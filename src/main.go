@@ -70,26 +70,26 @@ type ReplyData struct {
 func main(){
 	visitnum := 0
 	totalnum := 0 
-	t := time.NewTicker(time.Minute * 60)
+	t := time.NewTicker(time.Minute * 60 * 24)
 	go func() {
 		for range t.C {
 		    visitnum = 0
 		}
 	    }()
-	db, err := sql.Open("mysql", "root:-@/blog2")// Change When Deploy
+	db, err := sql.Open("mysql", "root:password@/blog")// Change When Deploy
 	if err != nil {
 		log.Fatalln("DB IS NOT CONNECTED")
 	}
 	defer db.Close()
 	//내 아이디/비밀번호 DB에 미리 저장
-	hash, err := bcrypt.GenerateFromPassword([]byte("-"),bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte("password"),bcrypt.DefaultCost)
 			if err != nil {
 				fmt.Println("BCRYPT PW ERROR")
 			}
 	db.Query(`INSERT INTO login (id, pw) values ("achoistic98", "`+string(hash)+`")`)
 	eg := gin.Default()
 	config := cors.DefaultConfig()
-   	config.AllowOrigins = []string{"http://localhost:3000"} // 허용할 오리진 설정
+   	config.AllowOrigins = []string{"http://www.choigonyok.com"} // 허용할 오리진 설정
 	config.AllowMethods=     []string{"POST", "DELETE", "GET", "PUT"}
 	config.AllowHeaders = []string{"cookie", "Content-type"}
 	config.AllowCredentials = true
@@ -97,7 +97,7 @@ func main(){
 
 	
 
-	eg.POST("/post/:param", func (c *gin.Context){
+	eg.POST("/api/post/:param", func (c *gin.Context){
 		_, err := c.Cookie("admin")
 		if err == http.ErrNoCookie{
 			c.String(http.StatusUnauthorized, "You are not administrator")
@@ -141,14 +141,14 @@ func main(){
 			wholeimg := imgfile.File["file"]
 			for _, v := range wholeimg {
 				no_space_filename := strings.ReplaceAll(v.Filename," ", "")
-				err = c.SaveUploadedFile(v, "/Users/yunsuk/blog-ver2-server/src/IMAGES/"+strconv.Itoa(idnum)+"-"+no_space_filename)
+				err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(idnum)+"-"+no_space_filename)
 				if err != nil {
 					c.String(http.StatusBadRequest,"IMG UPLOAD ERROR")
 				}
 			}
 			//DB에는 대표이미지(썸네일)만 저장
 			no_space_thimbnail := strings.ReplaceAll(wholeimg[0].Filename," ", "")
-			_ , err = db.Query(`UPDATE post SET imgpath = "http://localhost:8080/IMAGES/`+strconv.Itoa(idnum)+"-"+no_space_thimbnail+`" where id = `+strconv.Itoa(idnum))
+			_ , err = db.Query(`UPDATE post SET imgpath = "`+strconv.Itoa(idnum)+"-"+no_space_thimbnail+`" where id = `+strconv.Itoa(idnum))
 			if err != nil {
 				c.String(http.StatusBadRequest,"POST IMAGE ATTACH ERROR")
 			}
@@ -157,7 +157,7 @@ func main(){
 	})	
 	
 	// 방문자 수 구현
-	eg.GET("/cookie", func(c *gin.Context){
+	eg.GET("/api/cookie", func(c *gin.Context){
 		_, err := c.Cookie("visitor")
 		if err == http.ErrNoCookie {
 			visitnum += 1
@@ -181,7 +181,7 @@ func main(){
 		c.Writer.Write(data)
 	})
 
-	eg.POST("/mod/:param", func (c *gin.Context){
+	eg.POST("/api/mod/:param", func (c *gin.Context){
 		_, err := c.Cookie("admin")
 		if err == http.ErrNoCookie{
 			c.String(http.StatusUnauthorized, "You are not administrator")
@@ -203,7 +203,7 @@ func main(){
 		}
 	}
 	})
-	eg.POST("/login/:param", func (c *gin.Context){
+	eg.POST("/api/login/:param", func (c *gin.Context){
 		param := c.Param("param")
 		data := LoginData{}
 		if param == "pw" {
@@ -230,14 +230,14 @@ func main(){
 				c.Writer.WriteHeader(http.StatusUnauthorized)
 			} else {
 				c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-				c.SetCookie("admin", "authorized",60*60,"/","",false,true)
+				c.SetCookie("admin", "authorized",60*60*12,"/","choigonyok.com",false,true)
 				c.String(http.StatusOK, "COOKIE SENDED")
 			}
 		}
 	})
 
 
-	eg.POST("/tag", func (c *gin.Context){
+	eg.POST("/api/tag", func (c *gin.Context){
 		var data TagData
 		if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -259,8 +259,6 @@ func main(){
 			temp.Datetime = strings.ReplaceAll(temp.Datetime,"-", "/")
 			temp.Tag = strings.ToUpper(temp.Tag)
 			temp.Title = strings.ToUpper(temp.Title)
-			temp.Body = strings.ToUpper(temp.Body)
-			temp.ImagePath = strings.ToUpper(temp.ImagePath)
 			postdata = append(postdata, temp)
 		}
 		
@@ -279,7 +277,7 @@ func main(){
 		    
 		    
 	})
-	eg.GET("/tag", func (c *gin.Context){
+	eg.GET("/api/tag", func (c *gin.Context){
 		r, err := db.Query("SELECT tag FROM post group by tag" )
 		if err != nil {
 			log.Fatalln("TAG BUTTON FINDING ERROR!!")
@@ -292,7 +290,7 @@ func main(){
 		}
 		
 		sum = strings.ReplaceAll(sum," / ", " ")
-		sum, ok := strings.CutPrefix(sum, " ")
+		sum, _, ok := strings.Cut(sum, " ")
 		tagnum := strings.Count(sum, " ") //모든 포스트의 총 tag 합계-중복포함
 		
 		posttagdata := []TagButtonData{}
@@ -336,7 +334,7 @@ func main(){
 		    
 	})
 
-	eg.DELETE("/post/delete:deleteid", func (c *gin.Context){
+	eg.DELETE("/api/post/delete:deleteid", func (c *gin.Context){
 		_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
 		if err == http.ErrNoCookie{ 
 			c.String(http.StatusUnauthorized, "You are not administrator")
@@ -352,14 +350,14 @@ func main(){
 			if err != nil {
 				fmt.Println("DELETE POST ERROR")
 			} // DB에서 레코드 먼저 지우기
-			list, err := os.ReadDir("/Users/yunsuk/blog-ver2-server/src/IMAGES")
+			list, err := os.ReadDir("IMAGES")
 			if err != nil {
 				fmt.Println("OPENING IMG LIST ERROR")
 			}
 			// 그 다음 해당 게시글과 관계된 이미지 전체 삭제
 			for _, v := range list {
 				if strings.HasPrefix(v.Name(), deleteid+"-") {
-					os.Remove("/Users/yunsuk/blog-ver2-server/src/IMAGES/"+v.Name())
+					os.Remove("IMAGES/"+v.Name())
 					if err != nil {
 					fmt.Println("IMAGE DELETE ERROR")
 					}
@@ -386,7 +384,7 @@ func main(){
 	}
 	})
 
-	eg.PUT("/comments", func (c *gin.Context){
+	eg.PUT("/api/comments", func (c *gin.Context){
 		data := CommentData{}
 		err = c.ShouldBindJSON(&data)
 		if err != nil {
@@ -443,7 +441,7 @@ func main(){
 		}
 	})
 
-	eg.GET("/post/comments/pw/:uniqueid", func (c *gin.Context){
+	eg.GET("/api/post/comments/pw/:uniqueid", func (c *gin.Context){
 		param := c.Param("uniqueid")
 		r, err:= db.Query("SELECT writerpw FROM comments WHERE uniqueid ="+param)
 		if err != nil {
@@ -467,7 +465,7 @@ func main(){
 	})
 
 	// admin의 토큰 사용을 통한 댓글 삭제
-	eg.DELETE("/post/comments/:postid", func (c *gin.Context){
+	eg.DELETE("/api/post/comments/:postid", func (c *gin.Context){
 		param := c.Param("postid")
 		_, err = c.Cookie("admin") // 쿠키 : admin 권한 확인
 		if err == http.ErrNoCookie{ 
@@ -487,7 +485,7 @@ func main(){
 	})
 
 	// admin이 아닌 댓글 작성자 본인의 댓글 삭제
-	eg.POST("/post/comments", func (c *gin.Context){
+	eg.POST("/api/post/comments", func (c *gin.Context){
 		comid := c.Query("comid")
 		inputpw := c.Query("inputpw")
 		writerpw := ""
@@ -513,7 +511,7 @@ func main(){
 		}
 	})
 
-	eg.GET("/post/comments/:postid", func (c *gin.Context){
+	eg.GET("/api/post/comments/:postid", func (c *gin.Context){
 		param := c.Param("postid")
 		data := []CommentData{}
 		temp := CommentData{}
@@ -546,7 +544,7 @@ func main(){
 		c.Writer.Write(real_data)
 	})
 
-	eg.GET("/reply/:commentid", func (c *gin.Context){
+	eg.GET("/api/reply/:commentid", func (c *gin.Context){
 		commentid := c.Param("commentid")
 		r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = "+commentid+" order by replyuniqueid asc")
 		if err != nil {
@@ -566,7 +564,7 @@ func main(){
 		c.Writer.Write(senddata)
 	})
 
-	eg.PUT("/reply/:commentid", func (c *gin.Context){
+	eg.PUT("/api/reply/:commentid", func (c *gin.Context){
 		commentid := c.Param("commentid")
 		data := ReplyData{}
 		err = c.ShouldBindJSON(&data)
@@ -624,13 +622,9 @@ func main(){
 		}
 	})
 
-	eg.POST("/reply", func (c *gin.Context){
+	eg.POST("/api/reply", func (c *gin.Context){
 		inputpw := c.Query("inputpw")
 		replyid := c.Query("replyid")
-		fmt.Println(inputpw)
-		fmt.Println(inputpw)
-		fmt.Println(replyid)
-		fmt.Println(replyid)
 		r, err := db.Query("SELECT replywriterpw FROM reply WHERE replyuniqueid ="+replyid)
 		if err != nil {
 			fmt.Println("READING REPLY UNIQUE ID ERROR")
@@ -651,7 +645,7 @@ func main(){
 	})
 
 
-	eg.GET("/post/:postid", func (c *gin.Context){
+	eg.GET("/api/post/:postid", func (c *gin.Context){
 		postid := c.Param("postid")
 		var r2 *sql.Rows
 		if postid == "all" {
@@ -673,8 +667,6 @@ func main(){
 			temp.Datetime = strings.ReplaceAll(temp.Datetime,"-", "/")
 			temp.Tag = strings.ToUpper(temp.Tag)
 			temp.Title = strings.ToUpper(temp.Title)
-			temp.Body = strings.ToUpper(temp.Body)
-			temp.ImagePath = strings.ToUpper(temp.ImagePath)
 			data = append(data, temp)
 		}	
 		var response []byte
@@ -698,10 +690,10 @@ func main(){
 		c.Writer.Header().Set("Content-Type", "application/json")
 		c.Writer.Write(response)
 	})
-	eg.GET("/IMAGES/:imgname", func (c *gin.Context){
+	eg.GET("/api/IMAGES/:imgname", func (c *gin.Context){
 		imgname := c.Param("imgname")
 		imgname = strings.ReplaceAll(imgname," ","")
-		file, err := os.Open("src/Images/"+imgname)
+		file, err := os.Open("IMAGES/"+imgname)
 		if err != nil {
 		    // 파일 열기에 실패한 경우 에러 처리
 		    http.Error(c.Writer, "파일 오픈 실패", http.StatusInternalServerError)
