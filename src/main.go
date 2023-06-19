@@ -288,11 +288,9 @@ func main(){
 			r.Scan(&tagdata.Tagname)
 			sum += " "+tagdata.Tagname
 		}
-		
 		sum = strings.ReplaceAll(sum," / ", " ")
-		sum, _, ok := strings.Cut(sum, " ")
+		_, sum, ok := strings.Cut(sum, " ")
 		tagnum := strings.Count(sum, " ") //모든 포스트의 총 tag 합계-중복포함
-		
 		posttagdata := []TagButtonData{}
 		temp := TagButtonData{}
 		
