@@ -82,14 +82,14 @@ func main(){
 	}
 	defer db.Close()
 	//내 아이디/비밀번호 DB에 미리 저장
-	hash, err := bcrypt.GenerateFromPassword([]byte("password"),bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte("andromeda0085"),bcrypt.DefaultCost)
 			if err != nil {
 				fmt.Println("BCRYPT PW ERROR")
 			}
 	db.Query(`INSERT INTO login (id, pw) values ("achoistic98", "`+string(hash)+`")`)
 	eg := gin.Default()
 	config := cors.DefaultConfig()
-   	config.AllowOrigins = []string{"http://www.choigonyok.com"} // 허용할 오리진 설정
+	config.AllowOrigins = []string{"https://www.choigonyok.com"} // 허용할 오리진 설정
 	config.AllowMethods=     []string{"POST", "DELETE", "GET", "PUT"}
 	config.AllowHeaders = []string{"cookie", "Content-type"}
 	config.AllowCredentials = true
