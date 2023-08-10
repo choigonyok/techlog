@@ -1,5 +1,7 @@
 package model
 
+import "database/sql"
+
 type TagData struct {
 	Tags string `json:"Tag"`
     }
@@ -45,4 +47,28 @@ type ReplyData struct {
 	ReplyPW string `json:"compw"`
 	ReplyIsAdmin int `json:"replyisadmin"`
 	ReplyUniqueID int `json:"replyuniqueid"`
+}
+
+var db *sql.DB
+
+func OpenDB(driverName, dataSourceName string) error {
+	database, err := sql.Open(driverName, dataSourceName)
+	if err != nil {
+		return err
+	}
+
+	db = database
+
+	// DB와 서버가 연결 되었는지 확인
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CloseDB() error {
+	err := db.Close()
+	return err
 }

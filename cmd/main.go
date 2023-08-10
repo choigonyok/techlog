@@ -13,6 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/choigonyok/blog-project-backend/internal/controller"
+	"github.com/choigonyok/blog-project-backend/internal/model"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -20,54 +23,12 @@ import (
 )
 
 
-type TagData struct {
-	Tags string `json:"Tag"`
-    }
-type IdData struct {
-	Id int
-}
-type TagButtonData struct {
-	Tagname string
-}
-type SendData struct {
-	Id int
-	Tag string
-	Title string
-	Body string
-	Datetime string
-	ImagePath string
-	Comments []string
-	WriterID []string
-	WriterPW []string
-}
-type RecieveData struct {
-	Body string `json:"body"`
-	Datetime string `json:"datetime"`
-	Tag string `json:"tag"`
-	Title string `json:"title"`
-}
-type LoginData struct {
-	Id string `json:"id"`
-	Password string `json:"pw"`
-}
-type CommentData struct {
-	Comments string `json:"comments"`
-	PostId string `json:"postid"`
-	CommentID string `json:"comid"`
-	CommentPW string `json:"compw"`
-	IsAdmin int `json:"isadmin"`
-	ID int `json:"uniqueid"`
-}
-type ReplyData struct {
-	Reply string `json:"comments"`
-	CommentID string `json:"commentid"`
-	ReplyID string `json:"comid"`
-	ReplyPW string `json:"compw"`
-	ReplyIsAdmin int `json:"replyisadmin"`
-	ReplyUniqueID int `json:"replyuniqueid"`
-}
+
 
 func main(){
+	controller.ConnectDB(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@/"+os.Getenv("DB_NAME"))
+	defer controller.UnConnectDB()
+
 	visitnum := 0
 	totalnum := 0 
 	t := time.NewTicker(time.Minute * 60 * 24)
@@ -76,11 +37,8 @@ func main(){
 		    visitnum = 0
 		}
 	    }()
-	db, err := sql.Open("mysql", "root:password@/blog")// Change When Deploy
-	if err != nil {
-		log.Fatalln("DB IS NOT CONNECTED")
-	}
-	defer db.Close()
+	
+
 	//내 아이디/비밀번호 DB에 미리 저장
 	hash, err := bcrypt.GenerateFromPassword([]byte("andromeda0085"),bcrypt.DefaultCost)
 			if err != nil {
@@ -106,7 +64,7 @@ func main(){
 		switch param{
 		//게시글 작성 요청
 		case "post" :
-			var data RecieveData
+			var data model.RecieveData
 			if err := c.ShouldBindJSON(&data); 
 			err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -188,7 +146,7 @@ func main(){
 			c.String(http.StatusUnauthorized, "You are not administrator")
 		}else{
 		param := c.Param("param")
-		var recieved_data RecieveData
+		var recieved_data model.RecieveData
 		err = c.ShouldBindJSON(&recieved_data)
 		if err != nil{
 			fmt.Println("JSON BINDING ERROR")
@@ -206,7 +164,7 @@ func main(){
 	})
 	eg.POST("/api/login/:param", func (c *gin.Context){
 		param := c.Param("param")
-		data := LoginData{}
+		data := model.LoginData{}
 		if param == "pw" {
 			err = c.ShouldBindJSON(&data)
 			if err != nil {
@@ -239,7 +197,7 @@ func main(){
 
 
 	eg.POST("/api/tag", func (c *gin.Context){
-		var data TagData
+		var data model.TagData
 		if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -252,8 +210,8 @@ func main(){
 		if err != nil {
 			log.Fatalln("TAG FINDING ERROR!!")
 		}
-		postdata := []SendData{}
-		var temp SendData
+		postdata := []model.SendData{}
+		var temp model.SendData
 		for r.Next(){
 			r.Scan(&temp.Id,&temp.Tag,&temp.Title,&temp.Body,&temp.Datetime, &temp.ImagePath)
 			temp.Datetime = strings.TrimSuffix(temp.Datetime, " 00:00:00")
@@ -283,7 +241,7 @@ func main(){
 		if err != nil {
 			log.Fatalln("TAG BUTTON FINDING ERROR!!")
 		}
-		tagdata := TagButtonData{}
+		tagdata := model.TagButtonData{}
 		sum := ""
 		for r.Next(){
 			r.Scan(&tagdata.Tagname)
@@ -292,8 +250,8 @@ func main(){
 		sum = strings.ReplaceAll(sum," / ", " ")
 		_, sum, ok := strings.Cut(sum, " ")
 		tagnum := strings.Count(sum, " ") //모든 포스트의 총 tag 합계-중복포함
-		posttagdata := []TagButtonData{}
-		temp := TagButtonData{}
+		posttagdata := []model.TagButtonData{}
+		temp := model.TagButtonData{}
 		
 		if !ok {
 			fmt.Println("STRING ERROR 1")
@@ -310,8 +268,8 @@ func main(){
 		temp.Tagname = strings.ToUpper(sum)
 		posttagdata = append(posttagdata, temp)
 		// realdata[0] = posttagdata[0].Tagname
-		ret := []TagButtonData{}
-		m := make(map[TagButtonData]int)
+		ret := []model.TagButtonData{}
+		m := make(map[model.TagButtonData]int)
 		for i, v := range posttagdata {
 			if _, ok := m[v]; !ok{
 				m[v] = i
@@ -384,7 +342,7 @@ func main(){
 	})
 
 	eg.PUT("/api/comments", func (c *gin.Context){
-		data := CommentData{}
+		data := model.CommentData{}
 		err = c.ShouldBindJSON(&data)
 		if err != nil {
 			fmt.Println("COMMENTS JSON BINDING ERROR")
@@ -512,8 +470,8 @@ func main(){
 
 	eg.GET("/api/post/comments/:postid", func (c *gin.Context){
 		param := c.Param("postid")
-		data := []CommentData{}
-		temp := CommentData{}
+		data := []model.CommentData{}
+		temp := model.CommentData{}
 		if param == "0" { // 전체 댓글 중 admin 댓글이 아닌 것
 			r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
 			if err != nil {
@@ -549,8 +507,8 @@ func main(){
 		if err != nil {
 			fmt.Println("CAN NOT READ REPLY DATA FROM DB")
 		}
-		data := []ReplyData{}
-		temp := ReplyData{}
+		data := []model.ReplyData{}
+		temp := model.ReplyData{}
 		for r.Next() {
 			r.Scan(&temp.ReplyUniqueID, &temp.ReplyIsAdmin, &temp.ReplyID, &temp.ReplyPW, &temp.Reply)
 			data = append(data, temp)
@@ -565,7 +523,7 @@ func main(){
 
 	eg.PUT("/api/reply/:commentid", func (c *gin.Context){
 		commentid := c.Param("commentid")
-		data := ReplyData{}
+		data := model.ReplyData{}
 		err = c.ShouldBindJSON(&data)
 		if err != nil {
 			fmt.Println("REPLY JSON BINDING ERROR")
@@ -658,8 +616,8 @@ func main(){
 				log.Fatalln("ID FINDING ERROR!!")
 			}
 		}
-		var data []SendData
-		var temp SendData
+		var data []model.SendData
+		var temp model.SendData
 		for r2.Next(){
 			r2.Scan(&temp.Id,&temp.Tag,&temp.Title,&temp.Body,&temp.Datetime, &temp.ImagePath)
 			temp.Datetime = strings.TrimSuffix(temp.Datetime, " 00:00:00")
