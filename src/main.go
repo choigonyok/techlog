@@ -107,7 +107,8 @@ func main(){
 		//게시글 작성 요청
 		case "post" :
 			var data RecieveData
-			if err := c.ShouldBindJSON(&data); err != nil {
+			if err := c.ShouldBindJSON(&data); 
+			err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
@@ -415,7 +416,7 @@ func main(){
 				} else {
 					data.IsAdmin = 1
 				}
-				if strings.Contains(data.CommentID, `'`) || strings.Contains(data.CommentPW, `'`) ||strings.Contains(data.Comments, `'`) {
+				if strings.Contains(data.CommentID, `'`) ||strings.Contains(data.Comments, `'`) {
 					c.Writer.WriteHeader(http.StatusBadRequest)
 				} else {
 					var com_id int

@@ -106,8 +106,12 @@
 
 # **관련 Posts**
 
-* [리액트로 바위치기 #1](https://choigonyok.com/post/1)
+* [[BLOG #1]블로그를 직접 만들어보자](https://choigonyok.com/post/1)
 
-* [리액트로 바위치기 #2](https://choigonyok.com/post/8)
+* [[BLOG #2]URL로 이미지 GET하기](https://choigonyok.com/post/8)
 
-* [리액트로 바위치기 #3](https://choigonyok.com/post/9)
+* [[BLOG #3]태그로 RELATED POST 관리하기](https://choigonyok.com/post/9)
+
+* [[BLOG #4]여러 파일을 한 번에 업로드 하는 법](https://choigonyok.com/post/10)
+
+* [[BLOG #5]댓글/답글 기능 구현하기](https://choigonyok.com/post/13)
