@@ -19,7 +19,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -28,6 +27,8 @@ import (
 func main(){
 	controller.ConnectDB(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@/"+os.Getenv("DB_NAME"))
 	defer controller.UnConnectDB()
+
+
 
 	visitnum := 0
 	totalnum := 0 
@@ -38,13 +39,6 @@ func main(){
 		}
 	    }()
 	
-
-	//내 아이디/비밀번호 DB에 미리 저장
-	hash, err := bcrypt.GenerateFromPassword([]byte("andromeda0085"),bcrypt.DefaultCost)
-			if err != nil {
-				fmt.Println("BCRYPT PW ERROR")
-			}
-	db.Query(`INSERT INTO login (id, pw) values ("achoistic98", "`+string(hash)+`")`)
 	eg := gin.Default()
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"https://www.choigonyok.com"} // 허용할 오리진 설정
@@ -162,38 +156,8 @@ func main(){
 		}
 	}
 	})
-	eg.POST("/api/login/:param", func (c *gin.Context){
-		param := c.Param("param")
-		data := model.LoginData{}
-		if param == "pw" {
-			err = c.ShouldBindJSON(&data)
-			if err != nil {
-				fmt.Println("LOGIN DATA BINDING ERROR")
-			}
-		}
-		if data.Id != "achoistic98"{
-			c.Writer.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("WRONG ID INPUT")
-		} else {
-			r, err := db.Query(`SELECT pw FROM login where id = "achoistic98"`)
-			if err != nil {
-				fmt.Println("ID/PW DB INSERT ERROR")
-			}
-			var pwdata string
-			for r.Next() {
-				r.Scan(&pwdata)
-			}
-			fmt.Println(data.Password)
-			err = bcrypt.CompareHashAndPassword([]byte(pwdata), []byte(data.Password))
-			if err != nil {
-				c.Writer.WriteHeader(http.StatusUnauthorized)
-			} else {
-				c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-				c.SetCookie("admin", "authorized",60*60*12,"/","choigonyok.com",false,true)
-				c.String(http.StatusOK, "COOKIE SENDED")
-			}
-		}
-	})
+	
+	eg.POST("/api/login", controller.CheckIDAndPW)
 
 
 	eg.POST("/api/tag", func (c *gin.Context){
