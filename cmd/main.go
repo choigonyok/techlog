@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"github.com/choigonyok/blog-project-backend/internal/controller"
 
@@ -11,34 +10,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-
-
-
 func main(){
 	controller.ConnectDB(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@/"+os.Getenv("DB_NAME"))
 	defer controller.UnConnectDB()
-
-
-
-	visitnum := 0
-	totalnum := 0 
-	t := time.NewTicker(time.Minute * 60 * 24)
-	go func() {
-		for range t.C {
-		    visitnum = 0
-		}
-	    }()
 	
 	eg := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://www.choigonyok.com"} // 허용할 오리진 설정
-	config.AllowMethods=     []string{"POST", "DELETE", "GET", "PUT"}
+	config.AllowOrigins = []string{"https://www.choigonyok.com", "http://www.choigonyok.com"}
+	config.AllowMethods= []string{"POST", "DELETE", "GET", "PUT"}
 	config.AllowHeaders = []string{"cookie", "Content-type"}
 	config.AllowCredentials = true
    	eg.Use(cors.New(config))
-
-
-
+	
 	eg.POST("/api/post/:param", controller.WritePostHandler) // 게시글 작성
 	eg.GET("/api/cookie", controller.GetTodayAndTotalVisitorNumHandler) // today, total 방문자 수 확인
 	eg.POST("/api/mod/:param", controller.ModifyPostHandler) // 게시글 수정
