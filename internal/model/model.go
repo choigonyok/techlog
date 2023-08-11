@@ -1,6 +1,10 @@
 package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"strconv"
+	"time"
+)
 
 type TagData struct {
 	Tags string `json:"Tag"`
@@ -24,7 +28,7 @@ type SendData struct {
 }
 type RecieveData struct {
 	Body     string `json:"body"`
-	Datetime string `json:"datetime"`
+	Datetime time.Time `json:"datetime"`
 	Tag      string `json:"tag"`
 	Title    string `json:"title"`
 }
@@ -70,5 +74,27 @@ func OpenDB(driverName, dataSourceName string) error {
 
 func CloseDB() error {
 	err := db.Close()
+	return err
+}
+
+func GetRecentPostID() (int, error){
+	var idnum int
+r, err := db.Query("SELECT id FROM post order by id desc limit 1")
+if err != nil {
+	return 0, err
+}
+			for r.Next() {
+				r.Scan(
+					&idnum)
+			}
+return idnum, nil
+		}
+func AddPost(postID int, tag, title, body string, datetime time.Time ) error {
+	_, err := db.Query(`INSERT INTO post (id, tag, datetime, title, body) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime.Format("2006-01-02") + `','` + title + `','` + body + `')`)
+	return err
+}
+
+func UpdatePostImagePath (recentID int, imagename string) error {
+	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-" + imagename + `" where id = ` + strconv.Itoa(recentID))
 	return err
 }
