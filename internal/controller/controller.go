@@ -159,24 +159,14 @@ func GetPostsByTagHandler(c *gin.Context) {
 	if data.Tags == "ALL" {
 		data.Tags = ""
 	}
-	main_tag, _, _ := strings.Cut(data.Tags, " ")
-	r, err := db.Query("SELECT id,tag,title,body,datetime,imgpath FROM post where tag LIKE '%" + main_tag + "%' order by datetime desc")
+	mainTag, _, _ := strings.Cut(data.Tags, " ")
+	datas, err := model.SelectPostByTag(mainTag)
 	if err != nil {
-		log.Fatalln("TAG FINDING ERROR!!")
-	}
-	postdata := []model.SendData{}
-	var temp model.SendData
-	for r.Next() {
-		r.Scan(&temp.Id, &temp.Tag, &temp.Title, &temp.Body, &temp.Datetime, &temp.ImagePath)
-		temp.Datetime = strings.TrimSuffix(temp.Datetime, " 00:00:00")
-		temp.Datetime = strings.ReplaceAll(temp.Datetime, "-", "/")
-		temp.Tag = strings.ToUpper(temp.Tag)
-		temp.Title = strings.ToUpper(temp.Title)
-		postdata = append(postdata, temp)
+		fmt.Println("ERROR #6 : ", err.Error())
 	}
 
 	// JSON 응답 생성
-	response, err := json.Marshal(postdata)
+	marshaledDatas, err := json.Marshal(datas)
 	if err != nil {
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
@@ -185,9 +175,9 @@ func GetPostsByTagHandler(c *gin.Context) {
 	// JSON 헤더 설정 및 응답 전송
 
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.Write(response)
-
+	c.Writer.Write(marshaledDatas)
 }
+
 
 func GetEveryTagHandler(c *gin.Context) {
 	r, err := db.Query("SELECT tag FROM post group by tag")

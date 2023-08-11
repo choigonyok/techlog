@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -94,7 +95,7 @@ func AddPost(postID int, tag, title, body string, datetime time.Time ) error {
 	return err
 }
 
-func UpdatePostImagePath (recentID int, imagename string) error {
+func UpdatePostImagePath(recentID int, imagename string) error {
 	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-" + imagename + `" where id = ` + strconv.Itoa(recentID))
 	return err
 }
@@ -102,4 +103,22 @@ func UpdatePostImagePath (recentID int, imagename string) error {
 func UpdatePost(title, body, tag, postID string, datetime time.Time) error {
 	_, err := db.Query(`UPDATE post SET title = '` + title + `',body = '` + body + `',tag='` + tag + `',datetime='` + datetime.Format("2006-01-02") + `' where id = ` + postID)
 	return err
+}
+
+func SelectPostByTag(tag string) ([]SendData, error){
+	r, err := db.Query("SELECT id,tag,title,body,datetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by datetime desc")
+	if err != nil {
+		return nil, err
+	}
+	var data SendData
+	var datas []SendData
+	for r.Next() {
+		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
+		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
+		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
+		data.Tag = strings.ToUpper(data.Tag)
+		data.Title = strings.ToUpper(data.Title)		
+		datas = append(datas, data)
+	}
+	return datas, nil
 }
