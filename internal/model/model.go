@@ -98,3 +98,8 @@ func UpdatePostImagePath (recentID int, imagename string) error {
 	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-" + imagename + `" where id = ` + strconv.Itoa(recentID))
 	return err
 }
+
+func UpdatePost(title, body, tag, postID string, datetime time.Time) error {
+	_, err := db.Query(`UPDATE post SET title = '` + title + `',body = '` + body + `',tag='` + tag + `',datetime='` + datetime.Format("2006-01-02") + `' where id = ` + postID)
+	return err
+}

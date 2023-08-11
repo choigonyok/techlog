@@ -141,9 +141,9 @@ func ModifyPostHandler(c *gin.Context) {
 		if strings.Contains(recieved_data.Body, `'`) {
 			c.Writer.WriteHeader(http.StatusBadRequest)
 		} else {
-			_, err = db.Query(`UPDATE post SET title = '` + recieved_data.Title + `',body = '` + recieved_data.Body + `',tag='` + recieved_data.Tag + `',datetime='` + recieved_data.Datetime + `' where id = ` + param)
+			err := model.UpdatePost(recieved_data.Title, recieved_data.Body,recieved_data.Tag,param, recieved_data.Datetime)	
 			if err != nil {
-				fmt.Println("MODIFY POST : DB READING ERROR")
+				fmt.Println("ERROR #5 : ", err.Error())
 			}
 			c.Writer.WriteHeader(http.StatusOK)
 		}
