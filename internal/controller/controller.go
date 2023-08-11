@@ -57,16 +57,17 @@ func WritePostHandler(c *gin.Context) {
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			var idnum int
-			r, _ := db.Query("SELECT id FROM post order by id desc limit 1")
-			for r.Next() {
-				r.Scan(&idnum)
+			recentPostID, err := model.GetRecentPostID()
+			if err != nil {
+				fmt.Println("ERROR #2 : ", err.Error())
 			}
-			idnum += 1
 			if strings.Contains(data.Body, `'`) {
 				c.Writer.WriteHeader(http.StatusBadRequest)
 			} else {
-				_, err = db.Query(`INSERT INTO post (id, tag, datetime, title, body) values (` + strconv.Itoa(idnum) + `, '` + data.Tag + `','` + data.Datetime + `','` + data.Title + `','` + data.Body + `')`)
+				err := model.AddPost(recentPostID+1, data.Tag, data.Title, data.Body, data.Datetime)
+				if err != nil {
+					fmt.Println("ERROR #3 : ", err.Error())
+				}
 				if err != nil {
 					fmt.Println("DB POST ADD ERROR")
 				}
@@ -79,22 +80,22 @@ func WritePostHandler(c *gin.Context) {
 				c.String(http.StatusBadRequest, "IMG PARSING ERROR")
 			}
 			//방금 만들어진 post의 id 확인
-			r, _ := db.Query("SELECT id FROM post order by id desc limit 1")
-			var idnum int
-			for r.Next() {
-				r.Scan(&idnum)
+			recentID, err := model.GetRecentPostID()
+			if err != nil {
+				fmt.Println("ERROR #4 : ", err.Error())
 			}
+
 			wholeimg := imgfile.File["file"]
 			for _, v := range wholeimg {
 				no_space_filename := strings.ReplaceAll(v.Filename, " ", "")
-				err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(idnum)+"-"+no_space_filename)
+				err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(recentID)+"-"+no_space_filename)
 				if err != nil {
 					c.String(http.StatusBadRequest, "IMG UPLOAD ERROR")
 				}
 			}
 			//DB에는 대표이미지(썸네일)만 저장
 			no_space_thimbnail := strings.ReplaceAll(wholeimg[0].Filename, " ", "")
-			_, err = db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(idnum) + "-" + no_space_thimbnail + `" where id = ` + strconv.Itoa(idnum))
+			err = model.UpdatePostImagePath(recentID, no_space_thimbnail)
 			if err != nil {
 				c.String(http.StatusBadRequest, "POST IMAGE ATTACH ERROR")
 			}
