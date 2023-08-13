@@ -54,6 +54,34 @@ type ReplyData struct {
 	ReplyUniqueID int    `json:"replyuniqueid"`
 }
 
+type Comment struct {
+	ID int `json:"id"`
+	PostID int `json:"postid"`
+	Admin int `json:"admin"`
+	Text string `json:"text"`
+	WriterID string `json:"writerid"`
+	WriterPW string `json:"writerpw"`
+}
+
+type Post struct {
+	ID int `json:"id"`
+	Tag string `json:"tag"`
+	Title string `json:"title"`
+	Text string `json:"string"`
+	WriteTime time.Time `json:"writetime"`
+	ImagePath string `json:"imagepath"`
+	ImageNum int `json:"imagenum"`
+}
+
+type Reply struct {
+	ID int `json:"id"`
+	Admin int `json:"admin"`
+	WriterID string `json:"writerid"`
+	WriterPW string `json:"writerpw"`
+	Text string `json:"text"`
+	CommentID int `json:"commentid"`
+}
+
 var db *sql.DB
 
 func OpenDB(driverName, dataSourceName string) error {
