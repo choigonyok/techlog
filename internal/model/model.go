@@ -226,7 +226,7 @@ func SelectCommentByPostID(postID int) ([]CommentData, error) {
 	return datas, nil
 }
 
-func SelectReplyByCommentID(commendID string) ([]ReplyData, error) {
+func SelectReplyByCommentID(commentID string) ([]ReplyData, error) {
 	r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = " + commentID + " order by replyuniqueid asc")
 	if err != nil {
 		return nil, err
