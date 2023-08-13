@@ -79,7 +79,21 @@ type Reply struct {
 	CommentID int `json:"commentid"`
 }
 
+type Cookie struct {
+	Value string `json:"value"`
+}
+
 var db *sql.DB
+
+func GetCookieValue(inputValue string) (string, error) {
+	r, err := db.Query("SELECT value FROM cookie")
+	if err != nil {
+		return "", err
+	}
+	var cookieValue string
+	r.Scan(&cookieValue)
+	return cookieValue, nil
+}
 
 func OpenDB(driverName, dataSourceName string) error {
 	database, err := sql.Open(driverName, dataSourceName)

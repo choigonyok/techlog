@@ -47,11 +47,27 @@ func CheckIDAndPW(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
+func checkCookieValid(c *gin.Context) {
+	inputValue, CookieErr := c.Cookie("admin")
+	cookieValue, err := model.GetCookieValue(inputValue)
+	if err != nil {
+		fmt.Println("ERROR #21 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if CookieErr != nil || cookieValue != inputValue {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+}
+
 func WritePostHandler(c *gin.Context) {
 	_, err := c.Cookie("admin")
 	if err == http.ErrNoCookie {
-		c.String(http.StatusUnauthorized, "You are not administrator")
-	} else {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 		param := c.Param("param")
 		switch param {
 		//게시글 작성 요청
@@ -105,7 +121,7 @@ func WritePostHandler(c *gin.Context) {
 			}
 		}
 	}
-}
+
 
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 }
