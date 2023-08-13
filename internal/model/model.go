@@ -256,3 +256,19 @@ func InsertReply(isAdmin, recentReplyID int, commentID, replyText, writerID, wri
 	_, err := db.Query(`INSERT INTO reply (commentid, replycontents, replywriterid, replywriterpw, replyisadmin, replyuniqueid) values (` + strconv.Itoa(commentID) + `,'` + replyText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(recentReplyID) + `)`)
 	return err
 }
+
+func GetReplyPWByReplyID(replyID string) (string, error){
+	r, err := db.Query("SELECT replywriterpw FROM reply WHERE replyuniqueid =" + replyID)
+	if err != nil {
+		return "", err
+	}
+	var replyPW string
+	r.Next()
+	r.Scan(&replyPW)
+	return replyPW, nil
+}
+
+func DeleteReplyByReplyID(replyID string) error {
+	_, err := db.Query("DELETE FROM reply WHERE replyuniqueid = " + replyID)
+	return err
+}

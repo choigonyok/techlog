@@ -482,18 +482,14 @@ func AddReplyHandler(c *gin.Context) {
 func DeleteReplyHandler(c *gin.Context) {
 	inputpw := c.Query("inputpw")
 	replyid := c.Query("replyid")
-	r, err := db.Query("SELECT replywriterpw FROM reply WHERE replyuniqueid =" + replyid)
+	replyPW, err := model.GetReplyPWByReplyID(replyid)
 	if err != nil {
-		fmt.Println("READING REPLY UNIQUE ID ERROR")
+		fmt.Println("ERROR #28 : ", err.Error())
 	}
-	compare_pw := ""
-	for r.Next() {
-		r.Scan(&compare_pw)
-	}
-	if compare_pw == inputpw {
-		_, err = db.Query("DELETE FROM reply WHERE replyuniqueid = " + replyid)
+	if replyPW == inputpw {
+		err := model.DeleteReplyByReplyID(replyid)
 		if err != nil {
-			fmt.Println("DELETE REPLY IN DB ERROR")
+			fmt.Println("ERROR #29 : ", err.Error())
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 	} else {
