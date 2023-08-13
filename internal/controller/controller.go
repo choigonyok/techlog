@@ -413,23 +413,17 @@ func GetCommentHandler(c *gin.Context) {
 }
 
 func GetReplyHandler(c *gin.Context) {
-	commentid := c.Param("commentid")
-	r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = " + commentid + " order by replyuniqueid asc")
+	commentID := c.Param("commentid")
+	replySlice, err := model.SelectReplyByCommentID(commentID)
 	if err != nil {
-		fmt.Println("CAN NOT READ REPLY DATA FROM DB")
+		fmt.Println("ERROR #24 : ", err.Error())
 	}
-	data := []model.ReplyData{}
-	temp := model.ReplyData{}
-	for r.Next() {
-		r.Scan(&temp.ReplyUniqueID, &temp.ReplyIsAdmin, &temp.ReplyID, &temp.ReplyPW, &temp.Reply)
-		data = append(data, temp)
-	}
-	senddata, err := json.Marshal(data)
+	marshaledData, err := json.Marshal(replySlice)
 	if err != nil {
-		fmt.Println("REPLY DATA MARSHALING ERROR")
+		fmt.Println("ERROR #25 : ", err.Error())
 	}
 	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Write(senddata)
+	c.Writer.Write(marshaledData)
 }
 
 func AddReplyHandler(c *gin.Context) {

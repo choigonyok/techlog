@@ -225,3 +225,17 @@ func SelectCommentByPostID(postID int) ([]CommentData, error) {
 	}
 	return datas, nil
 }
+
+func SelectReplyByCommentID(commendID string) ([]ReplyData, error) {
+	r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = " + commentID + " order by replyuniqueid asc")
+	if err != nil {
+		return nil, err
+	}
+	datas := []ReplyData{}
+	data := ReplyData{}
+	for r.Next() {
+		r.Scan(&data.ReplyUniqueID, &data.ReplyID, &data.ReplyPW, &data.Reply)
+		datas = append(datas, data)
+	}
+	return datas, nil
+}
