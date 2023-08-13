@@ -367,22 +367,18 @@ func DeleteCommentByAdminHandler(c *gin.Context) {
 func DeleteCommentHandler(c *gin.Context) {
 	comid := c.Query("comid")
 	inputpw := c.Query("inputpw")
-	writerpw := ""
-	r, err := db.Query("SELECT writerpw FROM comments WHERE uniqueid = " + comid)
+	writerPW, err := model.GetCommentWriterPWByCommentID(comid)
 	if err != nil {
-		fmt.Println("WRITERPW LOADING FROM DB ERROR")
+		fmt.Println("ERROR #18 : ", err.Error())
 	}
-	for r.Next() {
-		r.Scan(&writerpw)
-	}
-	if inputpw == writerpw {
-		_, err = db.Query("DELETE FROM reply WHERE commentid = " + comid)
+	if inputpw == writerPW {
+		err := model.DeleteEveryReplyByCommentID(comid)
 		if err != nil {
-			fmt.Println("INCLUDING REPLY DELETE ERROR")
+			fmt.Println("ERROR #19 : ", err.Error())
 		}
-		_, err = db.Query("DELETE FROM comments WHERE uniqueid = " + comid)
-		if err != nil {
-			fmt.Println("COMMENT DELETE ERROR")
+		err2 := model.DeleteEveryCommentByCommentID(comid)
+		if err2 != nil {
+			fmt.Println("ERROR #20 : ", err.Error())
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 	} else {
