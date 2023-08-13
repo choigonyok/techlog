@@ -38,6 +38,7 @@
         - Go directory convention 적용
         - K8S 배포
         - Code refactoring
+        - 게시글에 특정 기호 못넣던 이슈 해결
 
 <br>
 

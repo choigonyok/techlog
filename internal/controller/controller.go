@@ -28,10 +28,10 @@ func UnConnectDB() {
 	}
 }
 
-func CheckIDAndPW(c *gin.Context) {
+func CheckAdminIDAndPW(c *gin.Context) {
 	data := struct {
-		ID string `json:"id"`
-		Password string `json:"pw"`	
+		ID       string `json:"id"`
+		Password string `json:"pw"`
 	}{}
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
@@ -134,7 +134,7 @@ func ModifyPostHandler(c *gin.Context) {
 		return
 	}
 	PostData.Text = strings.ReplaceAll(PostData.Text, `'`, `\'`)
-	err = model.UpdatePost(PostData.Title, PostData.Text,PostData.Tag,postID, PostData.WriteTime)	
+	err = model.UpdatePost(PostData.Title, PostData.Text, PostData.Tag, postID, PostData.WriteTime)
 	if err != nil {
 		fmt.Println("ERROR #5 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusUnauthorized)
@@ -168,6 +168,7 @@ func GetPostsByTagHandler(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.Write(marshaledData)
 }
+
 // 코드리뷰
 // 코드리뷰
 // 코드리뷰
@@ -289,11 +290,11 @@ func AddCommentHandler(c *gin.Context) {
 	isTextEmpty, textErr := regexp.MatchString("^$", data.Text)
 	isIDEmpty, idErr := regexp.MatchString("^$", data.WriterID)
 	isPwValid, pwErr := regexp.MatchString("^[0-9]+$", data.WriterPW)
-	if textErr != nil || idErr != nil || pwErr != nil{
+	if textErr != nil || idErr != nil || pwErr != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if !isTextEmpty || !isIDEmpty || !isPwValid{
+	if !isTextEmpty || !isIDEmpty || !isPwValid {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -306,7 +307,7 @@ func AddCommentHandler(c *gin.Context) {
 	strings.ReplaceAll(data.WriterPW, `'`, `\'`)
 	recentCommentID, err := model.GetRecentCommentID()
 	if err != nil {
-		fmt.Println("ERROR #12 : ", err.Error())	
+		fmt.Println("ERROR #12 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -408,6 +409,9 @@ func GetCommentHandler(c *gin.Context) {
 	}
 }
 
+// 여기서부터 시작
+// 여기서부터 시작
+// 여기서부터 시작
 func GetReplyHandler(c *gin.Context) {
 	commentID := c.Param("commentid")
 	replySlice, err := model.SelectReplyByCommentID(commentID)
