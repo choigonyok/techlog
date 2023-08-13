@@ -22,9 +22,11 @@ func main() {
 	config.AllowCredentials = true
 	eg.Use(cors.New(config))
 
-	eg.POST("/api/post/:param", controller.WritePostHandler)                        // 게시글 작성
+	eg.POST("/api/post/image", controller.WritePostHandler) // 작성된 게시글에 썸네일 추가
+	eg.POST("/api/post", controller.WritePostImageHandler)  // 게시글 작성
+
 	eg.GET("/api/cookie", controller.GetTodayAndTotalVisitorNumHandler)             // today, total 방문자 수 확인
-	eg.POST("/api/mod/:param", controller.ModifyPostHandler)                        // 게시글 수정
+	eg.POST("/api/mod/:postid", controller.ModifyPostHandler)                        // 게시글 수정
 	eg.POST("/api/login", controller.CheckIDAndPW)                                  // 로그인
 	eg.POST("/api/tag", controller.GetPostsByTagHandler)                            // 태그 클릭시 포스트 출력
 	eg.GET("/api/tag", controller.GetEveryTagHandler)                               // 현재 존재하는 모든 태그 불러오기

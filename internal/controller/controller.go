@@ -47,116 +47,111 @@ func CheckIDAndPW(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
-func checkCookieValid(c *gin.Context) {
+func isCookieValid(c *gin.Context) bool {
 	inputValue, CookieErr := c.Cookie("admin")
 	cookieValue, err := model.GetCookieValue(inputValue)
 	if err != nil {
-		fmt.Println("ERROR #21 : ", err.Error())
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
+		return false
 	}
 	if CookieErr != nil || cookieValue != inputValue {
-		c.Writer.WriteHeader(http.StatusUnauthorized)
-		return
+		return false
 	}
+	return true
 }
 
 func WritePostHandler(c *gin.Context) {
-	_, err := c.Cookie("admin")
-	if err == http.ErrNoCookie {
+	if !isCookieValid(c) {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+	var data model.Post
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	recentPostID, err := model.GetRecentPostID()
+	if err != nil {
+		fmt.Println("ERROR #2 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
+	err = model.AddPost(recentPostID+1, data.Tag, data.Title, data.Text, data.WriteTime.Format("2006-01-02"))
+	if err != nil {
+		fmt.Println("ERROR #3 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.Writer.WriteHeader(http.StatusOK)
+}
 
-		param := c.Param("param")
-		switch param {
-		//게시글 작성 요청
-		case "post":
-			var data model.RecieveData
-			if err := c.ShouldBindJSON(&data); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-			recentPostID, err := model.GetRecentPostID()
-			if err != nil {
-				fmt.Println("ERROR #2 : ", err.Error())
-			}
-			if strings.Contains(data.Body, `'`) {
-				c.Writer.WriteHeader(http.StatusBadRequest)
-			} else {
-				err := model.AddPost(recentPostID+1, data.Tag, data.Title, data.Body, data.Datetime)
-				if err != nil {
-					fmt.Println("ERROR #3 : ", err.Error())
-				}
-				if err != nil {
-					fmt.Println("DB POST ADD ERROR")
-				}
-				c.Writer.WriteHeader(http.StatusOK)
-			}
-		//위에서 작성된 게시글에 이미지 추가 요청
-		case "img":
-			imgfile, err := c.MultipartForm()
-			if err != nil {
-				c.String(http.StatusBadRequest, "IMG PARSING ERROR")
-			}
-			//방금 만들어진 post의 id 확인
-			recentID, err := model.GetRecentPostID()
-			if err != nil {
-				fmt.Println("ERROR #4 : ", err.Error())
-			}
-
-			wholeimg := imgfile.File["file"]
-			for _, v := range wholeimg {
-				no_space_filename := strings.ReplaceAll(v.Filename, " ", "")
-				err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(recentID)+"-"+no_space_filename)
-				if err != nil {
-					c.String(http.StatusBadRequest, "IMG UPLOAD ERROR")
-				}
-			}
-			//DB에는 대표이미지(썸네일)만 저장
-			no_space_thimbnail := strings.ReplaceAll(wholeimg[0].Filename, " ", "")
-			err = model.UpdatePostImagePath(recentID, no_space_thimbnail)
-			if err != nil {
-				c.String(http.StatusBadRequest, "POST IMAGE ATTACH ERROR")
-			}
+func WritePostImageHandler(c *gin.Context) {
+	if !isCookieValid(c) {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	imgFile, err := c.MultipartForm()
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	recentID, err := model.GetRecentPostID()
+	if err != nil {
+		fmt.Println("ERROR #4 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	everyIMG := imgFile.File["file"]
+	for _, v := range everyIMG {
+		noSpaceImageName := strings.ReplaceAll(v.Filename, " ", "")
+		err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(recentID)+"-"+noSpaceImageName)
+		if err != nil {
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 	}
-
+	noSpaceThumbnailName := strings.ReplaceAll(everyIMG[0].Filename, " ", "")
+	err = model.UpdatePostImagePath(recentID, noSpaceThumbnailName)
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
 
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 }
 
 func ModifyPostHandler(c *gin.Context) {
-	_, err := c.Cookie("admin")
-	if err == http.ErrNoCookie {
-		c.String(http.StatusUnauthorized, "You are not administrator")
-	} else {
-		param := c.Param("param")
-		var recieved_data model.RecieveData
-		err = c.ShouldBindJSON(&recieved_data)
-		if err != nil {
-			fmt.Println("JSON BINDING ERROR")
-		}
-		if strings.Contains(recieved_data.Body, `'`) {
-			c.Writer.WriteHeader(http.StatusBadRequest)
-		} else {
-			err := model.UpdatePost(recieved_data.Title, recieved_data.Body,recieved_data.Tag,param, recieved_data.Datetime)	
-			if err != nil {
-				fmt.Println("ERROR #5 : ", err.Error())
-			}
-			c.Writer.WriteHeader(http.StatusOK)
-		}
+	if !isCookieValid(c) {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
 	}
+	postID := c.Param("postid")
+	var PostData model.Post
+	err := c.ShouldBindJSON(&PostData)
+	if err != nil {
+		fmt.Println("ERROR #22 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	PostData.Text = strings.ReplaceAll(PostData.Text, `'`, `\'`)
+	err = model.UpdatePost(PostData.Title, PostData.Text,PostData.Tag,postID, PostData.WriteTime)	
+	if err != nil {
+		fmt.Println("ERROR #5 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	c.Writer.WriteHeader(http.StatusOK)
 }
 
 func GetPostsByTagHandler(c *gin.Context) {
-	var data model.TagData
+	var data model.Post
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if data.Tags == "ALL" {
-		data.Tags = ""
+	if data.Tag == "ALL" {
+		data.Tag = ""
 	}
 	mainTag, _, _ := strings.Cut(data.Tags, " ")
 	datas, err := model.SelectPostByTag(mainTag)

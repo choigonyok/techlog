@@ -28,15 +28,15 @@ type SendData struct {
 	WriterPW  []string
 }
 type RecieveData struct {
-	Body     string `json:"body"`
+	Body     string    `json:"body"`
 	Datetime time.Time `json:"datetime"`
-	Tag      string `json:"tag"`
-	Title    string `json:"title"`
+	Tag      string    `json:"tag"`
+	Title    string    `json:"title"`
 }
 
 type CommentData struct {
 	Comments  string `json:"comments"`
-	PostId    int `json:"postid"`
+	PostId    int    `json:"postid"`
 	CommentID string `json:"comid"`
 	CommentPW string `json:"compw"`
 	IsAdmin   int    `json:"isadmin"`
@@ -52,31 +52,31 @@ type ReplyData struct {
 }
 
 type Comment struct {
-	ID int `json:"id"`
-	PostID int `json:"postid"`
-	Admin int `json:"admin"`
-	Text string `json:"text"`
+	ID       int    `json:"id"`
+	PostID   int    `json:"postid"`
+	Admin    int    `json:"admin"`
+	Text     string `json:"text"`
 	WriterID string `json:"writerid"`
 	WriterPW string `json:"writerpw"`
 }
 
 type Post struct {
-	ID int `json:"id"`
-	Tag string `json:"tag"`
-	Title string `json:"title"`
-	Text string `json:"string"`
+	ID        int       `json:"id"`
+	Tag       string    `json:"tag"`
+	Title     string    `json:"title"`
+	Text      string    `json:"string"`
 	WriteTime time.Time `json:"writetime"`
-	ImagePath string `json:"imagepath"`
-	ImageNum int `json:"imagenum"`
+	ImagePath string    `json:"imagepath"`
+	ImageNum  int       `json:"imagenum"`
 }
 
 type Reply struct {
-	ID int `json:"id"`
-	Admin int `json:"admin"`
-	WriterID string `json:"writerid"`
-	WriterPW string `json:"writerpw"`
-	Text string `json:"text"`
-	CommentID int `json:"commentid"`
+	ID        int    `json:"id"`
+	Admin     int    `json:"admin"`
+	WriterID  string `json:"writerid"`
+	WriterPW  string `json:"writerpw"`
+	Text      string `json:"text"`
+	CommentID int    `json:"commentid"`
 }
 
 type Cookie struct {
@@ -117,25 +117,25 @@ func CloseDB() error {
 	return err
 }
 
-func GetRecentPostID() (int, error){
+func GetRecentPostID() (int, error) {
 	var idnum int
-r, err := db.Query("SELECT id FROM post order by id desc limit 1")
-if err != nil {
-	return 0, err
+	r, err := db.Query("SELECT id FROM post order by id desc limit 1")
+	if err != nil {
+		return 0, err
+	}
+	for r.Next() {
+		r.Scan(
+			&idnum)
+	}
+	return idnum, nil
 }
-			for r.Next() {
-				r.Scan(
-					&idnum)
-			}
-return idnum, nil
-		}
-func AddPost(postID int, tag, title, body string, datetime time.Time ) error {
-	_, err := db.Query(`INSERT INTO post (id, tag, datetime, title, body) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime.Format("2006-01-02") + `','` + title + `','` + body + `')`)
+func AddPost(postID int, tag, title, body string, datetime string) error {
+	_, err := db.Query(`INSERT INTO post (id, tag, datetime, title, body) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime + `','` + title + `','` + body + `')`)
 	return err
 }
 
 func UpdatePostImagePath(recentID int, imagename string) error {
-	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-" + imagename + `" where id = ` + strconv.Itoa(recentID))
+	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-\"" + imagename + `" where id = ` + strconv.Itoa(recentID))
 	return err
 }
 
@@ -144,7 +144,7 @@ func UpdatePost(title, body, tag, postID string, datetime time.Time) error {
 	return err
 }
 
-func SelectPostByTag(tag string) ([]SendData, error){
+func SelectPostByTag(tag string) ([]SendData, error) {
 	r, err := db.Query("SELECT id,tag,title,body,datetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by datetime desc")
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func SelectPostByTag(tag string) ([]SendData, error){
 		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
 		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
 		data.Tag = strings.ToUpper(data.Tag)
-		data.Title = strings.ToUpper(data.Title)		
+		data.Title = strings.ToUpper(data.Title)
 		datas = append(datas, data)
 	}
 	return datas, nil
@@ -186,7 +186,7 @@ func DeletePostByPostID(postID string) error {
 	return err
 }
 
-func SelectEveryCommentIDByPostID(postID string) ([]string, error){
+func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
 	r, err := db.Query("SELECT uniqueid FROM comments WHERE id = " + postID)
 	if err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error){
 
 func DeleteEveryCommentByCommentID(commentID string) error {
 	_, err := db.Query("DELETE FROM comments WHERE uniqueid = " + commentID)
-		return err
+	return err
 }
 
 func DeleteEveryReplyByCommentID(commentID string) error {
@@ -222,8 +222,8 @@ func GetRecentCommentID() (int, error) {
 	return recentCommentID, nil
 }
 
-func InsertComment(postID, commentID,isAdmin int, commentText, writerID, writerPW string) error {
-	_, err := db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + strconv.Itoa(postID)	+ `,'` + commentText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(commentID) + `)`)
+func InsertComment(postID, commentID, isAdmin int, commentText, writerID, writerPW string) error {
+	_, err := db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + strconv.Itoa(postID) + `,'` + commentText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(commentID) + `)`)
 	return err
 }
 
@@ -235,7 +235,7 @@ func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	return writerPW, err
 }
 
-func SelectNotAdminWriterComment(postID int) ([]CommentData, error){
+func SelectNotAdminWriterComment(postID int) ([]CommentData, error) {
 	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
 	if err != nil {
 		return nil, err
@@ -258,7 +258,7 @@ func SelectCommentByPostID(postID int) ([]CommentData, error) {
 	datas := []CommentData{}
 	data := CommentData{}
 	for r.Next() {
-		r.Scan(&data.CommentID, &data.CommentPW,&data.Comments, &data.IsAdmin, &data.ID)
+		r.Scan(&data.CommentID, &data.CommentPW, &data.Comments, &data.IsAdmin, &data.ID)
 		data.PostId = postID
 		datas = append(datas, data)
 	}
@@ -279,7 +279,7 @@ func SelectReplyByCommentID(commentID string) ([]ReplyData, error) {
 	return datas, nil
 }
 
-func GetRecentReplyID() (int, error){
+func GetRecentReplyID() (int, error) {
 	r, err := db.Query("SELECT replyuniqueid FROM reply order by replyuniqueid desc limit 1")
 	if err != nil {
 		return 0, err
@@ -296,7 +296,7 @@ func InsertReply(isAdmin, recentReplyID int, commentID, replyText, writerID, wri
 	return err
 }
 
-func GetReplyPWByReplyID(replyID string) (string, error){
+func GetReplyPWByReplyID(replyID string) (string, error) {
 	r, err := db.Query("SELECT replywriterpw FROM reply WHERE replyuniqueid =" + replyID)
 	if err != nil {
 		return "", err
