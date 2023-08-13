@@ -161,8 +161,8 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error){
 	return commentsSlice, nil
 }
 
-func DeleteEveryCommentByPostID(postID string) error {
-	_, err := db.Query("DELETE FROM comments WHERE id = " + postID)
+func DeleteEveryCommentByCommentID(commentID string) error {
+	_, err := db.Query("DELETE FROM comments WHERE uniqueid = " + commentID)
 		return err
 }
 

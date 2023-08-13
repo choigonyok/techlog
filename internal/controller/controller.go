@@ -259,14 +259,14 @@ func DeletePostHandler(c *gin.Context) {
 			if err != nil {
 				fmt.Println("ERROR #10 : ", err.Error())
 			}
-			err = model.DeleteEveryCommentByPostID(deleteid)
-			if err != nil {
-				fmt.Println("ERROR #11 : ", err.Error())
-			}
 			for _, v := range commentsIDs {
-				err = model.DeleteEveryReplyByCommentID(v)
+				err = model.DeleteEveryCommentByCommentID(v)
 				if err != nil {
 					fmt.Println("ERROR #12 : ", err.Error())
+				}
+				err = model.DeleteEveryReplyByCommentID(v)
+				if err != nil {
+					fmt.Println("ERROR #16 : ", err.Error())
 				}
 			}
 		}
@@ -327,19 +327,15 @@ func AddCommentHandler(c *gin.Context) {
 }
 
 func GetCommentPWHandler(c *gin.Context) {
-	param := c.Param("uniqueid")
-	r, err := db.Query("SELECT writerpw FROM comments WHERE uniqueid =" + param)
+	commentID := c.Param("uniqueid")
+	writerPW, err := model.GetCommentWriterPWByCommentID(commentID)
 	if err != nil {
-		fmt.Println("FAILED TO LOAD COMMENT'S PASSWORD")
-	}
-	temp := ""
-	for r.Next() {
-		r.Scan(&temp)
+		fmt.Println("ERROR #14 : ", err.Error())
 	}
 	temp_struct := struct {
 		ComPW string `json:"compw"`
 	}{
-		temp,
+		writerPW,
 	}
 	data, err := json.Marshal(temp_struct)
 	if err != nil {
@@ -351,17 +347,17 @@ func GetCommentPWHandler(c *gin.Context) {
 
 func DeleteCommentByAdminHandler(c *gin.Context) {
 	param := c.Param("postid")
-	_, err = c.Cookie("admin") // 쿠키 : admin 권한 확인
+	_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
 	if err == http.ErrNoCookie {
 		c.String(http.StatusUnauthorized, "THERE IS NO COOKIE")
 	} else {
-		_, err = db.Query("DELETE FROM reply WHERE commentid = " + param)
+		err := model.DeleteEveryReplyByCommentID(param)
 		if err != nil {
-			fmt.Println("INCLUDING REPLY DELETE ERROR")
+			fmt.Println("ERROR #15 : ", err.Error())
 		}
-		_, err = db.Query("DELETE FROM comments WHERE uniqueid = " + param)
+		err = model.DeleteEveryCommentByCommentID(param)
 		if err != nil {
-			fmt.Println("COMMENT DELETE ERROR")
+			fmt.Println("ERROR #17 : ", err.Error())
 		} else {
 			c.Writer.WriteHeader(http.StatusOK)
 		}
