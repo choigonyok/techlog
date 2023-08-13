@@ -33,6 +33,11 @@
 ## **1-4 리팩토링**
 
         기간 : 23.08.11 ~ 
+        내용 : 
+        - MVC패턴 적용
+        - Go directory convention 적용
+        - K8S 배포
+        - Code refactoring
 
 <br>
 
