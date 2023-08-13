@@ -103,27 +103,6 @@ func WritePostHandler(c *gin.Context) {
 }
 
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
-	_, err := c.Cookie("visitor")
-	if err == http.ErrNoCookie {
-		visitnum += 1
-		totalnum += 1
-		c.SetCookie("visitor", "OK", 60, "/", "", false, true)
-	}
-	temp := struct {
-		VisitNumber int
-		TotalNumber int
-	}{
-		VisitNumber: visitnum,
-		TotalNumber: totalnum,
-	}
-	data, err := json.Marshal(temp)
-	if err != nil {
-		fmt.Println("VISITOR NUM MARSHALING ERROR")
-	}
-	c.Writer.Header().Set("Content-type", "application/json")
-	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Write(data)
 }
 
 func ModifyPostHandler(c *gin.Context) {
