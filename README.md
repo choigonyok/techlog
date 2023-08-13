@@ -30,6 +30,10 @@
 
 ### [www.choigonyok.com](https://www.choigonyok.com)
 
+## **1-4 리팩토링**
+
+        기간 : 23.08.11 ~ 
+
 <br>
 
 # **개발이유**

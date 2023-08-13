@@ -180,35 +180,29 @@ func GetPostsByTagHandler(c *gin.Context) {
 
 
 func GetEveryTagHandler(c *gin.Context) {
-	r, err := db.Query("SELECT tag FROM post group by tag")
+	tagString, err := model.GetEveryTagAsString()
 	if err != nil {
 		log.Fatalln("TAG BUTTON FINDING ERROR!!")
 	}
-	tagdata := model.TagButtonData{}
-	sum := ""
-	for r.Next() {
-		r.Scan(&tagdata.Tagname)
-		sum += " " + tagdata.Tagname
-	}
-	sum = strings.ReplaceAll(sum, " / ", " ")
-	_, sum, ok := strings.Cut(sum, " ")
-	tagnum := strings.Count(sum, " ") //모든 포스트의 총 tag 합계-중복포함
+	tagString = strings.ReplaceAll(tagString, " / ", " ")
+	_, tagString, ok := strings.Cut(tagString, " ")
+	tagCount := strings.Count(tagString, " ") //모든 포스트의 총 tag 합계-중복포함
 	posttagdata := []model.TagButtonData{}
 	temp := model.TagButtonData{}
 
 	if !ok {
 		fmt.Println("STRING ERROR 1")
 	}
-	for i := 0; i < tagnum; i++ {
-		b, a, ok := strings.Cut(sum, " ")
+	for i := 0; i < tagCount; i++ {
+		b, a, ok := strings.Cut(tagString, " ")
 		if !ok {
 			fmt.Println("TAG COUNT ERROR OCCURED")
 		}
 		temp.Tagname = strings.ToUpper(b)
-		sum = a
+		tagString = a
 		posttagdata = append(posttagdata, temp)
 	}
-	temp.Tagname = strings.ToUpper(sum)
+	temp.Tagname = strings.ToUpper(tagString)
 	posttagdata = append(posttagdata, temp)
 	// realdata[0] = posttagdata[0].Tagname
 	ret := []model.TagButtonData{}

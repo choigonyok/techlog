@@ -122,3 +122,17 @@ func SelectPostByTag(tag string) ([]SendData, error){
 	}
 	return datas, nil
 }
+
+func GetEveryTagAsString() (string, error) {
+	r, err := db.Query("SELECT tag FROM post group by tag")
+	if err != nil {
+		return "", err
+	}
+	tagdata := TagButtonData{}
+	sum := ""
+	for r.Next() {
+		r.Scan(&tagdata.Tagname)
+		sum += " " + tagdata.Tagname
+	}
+	return sum, nil
+}
