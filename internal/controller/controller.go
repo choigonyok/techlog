@@ -30,16 +30,21 @@ func UnConnectDB() {
 }
 
 func CheckIDAndPW(c *gin.Context) {
-	data := model.LoginData{}
+	data := struct {
+		ID string `json:"id"`
+		Password string `json:"pw"`	
+	}{}
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("ERROR #1 : ", err.Error())
 	}
-	if data.Id == os.Getenv("BLOG_ID") && data.Password == os.Getenv("BLOG_PW") {
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.SetCookie("admin", "authorized", 60*60*12, "/", "choigonyok.com", false, true)
-		c.String(http.StatusOK, "COOKIE SENDED")
+	if data.ID != os.Getenv("BLOG_ID") || data.Password != os.Getenv("BLOG_PW") {
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
 	}
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	c.SetCookie("admin", "authorized", 60*60*12, "/", "choigonyok.com", false, true)
+	c.Writer.WriteHeader(http.StatusOK)
 }
 
 func WritePostHandler(c *gin.Context) {

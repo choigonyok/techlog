@@ -33,10 +33,7 @@ type RecieveData struct {
 	Tag      string `json:"tag"`
 	Title    string `json:"title"`
 }
-type LoginData struct {
-	Id       string `json:"id"`
-	Password string `json:"pw"`
-}
+
 type CommentData struct {
 	Comments  string `json:"comments"`
 	PostId    int `json:"postid"`
