@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -499,48 +498,29 @@ func DeleteReplyHandler(c *gin.Context) {
 
 func GetPostHandler(c *gin.Context) {
 	postid := c.Param("postid")
-	var r2 *sql.Rows
 	if postid == "all" {
-		r2, err = db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post")
+		postData, err := model.GetEveryPost()
 		if err != nil {
-			log.Fatalln("ID FINDING ERROR!!")
+			fmt.Println("ERROR #30 : ", err.Error())
 		}
+		marshaledData, err := json.Marshal(postData)
+		if err != nil {
+			fmt.Println("ERROR #32 : ", error.Error())
+			return
+		}
+		c.Writer.Write(marshaledData)
 	} else {
-		r2, err = db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post where id = " + postid)
+		postData, err := model.GetPostByPostID(postid)
 		if err != nil {
-			log.Fatalln("ID FINDING ERROR!!")
+			fmt.Println("ERROR #31 : ", err.Error())
 		}
-	}
-	var data []model.SendData
-	var temp model.SendData
-	for r2.Next() {
-		r2.Scan(&temp.Id, &temp.Tag, &temp.Title, &temp.Body, &temp.Datetime, &temp.ImagePath)
-		temp.Datetime = strings.TrimSuffix(temp.Datetime, " 00:00:00")
-		temp.Datetime = strings.ReplaceAll(temp.Datetime, "-", "/")
-		temp.Tag = strings.ToUpper(temp.Tag)
-		temp.Title = strings.ToUpper(temp.Title)
-		data = append(data, temp)
-	}
-	var response []byte
-	if postid == "all" {
-		// JSON 응답 생성
-		response, err = json.Marshal(data)
+		marshaledData, err := json.Marshal(postData)
 		if err != nil {
 			http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-	} else {
-		// JSON 응답 생성
-		response, err = json.Marshal(temp)
-		if err != nil {
-			http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		c.Writer.Write(marshaledData)
 	}
-	// JSON 헤더 설정 및 응답 전송
-	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.Write(response)
 }
 
 func GetThumbnailHandler(c *gin.Context) {

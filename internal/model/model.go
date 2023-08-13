@@ -272,3 +272,38 @@ func DeleteReplyByReplyID(replyID string) error {
 	_, err := db.Query("DELETE FROM reply WHERE replyuniqueid = " + replyID)
 	return err
 }
+
+func GetEveryPost() ([]SendData, error) {
+	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post")
+	if err != nil {
+		return nil, err
+	}
+	var datas []SendData
+	var data SendData
+	for r.Next() {
+		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
+		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
+		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
+		data.Tag = strings.ToUpper(data.Tag)
+		data.Title = strings.ToUpper(data.Title)
+		datas = append(datas, data)
+	}
+	return datas, nil
+}
+func GetPostByPostID(postID string) ([]SendData, error) {
+	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post where id = " + postID)
+	if err != nil {
+		return nil, err
+	}
+	var datas []SendData
+	var data SendData
+	for r.Next() {
+		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
+		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
+		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
+		data.Tag = strings.ToUpper(data.Tag)
+		data.Title = strings.ToUpper(data.Title)
+		datas = append(datas, data)
+	}
+	return datas, nil
+}
