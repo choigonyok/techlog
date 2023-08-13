@@ -136,3 +136,37 @@ func GetEveryTagAsString() (string, error) {
 	}
 	return sum, nil
 }
+
+func DeleteRecentPost() error {
+	_, err := db.Query("DELETE FROM post ORDER BY id DESC LIMIT 1")
+	return err
+}
+
+func DeletePostByPostID(postID string) error {
+	_, err := db.Query("DELETE FROM post WHERE id = " + postID)
+	return err
+}
+
+func SelectEveryCommentIDByPostID(postID string) ([]string, error){
+	r, err := db.Query("SELECT uniqueid FROM comments WHERE id = " + postID)
+	if err != nil {
+		return nil, err
+	}
+	var commentsSlice []string
+	var tempString string
+	for r.Next() {
+		r.Scan(&tempString)
+		commentsSlice = append(commentsSlice, tempString)
+	}
+	return commentsSlice, nil
+}
+
+func DeleteEveryCommentByPostID(postID string) error {
+	_, err := db.Query("DELETE FROM comments WHERE id = " + postID)
+		return err
+}
+
+func DeleteEveryReplyByCommentID(commentID string) error {
+	_, err := db.Query("DELETE FROM reply WHERE commentid = " + commentID)
+	return err
+}

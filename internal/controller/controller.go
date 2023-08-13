@@ -233,18 +233,18 @@ func DeletePostHandler(c *gin.Context) {
 	} else {
 		deleteid := c.Param("deleteid")
 		if deleteid == "0" {
-			_, err = db.Query("DELETE FROM post ORDER BY id DESC LIMIT 1")
+			err := model.DeleteRecentPost()
 			if err != nil {
-				fmt.Println("DELETE NOT HAVE IMG POST ERROR")
+				fmt.Println("ERROR #7 : ", err.Error())
 			} // 이미지 없이 작성된 글 삭제
 		} else {
-			_, err = db.Query("DELETE FROM post WHERE id = " + deleteid)
+			err := model.DeletePostByPostID(deleteid)
 			if err != nil {
-				fmt.Println("DELETE POST ERROR")
+				fmt.Println("ERROR #8 : ", err.Error())
 			} // DB에서 레코드 먼저 지우기
-			list, err := os.ReadDir("IMAGES")
+			list, err := os.ReadDir("assets")
 			if err != nil {
-				fmt.Println("OPENING IMG LIST ERROR")
+				fmt.Println("ERROR #9 : ", err.Error())
 			}
 			// 그 다음 해당 게시글과 관계된 이미지 전체 삭제
 			for _, v := range list {
@@ -255,21 +255,19 @@ func DeletePostHandler(c *gin.Context) {
 					}
 				}
 			}
-			r, err := db.Query("SELECT uniqueid FROM comments WHERE id = " + deleteid)
+			commentsIDs, err := model.SelectEveryCommentIDByPostID(deleteid)
 			if err != nil {
-				fmt.Println("READING COMMENT'S ID TO DELETE REPLY ERROR")
+				fmt.Println("ERROR #10 : ", err.Error())
 			}
-			comment_id := ""
-			for r.Next() {
-				r.Scan(&comment_id)
-			}
-			_, err = db.Query("DELETE FROM comments WHERE id = " + deleteid)
+			err = model.DeleteEveryCommentByPostID(deleteid)
 			if err != nil {
-				fmt.Println("DELETE COMMENTS INCLUDED POST ERROR")
+				fmt.Println("ERROR #11 : ", err.Error())
 			}
-			_, err = db.Query("DELETE FROM reply WHERE commentid = " + comment_id)
-			if err != nil {
-				fmt.Println("DELETE COMMENTS INCLUDED POST ERROR")
+			for _, v := range commentsIDs {
+				err = model.DeleteEveryReplyByCommentID(v)
+				if err != nil {
+					fmt.Println("ERROR #12 : ", err.Error())
+				}
 			}
 		}
 		c.Writer.WriteHeader(http.StatusOK)
