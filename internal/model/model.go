@@ -195,3 +195,33 @@ func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	err = r.Scan(&writerPW)
 	return writerPW, err
 }
+
+func SelectNotAdminWriterComment(postID int) ([]CommentData, error){
+	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
+	if err != nil {
+		return nil, err
+	}
+	datas := []CommentData{}
+	data := CommentData{}
+	for r.Next() {
+		r.Scan(&data.CommentID, &data.CommentPW, &data.Comments, &data.IsAdmin, &data.ID)
+		data.PostId = postID
+		datas = append(datas, data)
+	}
+	return datas, nil
+}
+
+func SelectCommentByPostID(postID int) ([]CommentData, error) {
+	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE id = ` + strconv.Itoa(postID))
+	if err != nil {
+		return nil, err
+	}
+	datas := []CommentData{}
+	data := CommentData{}
+	for r.Next() {
+		r.Scan(&data.CommentID, &data.CommentPW,&data.Comments, &data.IsAdmin, &data.ID)
+		data.PostId = postID
+		datas = append(datas, data)
+	}
+	return datas, nil
+}

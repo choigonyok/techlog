@@ -388,35 +388,28 @@ func DeleteCommentHandler(c *gin.Context) {
 
 func GetCommentHandler(c *gin.Context) {
 	param := c.Param("postid")
-	data := []model.CommentData{}
-	temp := model.CommentData{}
+	postID, _ := strconv.Atoi(param)
 	if param == "0" { // 전체 댓글 중 admin 댓글이 아닌 것
-		r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
+		commentSlice, err := model.SelectNotAdminWriterComment(postID)
 		if err != nil {
-			fmt.Println("DB COMMENTS INPUT ERROR")
+			fmt.Println("ERROR #21 : ", err.Error())
 		}
-		for r.Next() {
-			r.Scan(&temp.CommentID, &temp.CommentPW, &temp.Comments, &temp.IsAdmin, &temp.ID)
-			temp.PostId = param
-			data = append(data, temp)
+		marshaledData, err := json.Marshal(commentSlice)
+		if err != nil {
+			fmt.Println("ERROR #23 : ", err.Error())
 		}
+		c.Writer.Write(marshaledData)
 	} else { // 해당 post 댓글
-		r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE id = ` + param)
+		commentSlice, err := model.SelectCommentByPostID(postID)
 		if err != nil {
-			fmt.Println("DB COMMENTS INPUT ERROR")
+			fmt.Println("ERROR #22 : ", err.Error())
 		}
-		for r.Next() {
-			r.Scan(&temp.CommentID, &temp.CommentPW, &temp.Comments, &temp.IsAdmin, &temp.ID)
-			temp.PostId = param
-			data = append(data, temp)
+		marshaledData, err := json.Marshal(commentSlice)
+		if err != nil {
+			fmt.Println("ERROR #23 : ", err.Error())
 		}
+		c.Writer.Write(marshaledData)
 	}
-	real_data, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println("COMMENTS DATA JSON BINDING ERROR")
-	}
-	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.Write(real_data)
 }
 
 func GetReplyHandler(c *gin.Context) {
