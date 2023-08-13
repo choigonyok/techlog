@@ -276,7 +276,7 @@ func DeletePostHandler(c *gin.Context) {
 
 func AddCommentHandler(c *gin.Context) {
 	data := model.CommentData{}
-	err = c.ShouldBindJSON(&data)
+	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("COMMENTS JSON BINDING ERROR")
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -310,18 +310,13 @@ func AddCommentHandler(c *gin.Context) {
 			if strings.Contains(data.CommentID, `'`) || strings.Contains(data.Comments, `'`) {
 				c.Writer.WriteHeader(http.StatusBadRequest)
 			} else {
-				var com_id int
-				r, err := db.Query("SELECT uniqueid FROM comments order by uniqueid desc limit 1")
+				recentCommentID, err := model.GetRecentCommentID()
 				if err != nil {
-					fmt.Println("FINDING COMMENT'S UNIQUE ID IN DB")
+					fmt.Println("ERROR #12 : ", err.Error())
 				}
-				for r.Next() {
-					r.Scan(&com_id)
-				}
-				com_id += 1
-				_, err = db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + data.PostId + `,'` + data.Comments + `','` + data.CommentID + `','` + data.CommentPW + `',` + strconv.Itoa(data.IsAdmin) + `,` + strconv.Itoa(com_id) + `)`)
+				err = model.InsertComment(data.PostId, recentCommentID+1, data.IsAdmin, data.Comments, data.CommentID, data.CommentPW)
 				if err != nil {
-					fmt.Println("DB COMMENTS INPUT ERROR")
+					fmt.Println("ERROR #13 : ", err.Error())
 					c.Writer.WriteHeader(http.StatusInternalServerError)
 				} else {
 					c.Writer.WriteHeader(http.StatusOK)

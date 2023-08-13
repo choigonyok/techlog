@@ -39,7 +39,7 @@ type LoginData struct {
 }
 type CommentData struct {
 	Comments  string `json:"comments"`
-	PostId    string `json:"postid"`
+	PostId    int `json:"postid"`
 	CommentID string `json:"comid"`
 	CommentPW string `json:"compw"`
 	IsAdmin   int    `json:"isadmin"`
@@ -168,5 +168,22 @@ func DeleteEveryCommentByPostID(postID string) error {
 
 func DeleteEveryReplyByCommentID(commentID string) error {
 	_, err := db.Query("DELETE FROM reply WHERE commentid = " + commentID)
+	return err
+}
+
+func GetRecentCommentID() (int, error) {
+	r, err := db.Query("SELECT uniqueid FROM comments order by uniqueid desc limit 1")
+	if err != nil {
+		return 0, err
+	}
+	var recentCommentID int
+	for r.Next() {
+		r.Scan(&recentCommentID)
+	}
+	return recentCommentID, nil
+}
+
+func InsertComment(postID, commentID,isAdmin int, commentText, writerID, writerPW string) error {
+	_, err := db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + strconv.Itoa(postID)	+ `,'` + commentText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(commentID) + `)`)
 	return err
 }
