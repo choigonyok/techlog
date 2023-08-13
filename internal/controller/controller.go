@@ -429,7 +429,7 @@ func GetReplyHandler(c *gin.Context) {
 func AddReplyHandler(c *gin.Context) {
 	commentid := c.Param("commentid")
 	data := model.ReplyData{}
-	err = c.ShouldBindJSON(&data)
+	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("REPLY JSON BINDING ERROR")
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -463,18 +463,13 @@ func AddReplyHandler(c *gin.Context) {
 			if strings.Contains(data.Reply, `'`) || strings.Contains(data.ReplyPW, `'`) || strings.Contains(data.ReplyID, `'`) {
 				c.Writer.WriteHeader(http.StatusBadRequest)
 			} else {
-				var reply_id int
-				r, err := db.Query("SELECT replyuniqueid FROM reply order by replyuniqueid desc limit 1")
+				recentReplyID, err := model.GetRecentReplyID()
 				if err != nil {
-					fmt.Println("FINDING REPLY'S UNIQUE ID IN DB")
+					fmt.Println("ERROR #26 : ", err.Error())
 				}
-				for r.Next() {
-					r.Scan(&reply_id)
-				}
-				reply_id += 1
-				_, err = db.Query(`INSERT INTO reply (commentid, replycontents, replywriterid, replywriterpw, replyisadmin, replyuniqueid) values (` + commentid + `,'` + data.Reply + `','` + data.ReplyID + `','` + data.ReplyPW + `',` + strconv.Itoa(data.ReplyIsAdmin) + `,` + strconv.Itoa(reply_id) + `)`)
+				err = model.InsertReply(data.ReplyIsAdmin, recentReplyID+1, commentid, data.Reply, data.ReplyID, data.ReplyPW)
 				if err != nil {
-					fmt.Println("DB REPLY INPUT ERROR")
+					fmt.Println("ERROR #27 : ", err.Error())
 					c.Writer.WriteHeader(http.StatusInternalServerError)
 				} else {
 					c.Writer.WriteHeader(http.StatusOK)

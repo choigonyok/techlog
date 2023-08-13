@@ -239,3 +239,20 @@ func SelectReplyByCommentID(commendID string) ([]ReplyData, error) {
 	}
 	return datas, nil
 }
+
+func GetRecentReplyID() (int, error){
+	r, err := db.Query("SELECT replyuniqueid FROM reply order by replyuniqueid desc limit 1")
+	if err != nil {
+		return 0, err
+	}
+	var recentReplyID int
+	for r.Next() {
+		r.Scan(&recentReplyID)
+	}
+	return recentReplyID, nil
+}
+
+func InsertReply(isAdmin, recentReplyID int, commentID, replyText, writerID, writerPW string) error {
+	_, err := db.Query(`INSERT INTO reply (commentid, replycontents, replywriterid, replywriterpw, replyisadmin, replyuniqueid) values (` + strconv.Itoa(commentID) + `,'` + replyText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(recentReplyID) + `)`)
+	return err
+}
