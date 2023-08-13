@@ -187,3 +187,11 @@ func InsertComment(postID, commentID,isAdmin int, commentText, writerID, writerP
 	_, err := db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + strconv.Itoa(postID)	+ `,'` + commentText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(commentID) + `)`)
 	return err
 }
+
+func GetCommentWriterPWByCommentID(commentID string) (string, error) {
+	r, err := db.Query("SELECT writerpw FROM comments WHERE uniqueid =" + commentID)
+	var writerPW string
+	// r.Next()
+	err = r.Scan(&writerPW)
+	return writerPW, err
+}
