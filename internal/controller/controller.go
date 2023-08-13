@@ -505,7 +505,7 @@ func GetPostHandler(c *gin.Context) {
 		}
 		marshaledData, err := json.Marshal(postData)
 		if err != nil {
-			fmt.Println("ERROR #32 : ", error.Error())
+			fmt.Println("ERROR #32 : ", err.Error())
 			return
 		}
 		c.Writer.Write(marshaledData)
