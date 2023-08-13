@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -147,42 +146,45 @@ func ModifyPostHandler(c *gin.Context) {
 func GetPostsByTagHandler(c *gin.Context) {
 	var data model.Post
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if data.Tag == "ALL" {
 		data.Tag = ""
 	}
-	mainTag, _, _ := strings.Cut(data.Tags, " ")
+	mainTag, _, _ := strings.Cut(data.Tag, " ")
 	datas, err := model.SelectPostByTag(mainTag)
 	if err != nil {
 		fmt.Println("ERROR #6 : ", err.Error())
-	}
-
-	// JSON 응답 생성
-	marshaledDatas, err := json.Marshal(datas)
-	if err != nil {
-		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	// JSON 헤더 설정 및 응답 전송
-
+	marshaledData, err := json.Marshal(datas)
+	if err != nil {
+		fmt.Println("ERROR #23 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.Write(marshaledDatas)
+	c.Writer.Write(marshaledData)
 }
-
-
+// 코드리뷰
+// 코드리뷰
+// 코드리뷰
+// 코드리뷰
+// 코드리뷰
 func GetEveryTagHandler(c *gin.Context) {
 	tagString, err := model.GetEveryTagAsString()
 	if err != nil {
-		log.Fatalln("TAG BUTTON FINDING ERROR!!")
+		fmt.Println("ERROR #24 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	tagString = strings.ReplaceAll(tagString, " / ", " ")
 	_, tagString, ok := strings.Cut(tagString, " ")
 	tagCount := strings.Count(tagString, " ") //모든 포스트의 총 tag 합계-중복포함
-	posttagdata := []model.TagButtonData{}
-	temp := model.TagButtonData{}
+	posts := []model.Post{}
+	post := model.Post{}
 
 	if !ok {
 		fmt.Println("STRING ERROR 1")
@@ -192,151 +194,151 @@ func GetEveryTagHandler(c *gin.Context) {
 		if !ok {
 			fmt.Println("TAG COUNT ERROR OCCURED")
 		}
-		temp.Tagname = strings.ToUpper(b)
+		post.Tag = strings.ToUpper(b)
 		tagString = a
-		posttagdata = append(posttagdata, temp)
+		posts = append(posts, post)
 	}
-	temp.Tagname = strings.ToUpper(tagString)
-	posttagdata = append(posttagdata, temp)
-	// realdata[0] = posttagdata[0].Tagname
-	ret := []model.TagButtonData{}
-	m := make(map[model.TagButtonData]int)
-	for i, v := range posttagdata {
-		if _, ok := m[v]; !ok {
-			m[v] = i
+	post.Tag = strings.ToUpper(tagString)
+	posts = append(posts, post)
+	ret := []model.Post{}
+	tagMap := make(map[model.Post]int)
+	for i, v := range posts {
+		if _, ok := tagMap[v]; !ok {
+			tagMap[v] = i
 			ret = append(ret, v)
 		}
 	}
-
-	// JSON 응답 생성
-	response, err := json.Marshal(ret)
+	marshaledData, err := json.Marshal(ret)
 	if err != nil {
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// JSON 헤더 설정 및 응답 전송
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.Write(response)
+	c.Writer.Write(marshaledData)
 }
 
 func DeletePostHandler(c *gin.Context) {
-	_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
-	if err == http.ErrNoCookie {
-		c.String(http.StatusUnauthorized, "You are not administrator")
+	if !isCookieValid(c) {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	postID := c.Param("postid")
+
+	// 이미지 없이 작성된 글 삭제
+	if postID == "0" {
+		err := model.DeleteRecentPost()
+		if err != nil {
+			fmt.Println("ERROR #7 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	} else {
-		deleteid := c.Param("deleteid")
-		if deleteid == "0" {
-			err := model.DeleteRecentPost()
-			if err != nil {
-				fmt.Println("ERROR #7 : ", err.Error())
-			} // 이미지 없이 작성된 글 삭제
-		} else {
-			err := model.DeletePostByPostID(deleteid)
-			if err != nil {
-				fmt.Println("ERROR #8 : ", err.Error())
-			} // DB에서 레코드 먼저 지우기
-			list, err := os.ReadDir("assets")
-			if err != nil {
-				fmt.Println("ERROR #9 : ", err.Error())
-			}
-			// 그 다음 해당 게시글과 관계된 이미지 전체 삭제
-			for _, v := range list {
-				if strings.HasPrefix(v.Name(), deleteid+"-") {
-					os.Remove("IMAGES/" + v.Name())
-					if err != nil {
-						fmt.Println("IMAGE DELETE ERROR")
-					}
-				}
-			}
-			commentsIDs, err := model.SelectEveryCommentIDByPostID(deleteid)
-			if err != nil {
-				fmt.Println("ERROR #10 : ", err.Error())
-			}
-			for _, v := range commentsIDs {
-				err = model.DeleteEveryCommentByCommentID(v)
+		err := model.DeletePostByPostID(postID)
+		if err != nil {
+			fmt.Println("ERROR #8 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		imageList, err := os.ReadDir("assets")
+		if err != nil {
+			fmt.Println("ERROR #9 : ", err.Error())
+		}
+		for _, v := range imageList {
+			if strings.HasPrefix(v.Name(), postID+"-") {
+				os.Remove("assets/" + v.Name())
 				if err != nil {
-					fmt.Println("ERROR #12 : ", err.Error())
-				}
-				err = model.DeleteEveryReplyByCommentID(v)
-				if err != nil {
-					fmt.Println("ERROR #16 : ", err.Error())
+					fmt.Println("ERROR #26 : ", err.Error())
+					c.Writer.WriteHeader(http.StatusInternalServerError)
+					return
 				}
 			}
 		}
-		c.Writer.WriteHeader(http.StatusOK)
+		commentsIDs, err := model.SelectEveryCommentIDByPostID(postID)
+		if err != nil {
+			fmt.Println("ERROR #10 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		for _, v := range commentsIDs {
+			err = model.DeleteEveryCommentByCommentID(v)
+			if err != nil {
+				fmt.Println("ERROR #12 : ", err.Error())
+				c.Writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			err = model.DeleteEveryReplyByCommentID(v)
+			if err != nil {
+				fmt.Println("ERROR #16 : ", err.Error())
+				c.Writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		}
 	}
+	c.Writer.WriteHeader(http.StatusOK)
 }
 
 func AddCommentHandler(c *gin.Context) {
-	data := model.CommentData{}
+	var data model.Comment
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		fmt.Println("COMMENTS JSON BINDING ERROR")
+		fmt.Println("ERROR #27 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	// 빈 텍스트가 있는지 확인
-	isComEmpty, err := regexp.MatchString("^$", data.Comments)
-	if err != nil {
-		fmt.Println("REGEXP ERROR4")
+	isTextEmpty, textErr := regexp.MatchString("^$", data.Text)
+	isIDEmpty, idErr := regexp.MatchString("^$", data.WriterID)
+	isPwValid, pwErr := regexp.MatchString("^[0-9]+$", data.WriterPW)
+	if textErr != nil || idErr != nil || pwErr != nil{
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	isIDEmpty, err := regexp.MatchString("^$", data.CommentID)
-	if err != nil {
-		fmt.Println("REGEXP ERROR5")
+	if !isTextEmpty || !isIDEmpty || !isPwValid{
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
 	}
-	if isComEmpty || isIDEmpty {
-		c.Writer.WriteHeader(http.StatusLengthRequired)
+	if !isCookieValid(c) {
+		data.Admin = 1
 	} else {
-		// password 숫자 맞는지 확인
-		isPwNumber, err := regexp.MatchString("^[0-9]+$", data.CommentPW)
-		if err != nil {
-			fmt.Println("REGEXP ERROR6")
-		}
-		if !isPwNumber {
-			c.Writer.WriteHeader(http.StatusNotAcceptable)
-		} else {
-			_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
-			if err == http.ErrNoCookie {
-				data.IsAdmin = 0
-			} else {
-				data.IsAdmin = 1
-			}
-			if strings.Contains(data.CommentID, `'`) || strings.Contains(data.Comments, `'`) {
-				c.Writer.WriteHeader(http.StatusBadRequest)
-			} else {
-				recentCommentID, err := model.GetRecentCommentID()
-				if err != nil {
-					fmt.Println("ERROR #12 : ", err.Error())
-				}
-				err = model.InsertComment(data.PostId, recentCommentID+1, data.IsAdmin, data.Comments, data.CommentID, data.CommentPW)
-				if err != nil {
-					fmt.Println("ERROR #13 : ", err.Error())
-					c.Writer.WriteHeader(http.StatusInternalServerError)
-				} else {
-					c.Writer.WriteHeader(http.StatusOK)
-				}
-			}
-		}
+		data.Admin = 0
 	}
+	strings.ReplaceAll(data.WriterID, `'`, `\'`)
+	strings.ReplaceAll(data.WriterPW, `'`, `\'`)
+	recentCommentID, err := model.GetRecentCommentID()
+	if err != nil {
+		fmt.Println("ERROR #12 : ", err.Error())	
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	err = model.InsertComment(data.PostID, recentCommentID+1, data.Admin, data.Text, data.WriterID, data.WriterPW)
+	if err != nil {
+		fmt.Println("ERROR #13 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.Writer.WriteHeader(http.StatusOK)
 }
 
 func GetCommentPWHandler(c *gin.Context) {
-	commentID := c.Param("uniqueid")
+	commentID := c.Param("commentid")
 	writerPW, err := model.GetCommentWriterPWByCommentID(commentID)
 	if err != nil {
 		fmt.Println("ERROR #14 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	temp_struct := struct {
-		ComPW string `json:"compw"`
+	TempWriterPW := struct {
+		WriterPW string `json:"writerpw"`
 	}{
 		writerPW,
 	}
-	data, err := json.Marshal(temp_struct)
+	marshaledData, err := json.Marshal(TempWriterPW)
 	if err != nil {
-		fmt.Println("COMMENT PW MARSHALING ERROR")
+		fmt.Println("ERROR #28 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	c.Writer.WriteHeader(http.StatusOK)
-	c.Writer.Write(data)
+	c.Writer.Write(marshaledData)
 }
 
 func DeleteCommentByAdminHandler(c *gin.Context) {

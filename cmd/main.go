@@ -24,16 +24,17 @@ func main() {
 
 	eg.POST("/api/post/image", controller.WritePostHandler) // 작성된 게시글에 썸네일 추가
 	eg.POST("/api/post", controller.WritePostImageHandler)  // 게시글 작성
+	eg.DELETE("/api/post/:postid", controller.DeletePostHandler)            // 게시글 삭제
 
 	eg.GET("/api/cookie", controller.GetTodayAndTotalVisitorNumHandler)             // today, total 방문자 수 확인
 	eg.POST("/api/mod/:postid", controller.ModifyPostHandler)                        // 게시글 수정
 	eg.POST("/api/login", controller.CheckIDAndPW)                                  // 로그인
 	eg.POST("/api/tag", controller.GetPostsByTagHandler)                            // 태그 클릭시 포스트 출력
 	eg.GET("/api/tag", controller.GetEveryTagHandler)                               // 현재 존재하는 모든 태그 불러오기
-	eg.DELETE("/api/post/delete:deleteid", controller.DeletePostHandler)            // 게시글 삭제
-	eg.PUT("/api/comments", controller.AddCommentHandler)                           // 댓글 달기
-	eg.GET("/api/post/comments/pw/:uniqueid", controller.GetCommentPWHandler)       // 댓글 작성시 생성한 비밀번호 불러오기
-	eg.DELETE("/api/post/comments/:postid", controller.DeleteCommentByAdminHandler) // 관리자 권한 댓글 삭제
+	
+	eg.PUT("/api/comment", controller.AddCommentHandler)                           // 댓글 달기
+	eg.GET("/api/comment/pw/:commentid", controller.GetCommentPWHandler)       // 댓글 작성시 생성한 비밀번호 불러오기
+	eg.DELETE("/api/comment/:postid", controller.DeleteCommentByAdminHandler) // 관리자 권한 댓글 삭제
 	eg.POST("/api/post/comments", controller.DeleteCommentHandler)                  // 댓글 작성자의 댓글삭제
 	eg.GET("/api/post/comments/:postid", controller.GetCommentHandler)              // 게시글 별 댓글 불러오기
 	eg.GET("/api/reply/:commentid", controller.GetReplyHandler)                     // 댓글 별 답글 불러오기

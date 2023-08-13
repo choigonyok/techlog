@@ -7,15 +7,6 @@ import (
 	"time"
 )
 
-type TagData struct {
-	Tags string `json:"Tag"`
-}
-type IdData struct {
-	Id int
-}
-type TagButtonData struct {
-	Tagname string
-}
 type SendData struct {
 	Id        int
 	Tag       string
@@ -26,12 +17,6 @@ type SendData struct {
 	Comments  []string
 	WriterID  []string
 	WriterPW  []string
-}
-type RecieveData struct {
-	Body     string    `json:"body"`
-	Datetime time.Time `json:"datetime"`
-	Tag      string    `json:"tag"`
-	Title    string    `json:"title"`
 }
 
 type CommentData struct {
@@ -167,11 +152,11 @@ func GetEveryTagAsString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tagdata := TagButtonData{}
+	tagdata := Post{}
 	sum := ""
 	for r.Next() {
-		r.Scan(&tagdata.Tagname)
-		sum += " " + tagdata.Tagname
+		r.Scan(&tagdata.Tag)
+		sum += " " + tagdata.Tag
 	}
 	return sum, nil
 }
