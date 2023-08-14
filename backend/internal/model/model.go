@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -81,6 +82,8 @@ func UpdateCookieRecord() (uuid.UUID, error) {
 }
 
 func OpenDB(driverName, dataSourceName string) error {
+	fmt.Println(driverName)
+	fmt.Println(dataSourceName)
 	database, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		return err
