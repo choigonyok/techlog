@@ -10,17 +10,24 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func originConfig() cors.Config{
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{os.Getenv("ORIGIN")} 
+	// 허용할 오리진 설정, 원래 리액트의 port가 아니라 리액트가 있는 container의 port 번호를 origin allow 해줘야함
+	// localhost:3000로 origin allow 하면 통신 안됨
+	config.AllowMethods= []string{"GET", "POST", "DELETE", "PUT"}
+	config.AllowHeaders = []string{"Content-type"}
+	config.AllowCredentials = true
+	return config
+}
+
 func main() {
 	controller.ConnectDB(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+os.Getenv("DB_NAME"))
 	defer controller.UnConnectDB()
 
 	eg := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://www.choigonyok.com", "http://www.choigonyok.com"}
-	config.AllowMethods = []string{"POST", "DELETE", "GET", "PUT"}
-	config.AllowHeaders = []string{"cookie", "Content-type"}
-	config.AllowCredentials = true
-	eg.Use(cors.New(config))
+	config := originConfig()
+	eg.Use(cors.New(config))	
 
 	eg.POST("/api/post/image", controller.WritePostHandler)      // 작성된 게시글에 썸네일 추가
 	eg.POST("/api/post", controller.WritePostImageHandler)       // 게시글 작성
