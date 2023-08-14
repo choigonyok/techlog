@@ -12,6 +12,7 @@ import (
 
 	"github.com/choigonyok/blog-project-backend/internal/model"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func ConnectDB(driverName, dbData string) {
@@ -41,8 +42,11 @@ func CheckAdminIDAndPW(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-	c.SetCookie("admin", "authorized", 60*60*12, "/", "choigonyok.com", false, true)
+	cookieValue := uuid.New()
+	fmt.Println(cookieValue.String()) // TEST
+	fmt.Println(cookieValue.String()) // TEST
+	fmt.Println(cookieValue.String()) // TEST
+	c.SetCookie("admin", cookieValue.String(), 60*60*12, "/", "choigonyok.com", false, true)
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
