@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database-deployment
+  template:
+    metadata:
+      labels:
+        app: database-deployment
+    spec:
+      containers:
+        - name: database-deployment
+          image: achoistic98/blog_database:latest
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: database-volume
+              mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "password"
+            - name: MYSQL_DATABASE
+              value: "blog"
+      volumes:
+        - name: database-volume
+          hostPath:
+            path: /volumes # Replace with the actual path on your host machine
