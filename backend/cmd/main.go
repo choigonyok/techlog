@@ -29,8 +29,8 @@ func main() {
 	config := originConfig()
 	eg.Use(cors.New(config))	
 
-	eg.POST("/api/post/image", controller.WritePostHandler)      // 작성된 게시글에 썸네일 추가
-	eg.POST("/api/post", controller.WritePostImageHandler)       // 게시글 작성
+	eg.POST("/api/post/image", controller.WritePostImageHandler)      // 작성된 게시글에 썸네일 추가
+	eg.POST("/api/post", controller.WritePostHandler)       // 게시글 작성
 	eg.DELETE("/api/post/:postid", controller.DeletePostHandler) // 게시글 삭제
 	eg.GET("/api/post/:postid", controller.GetPostHandler)       // 게시글 내용 불러오기
 	eg.PUT("/api/post/:postid", controller.ModifyPostHandler)    // 게시글 수정

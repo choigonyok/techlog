@@ -54,6 +54,7 @@ func GetCookieValue(inputValue string) (string, error) {
 		return "", err
 	}
 	var cookieValue string
+	r.Next()
 	r.Scan(&cookieValue)
 	return cookieValue, nil
 }
@@ -123,12 +124,12 @@ func AddPost(postID int, tag, title, body string, datetime string) error {
 }
 
 func UpdatePostImagePath(recentID int, imagename string) error {
-	_, err := db.Query(`UPDATE post SET imgpath = "` + strconv.Itoa(recentID) + "-\"" + imagename + `" where id = ` + strconv.Itoa(recentID))
+	_, err := db.Query(`UPDATE post SET imgpath = '` + strconv.Itoa(recentID) + `-` + imagename + `' where id = ` + strconv.Itoa(recentID))
 	return err
 }
 
 func UpdatePost(title, text, tag, postID string, writetime string) error {
-	_, err := db.Query(`UPDATE post SET title = '` + title + `',text = '` + text + `',tag='` + tag + `',writetime='` + writetime + `' where id = ` + postID)
+	_, err := db.Query(`UPDATE post SET title = '` + title + `', text = '` + text + `', tag ='` + tag + `', writetime = '` + writetime + `' where id = ` + postID)
 	return err
 }
 

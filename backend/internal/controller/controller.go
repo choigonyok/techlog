@@ -111,6 +111,7 @@ func WritePostImageHandler(c *gin.Context) {
 	imgFile, err := c.MultipartForm()
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("ERROR #35 : ", err.Error())
 		return
 	}
 	recentID, err := model.GetRecentPostID()
@@ -125,6 +126,7 @@ func WritePostImageHandler(c *gin.Context) {
 		err = c.SaveUploadedFile(v, "assets/"+strconv.Itoa(recentID)+"-"+noSpaceImageName)
 		if err != nil {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
+			fmt.Println("ERROR #34 : ", err.Error())
 			return
 		}
 	}
@@ -132,6 +134,7 @@ func WritePostImageHandler(c *gin.Context) {
 	err = model.UpdatePostImagePath(recentID, noSpaceThumbnailName)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("ERROR #36 : ", err.Error())
 		return
 	}
 }
@@ -273,14 +276,10 @@ func GetEveryTagHandler(c *gin.Context) {
 		return
 	}
 	tagString = strings.ReplaceAll(tagString, " / ", " ")
-	_, tagString, ok := strings.Cut(tagString, " ")
+	_, tagString, _ = strings.Cut(tagString, " ")
 	tagCount := strings.Count(tagString, " ")
 	posts := []model.Post{}
 	post := model.Post{}
-
-	if !ok {
-		fmt.Println("STRING ERROR 1")
-	}
 	for i := 0; i < tagCount; i++ {
 		b, a, ok := strings.Cut(tagString, " ")
 		if !ok {
@@ -387,7 +386,7 @@ func DeleteCommentByAdminHandler(c *gin.Context) {
 }
 
 func DeleteCommentHandler(c *gin.Context) {
-	comnmentID := c.Query("comid")
+	comnmentID := c.Query("commentid")
 	inputPW := c.Query("inputpw")
 	writerPW, err := model.GetCommentWriterPWByCommentID(comnmentID)
 	if err != nil {
