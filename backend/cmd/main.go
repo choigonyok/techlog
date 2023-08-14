@@ -7,6 +7,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 func originConfig() cors.Config{
@@ -19,6 +20,7 @@ func originConfig() cors.Config{
 }
 
 func main() {
+	godotenv.Load(".env")
 	
 	controller.ConnectDB(os.Getenv("DB_DRIVER"), os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+"@"+os.Getenv("DB_HOST")+"/"+os.Getenv("DB_NAME"))
 	defer controller.UnConnectDB()
