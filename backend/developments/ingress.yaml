@@ -1,0 +1,23 @@
+kind: Ingress
+metadata:
+  name: ingress-controller
+spec:
+  ingressClassName: haproxy
+  rules:
+    - host: www.choigonyok.com
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: frontend-service
+              port:
+                  number: 3000
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: backend-service
+              port:
+                  number: 8080
