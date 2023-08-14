@@ -6,34 +6,37 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
 USE blog;
 
-CREATE TABLE `comments` (
-        `id` INT, 
-        `contents` TEXT, 
-        `writerid` VARCHAR(255),
-        `writerpw` VARCHAR(255),
-        `isadmin` TINYINT(1),
-        `uniqieid` INT PRIMARY KEY);
+CREATE TABLE `comment` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `text` TEXT, 
+        `writerid` VARCHAR(255) NOT NULL DEFAULT "",
+        `writerpw` VARCHAR(255) NOT NULL DEFAULT "",
+        `admin` TINYINT(1) NOT NULL DEFAULT 0,
+        `postid` INT NOT NULL DEFAULT 0);
 
-CREATE TABLE `login` (
-        `id` VARCHAR(255),
-        `pw` VARCHAR(255));
+CREATE TABLE `cookie` (
+        `value` VARCHAR(255) NOT NULL DEFAULT "");
+
+CREATE TABLE `visitor` (
+        `today` INT NOT NULL DEFAULT 0,
+        `total` INT NOT NULL DEFAULT 0);
 
 CREATE TABLE `post` (
-        `id` INT PRIMARY KEY,
-        `tag` VARCHAR(255) NOT NULL,
-        `title` VARCHAR(255),
-        `body` TEXT,
-        `datetime` DATETIME,
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `tag` VARCHAR(255) NOT NULL DEFAULT "",
+        `title` VARCHAR(255) NOT NULL DEFAULT "",
+        `text` TEXT NOT NULL DEFAULT "",
+        `writetime` DATETIME NOT NULL DEFAULT "00-00-00",
         `imgpath` VARCHAR(255),
         `imgnum` INT);
 
 CREATE TABLE `reply` (
-        `replyuniqueid` INT PRIMARY KEY,
-        `replyisadmin` TINYINT(1),
-        `replywriterid` VARCHAR(255),
-        `replywriterpw` VARCHAR(255),
-        `replycontents` TEXT,
-        `commentid` VARCHAR(255));
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `admin` TINYINT(1) NOT NULL DEFAULT 0,
+        `writerid` VARCHAR(255) NOT NULL DEFAULT "",
+        `writerpw` VARCHAR(255) NOT NULL DEFAULT "",
+        `text` TEXT NOT NULL DEFAULT "",
+        `commentid` INT NOT NULL DEFAULT 0);
 
 CREATE TABLE `beabouttodelete` (
         `delete_date` DATETIME DEFAULT '0000-00-00 00:00:00',
