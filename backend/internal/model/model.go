@@ -63,7 +63,7 @@ func UpdateCookieRecord() (uuid.UUID, error) {
 	if err != nil {
 		return uuid.Nil, err
 	}
-	_, err =  db.Exec("DELETE * FROM cookie")
+	_, err =  db.Exec("DELETE FROM cookie")
 	if err != nil {
 		tx.Rollback()
 		return uuid.Nil, err
@@ -118,7 +118,7 @@ func GetRecentPostID() (int, error) {
 	return idnum, nil
 }
 func AddPost(postID int, tag, title, body string, datetime string) error {
-	_, err := db.Query(`INSERT INTO post (id, tag, datetime, title, body) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime + `','` + title + `','` + body + `')`)
+	_, err := db.Query(`INSERT INTO post (id, tag, writetime, title, text) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime + `','` + title + `','` + body + `')`)
 	return err
 }
 
@@ -127,13 +127,13 @@ func UpdatePostImagePath(recentID int, imagename string) error {
 	return err
 }
 
-func UpdatePost(title, body, tag, postID string, datetime time.Time) error {
-	_, err := db.Query(`UPDATE post SET title = '` + title + `',body = '` + body + `',tag='` + tag + `',datetime='` + datetime.Format("2006-01-02") + `' where id = ` + postID)
+func UpdatePost(title, text, tag, postID string, writetime string) error {
+	_, err := db.Query(`UPDATE post SET title = '` + title + `',text = '` + text + `',tag='` + tag + `',writetime='` + writetime + `' where id = ` + postID)
 	return err
 }
 
 func SelectPostByTag(tag string) ([]Post, error) {
-	r, err := db.Query("SELECT id,tag,title,body,datetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by datetime desc")
+	r, err := db.Query("SELECT id,tag,title,text,writetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by writetime desc")
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +171,7 @@ func DeletePostByPostID(postID string) error {
 }
 
 func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
-	r, err := db.Query("SELECT uniqueid FROM comments WHERE id = " + postID)
+	r, err := db.Query("SELECT id FROM comment WHERE postid = " + postID)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func DeleteEveryCommentByCommentID(commentID string) error {
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec("DELETE FROM comments WHERE uniqueid = " + commentID)
+	_, err = tx.Exec("DELETE FROM comment WHERE id = " + commentID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -207,7 +207,7 @@ func DeleteEveryCommentByCommentID(commentID string) error {
 }
 
 func GetRecentCommentID() (int, error) {
-	r, err := db.Query("SELECT uniqueid FROM comments order by uniqueid desc limit 1")
+	r, err := db.Query("SELECT id FROM comment order by id desc limit 1")
 	if err != nil {
 		return 0, err
 	}
@@ -218,13 +218,13 @@ func GetRecentCommentID() (int, error) {
 	return recentCommentID, nil
 }
 
-func InsertComment(postID, commentID, isAdmin int, commentText, writerID, writerPW string) error {
-	_, err := db.Query(`INSERT INTO comments(id, contents, writerid, writerpw, isadmin, uniqueid) values (` + strconv.Itoa(postID) + `,'` + commentText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(commentID) + `)`)
+func InsertComment(postID, id, admin int, text, writerID, writerPW string) error {
+	_, err := db.Query(`INSERT INTO comment(postid, text, writerid, writerpw, admin, id) values (` + strconv.Itoa(postID) + `,'` + text + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(admin) + `,` + strconv.Itoa(id) + `)`)
 	return err
 }
 
 func GetCommentWriterPWByCommentID(commentID string) (string, error) {
-	r, err := db.Query("SELECT writerpw FROM comments WHERE uniqueid =" + commentID)
+	r, err := db.Query("SELECT writerpw FROM comment WHERE id =" + commentID)
 	var writerPW string
 	r.Next()
 	err = r.Scan(&writerPW)
@@ -232,7 +232,7 @@ func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 }
 
 func SelectNotAdminWriterComment(postID int) ([]Comment, error) {
-	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
+	r, err := db.Query(`SELECT writerid, writerpw, text, admin, id FROM comment WHERE admin != 1`)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +247,7 @@ func SelectNotAdminWriterComment(postID int) ([]Comment, error) {
 }
 
 func SelectCommentByPostID(postID int) ([]Comment, error) {
-	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE id = ` + strconv.Itoa(postID))
+	r, err := db.Query(`SELECT writerid, writerpw, text, admin, id FROM comment WHERE postid = ` + strconv.Itoa(postID))
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func SelectCommentByPostID(postID int) ([]Comment, error) {
 }
 
 func SelectReplyByCommentID(commentID string) ([]Reply, error) {
-	r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = " + commentID + " order by replyuniqueid asc")
+	r, err := db.Query("SELECT id, admin, replywriterid, writerpw, text FROM reply WHERE commentid = " + commentID + " order by id asc")
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +276,7 @@ func SelectReplyByCommentID(commentID string) ([]Reply, error) {
 }
 
 func GetRecentReplyID() (int, error) {
-	r, err := db.Query("SELECT replyuniqueid FROM reply order by replyuniqueid desc limit 1")
+	r, err := db.Query("SELECT id FROM reply order by id desc limit 1")
 	if err != nil {
 		return 0, err
 	}
@@ -288,12 +288,12 @@ func GetRecentReplyID() (int, error) {
 }
 
 func InsertReply(isAdmin, recentReplyID int, commentID, replyText, writerID, writerPW string) error {
-	_, err := db.Query(`INSERT INTO reply (commentid, replycontents, replywriterid, replywriterpw, replyisadmin, replyuniqueid) values (` + commentID + `,'` + replyText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(recentReplyID) + `)`)
+	_, err := db.Query(`INSERT INTO reply (commentid, text, writerid, writerpw, admin, id) values (` + commentID + `,'` + replyText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(recentReplyID) + `)`)
 	return err
 }
 
 func GetReplyPWByReplyID(replyID string) (string, error) {
-	r, err := db.Query("SELECT replywriterpw FROM reply WHERE replyuniqueid =" + replyID)
+	r, err := db.Query("SELECT writerpw FROM reply WHERE id =" + replyID)
 	if err != nil {
 		return "", err
 	}
@@ -304,12 +304,12 @@ func GetReplyPWByReplyID(replyID string) (string, error) {
 }
 
 func DeleteReplyByReplyID(replyID string) error {
-	_, err := db.Query("DELETE FROM reply WHERE replyuniqueid = " + replyID)
+	_, err := db.Query("DELETE FROM reply WHERE id = " + replyID)
 	return err
 }
 
 func GetEveryPost() ([]Post, error) {
-	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post")
+	r, err := db.Query("SELECT id, tag,title,text,writetime,imgpath FROM post")
 	if err != nil {
 		return nil, err
 	}
@@ -322,7 +322,7 @@ func GetEveryPost() ([]Post, error) {
 	return datas, nil
 }
 func GetPostByPostID(postID string) ([]Post, error) {
-	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post where id = " + postID)
+	r, err := db.Query("SELECT id, tag,title,text,writetime,imgpath FROM post where id = " + postID)
 	if err != nil {
 		return nil, err
 	}

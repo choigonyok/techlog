@@ -217,15 +217,15 @@ func ModifyPostHandler(c *gin.Context) {
 		return
 	}
 	postID := c.Param("postid")
-	var PostData model.Post
-	err := c.ShouldBindJSON(&PostData)
+	var data model.Post
+	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("ERROR #22 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	PostData.Text = strings.ReplaceAll(PostData.Text, `'`, `\'`)
-	err = model.UpdatePost(PostData.Title, PostData.Text, PostData.Tag, postID, PostData.WriteTime)
+	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
+	err = model.UpdatePost(data.Title, data.Text, data.Tag, postID, data.WriteTime.Format("2006-01-02"))
 	if err != nil {
 		fmt.Println("ERROR #5 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusUnauthorized)
