@@ -8,35 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type SendData struct {
-	Id        int
-	Tag       string
-	Title     string
-	Body      string
-	Datetime  string
-	ImagePath string
-	Comments  []string
-	WriterID  []string
-	WriterPW  []string
-}
-
-type CommentData struct {
-	Comments  string `json:"comments"`
-	PostId    int    `json:"postid"`
-	CommentID string `json:"comid"`
-	CommentPW string `json:"compw"`
-	IsAdmin   int    `json:"isadmin"`
-	ID        int    `json:"uniqueid"`
-}
-type ReplyData struct {
-	Reply         string `json:"comments"`
-	CommentID     string `json:"commentid"`
-	ReplyID       string `json:"comid"`
-	ReplyPW       string `json:"compw"`
-	ReplyIsAdmin  int    `json:"replyisadmin"`
-	ReplyUniqueID int    `json:"replyuniqueid"`
-}
-
 type Comment struct {
 	ID       int    `json:"id"`
 	PostID   int    `json:"postid"`
@@ -257,16 +228,16 @@ func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	return writerPW, err
 }
 
-func SelectNotAdminWriterComment(postID int) ([]CommentData, error) {
+func SelectNotAdminWriterComment(postID int) ([]Comment, error) {
 	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE isadmin != 1`)
 	if err != nil {
 		return nil, err
 	}
-	datas := []CommentData{}
-	data := CommentData{}
+	datas := []Comment{}
+	data := Comment{}
 	for r.Next() {
-		r.Scan(&data.CommentID, &data.CommentPW, &data.Comments, &data.IsAdmin, &data.ID)
-		data.PostId = postID
+		r.Scan(&data.WriterID, &data.WriterPW, &data.Text, &data.Admin, &data.ID)
+		data.PostID = postID
 		datas = append(datas, data)
 	}
 	return datas, nil
