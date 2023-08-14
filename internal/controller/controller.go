@@ -142,8 +142,6 @@ func DeletePostHandler(c *gin.Context) {
 		return
 	}
 	postID := c.Param("postid")
-
-	// 이미지 없이 작성된 글 삭제
 	if postID == "0" {
 		err := model.DeleteRecentPost()
 		if err != nil {
@@ -267,10 +265,6 @@ func GetPostsByTagHandler(c *gin.Context) {
 }
 
 // 코드리뷰
-// 코드리뷰
-// 코드리뷰
-// 코드리뷰
-// 코드리뷰
 func GetEveryTagHandler(c *gin.Context) {
 	tagString, err := model.GetEveryTagAsString()
 	if err != nil {
@@ -280,7 +274,7 @@ func GetEveryTagHandler(c *gin.Context) {
 	}
 	tagString = strings.ReplaceAll(tagString, " / ", " ")
 	_, tagString, ok := strings.Cut(tagString, " ")
-	tagCount := strings.Count(tagString, " ") //모든 포스트의 총 tag 합계-중복포함
+	tagCount := strings.Count(tagString, " ")
 	posts := []model.Post{}
 	post := model.Post{}
 
@@ -322,7 +316,6 @@ func AddCommentHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	// 빈 텍스트가 있는지 확인
 	isTextEmpty, textErr := regexp.MatchString("^$", data.Text)
 	isIDEmpty, idErr := regexp.MatchString("^$", data.WriterID)
 	isPwValid, pwErr := regexp.MatchString("^[0-9]+$", data.WriterPW)
@@ -526,11 +519,6 @@ func AddReplyHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusOK)
 	}
 }
-
-
-// 여기서부터 시작
-// 여기서부터 시작
-// 여기서부터 시작
 
 func DeleteReplyHandler(c *gin.Context) {
 	inputPW := c.Query("inputpw")
