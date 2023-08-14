@@ -1,0 +1,21 @@
+.login-idpw {
+  display: flex;
+  flex-direction: column;
+  gap: 1.7rem;
+  width: auto;
+  font-size: 30px;
+  height: auto;
+  align-items: center;
+  justify-content: space-around;
+  margin: 5%;
+}
+.login-button {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  padding-left: 5%;
+  padding-right: 5%;
+  margin-bottom: 3%;
+  justify-content: center;
+  text-align: center;
+}

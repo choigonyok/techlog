@@ -1,0 +1,169 @@
+.select-button:hover{
+  background-color: black;
+  border: 5px solid rgb(255, 42, 0);
+  color: white;
+  transition: 300ms;
+}
+
+.delete-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 10%;
+  justify-content: center;
+  align-items: center;
+}
+.file-container {
+  display: flex;
+  width: 400px;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+.file {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+
+.delete-button:hover {
+  background-color: black;
+  border: 5px solid rgb(255, 42, 0);
+  color: white;
+  transition: 300ms;
+}
+
+.delete-main {
+  text-align: center;
+  font-size: 60px;
+}
+.delete-list {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: auto;
+  width: 1300px;
+  margin-top: 10%;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  border-radius: 50px;
+  background-color: rgb(37, 37, 37);
+}
+.delete-inlist {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: auto;
+}
+.delete-button {
+  display: flex;
+  width: 80px;
+  border: 5px solid rgb(38, 46, 59);
+  border-radius: 40px;
+  height: inherit;
+  background-color: rgba(255, 255, 255, 0.938);
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  padding: 8%;
+  transition: 500ms;
+}
+.delete-button__container {
+  display: flex;
+  flex-direction: column;
+  width: 80px;
+  border-radius: 20px;
+  gap: 3rem;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+}
+.delete-post {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 1000px;
+  height: auto;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  padding: 2%;
+  align-items: start;
+  justify-content: center;
+  border-radius: 20px;
+  border: 1px solid white;
+  gap: 5px;
+}
+.delete-title {
+  display: flex;
+  font-size: 24px;
+  height: auto;
+  padding: 0.5rem;
+  text-align: center;
+}
+.delete-comment {
+  display: flex;
+  font-size: 24px;
+  height: auto;
+  padding: 0.5rem;
+  text-align: center;
+}
+.delete-date {
+  display: flex;
+  border: 3px solid white;
+  border-radius: 20px;
+  flex-wrap: wrap;
+  display: flex;
+  font-size: 14px;
+  text-align: left;
+  padding: 0.5rem;
+}
+.delete-tag {
+  display: flex;
+
+  border-radius: 20px;
+  flex-wrap: wrap;
+  display: flex;
+  font-size: 16px;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.modify-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: center;
+  height: auto;
+  width: 100%;
+  margin-top: 3%;
+}
+
+.select-button {
+  font-size: 20px;
+  width: 20rem;
+  height: auto;
+  padding-left: 3%;
+  padding-right: 3%;
+  justify-content: center;
+  padding-top: 0.5%;
+  padding-bottom: 0.5%;
+  border: 5px solid rgb(38, 46, 59);
+  background-color: rgb(59, 59, 59);
+  background-clip: padding-box;
+  color: white;
+  border-radius: 30px;
+  transition: 300ms;
+}

@@ -1,0 +1,216 @@
+.comment:focus {
+  border: 5px solid rgb(255, 42, 0);
+  color: white;
+  transition: 300ms;
+}
+.comment-box:hover {
+  .comment-delete__button {
+    color: red;
+    transition: 300ms;
+  }
+}
+.comment-box__adminwriter:hover{
+  cursor: pointer;
+  color: white;
+  transition: 300ms; 
+  font-size: 24px;
+}
+.comment-box__writer:hover{
+  cursor: pointer;
+  color: white;
+  transition: 300ms;
+  font-size: 24px;
+}
+.comment-delete__button:hover{
+  cursor: pointer;
+}
+.comment-container__container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.comment-button__submit:hover {
+  border: 5px solid rgb(255, 42, 0);
+  color: black;
+  transition: 300ms;
+  background-color: white;
+}
+
+.comment-container__write {
+  display: flex;
+
+  flex-direction: column;
+  margin-top: 3%;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  width: 900px !important;
+}
+.reply-container__write {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3%;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding-bottom: 5%;
+}
+.comment-buttons {
+  display: flex;
+  width: 700px;
+  gap: 0.5rem;
+}
+.comment-button__id {
+  display: flex;
+  width: auto;
+  font-size: 14px;
+  padding-left: 4% !important;
+  padding-right: 4%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+  border: 5px solid rgb(38, 46, 59);
+  background-color: rgb(59, 59, 59);
+  background-clip: padding-box;
+  color: white;
+  border-radius: 30px;
+  transition: 300ms;
+}
+
+.comment-button__submit {
+  display: flex;
+  width: auto;
+  font-size: 14px;
+  padding-left: 4% !important;
+  padding-right: 4%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+  border: 5px solid rgb(38, 46, 59);
+  background-color: rgb(59, 59, 59);
+  background-clip: padding-box;
+  color: white;
+  border-radius: 30px;
+  transition: 300ms;
+}
+
+.comment {
+  display: flex;
+  width: 700px;
+  flex-direction: column;
+  text-align: left;
+  border: 5px solid rgb(38, 46, 59);
+  background-color: rgb(59, 59, 59);
+  color: white;
+  padding: 1.5%;
+  padding-left: 2%;
+  border-radius: 30px;
+  font-size: 17px;
+  min-height: 150px;
+  transition: 400ms;
+  outline: none;
+  resize: none;
+}
+
+.comment-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100% !important;
+  height: auto;
+  white-space: pre-line;
+  gap: 20px;  
+}
+
+.comment-box {
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  width: 700px !important;
+  height: auto;
+  justify-content: space-between;
+  text-align: left;
+  padding-left: 3rem;
+  align-items: center;
+  white-space:pre-line;
+}
+
+.comment-delete {
+  font-size: 16px;
+  width:auto !important;
+  word-break: break-all;
+  height: auto;
+  justify-content: space-between;
+  justify-content: left;
+  text-align: left;
+  color: rgb(185, 185, 185);
+  padding-right: 1%;
+  
+}
+
+.comment-delete__button {
+  display: flex;
+  font-size: 16px;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  color: transparent;
+  transition: 300ms;
+  padding: 2%;
+  
+}
+
+.password-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  height: 3rem !important;
+  width: 400px ;
+  padding-left: 3rem;
+}
+.password-text { 
+  font-size: 16px;
+  width: auto !important;
+  height: auto;
+  justify-content: left;
+  text-align: left;
+  color: rgb(185, 185, 185);
+  padding-left: 5% !important;
+  
+}
+
+.comment-box__writer {
+  display: flex;
+  font-size: 19px;
+  width: auto;
+  height: auto;
+  justify-content: left;
+  text-align: left;
+  border-left: 1px solid rgb(185, 185, 185);
+  color: rgb(185, 185, 185);
+  padding: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 3%;
+  transition: 300ms; 
+}
+
+.comment-box__adminwriter {
+  display: flex;
+  font-size: 19px;
+  width: auto;
+  height: auto;
+  color: rgb(255, 146, 124);
+  justify-content: left;
+  text-align: left;
+  border-left: 1px solid rgb(185, 185, 185);
+  padding: 0.5rem;
+  padding-left: 1rem;
+  transition: 300ms; 
+}

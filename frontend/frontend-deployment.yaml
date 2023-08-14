@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-deployment
+  template:
+    metadata:
+      labels:
+        app: frontend-deployment
+    spec:
+      containers:
+      - name: frontend-deployment
+        image: achoistic98/blog_frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_HOST
+          value: "backend-service:8080"

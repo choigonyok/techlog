@@ -1,0 +1,66 @@
+.header-category:link {
+  color: white;
+}
+.header-category:visited {
+  color: white;
+}
+.header-category:hover {
+  color: gray;
+  transition-duration: 300ms;
+}
+
+.header-title:link {
+  color: white;
+}
+.header-title:visited {
+  color: white;
+}
+.header-title:hover {
+  color: gray;
+  transition-duration: 300ms;
+}
+
+.header {
+  align-items: center;
+  position: sticky;
+  padding-left: 7vw;
+  padding-right: 7vw;
+  padding-top: 1.3vw;
+  padding-bottom: 1.3vw;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background-color: rgb(24, 26, 28, 0.8);
+  box-shadow: 0px 3px 10px 0px #343434;
+
+}
+
+.header-empty {
+  display: flex;
+  width: auto;
+}
+.header-title {
+  font-size: 1.3vw;
+  text-decoration: none;
+  text-align: left;
+  width: auto;
+  transition: 300ms;
+  background-color: transparent;
+  color: white;
+  border: none;
+  text-decoration: none;
+}
+.header-category {
+  margin-left: 2rem;
+  text-align: right;
+  font-size: 1.2vw;
+  text-decoration: none;
+  width: auto;
+  transition: 300ms;
+  background-color: transparent;
+  color: white;
+}

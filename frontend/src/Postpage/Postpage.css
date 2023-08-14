@@ -1,0 +1,217 @@
+.image-container {
+  margin-top: 5%;
+  display: flex;
+  height: 500px;
+  width: 100%;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+
+.postbutton {
+  display: flex;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: white;
+  font-size: 50px;
+}
+
+.image {
+  border: none;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  width: 900px;
+  max-height: 570px;
+  align-items: center;
+  object-fit: cover;
+}
+
+.post-title {
+  display: flex;
+  margin-top: 2%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: 200px;
+}
+
+.post-tagsbox {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  width: 700px;
+  height: auto;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.post-tags__button {
+  font-size: 12px;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top: 2%;
+  padding-bottom: 0.5%;
+  width: auto;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 1.5%;
+  border: 5px solid rgb(255, 42, 0, 0.75);
+  background-color: rgb(232, 232, 232);
+  background-clip: padding-box;
+  color: black;
+  border-radius: 30px;
+}
+
+.written-date {
+  margin: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: inherit;
+  height: auto;
+  font-size: large;
+  font-style: italic;
+}
+
+.post-title__item {
+  margin: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 37px;
+  width: inherit;
+  height: auto;
+  font-weight: 800;
+}
+
+.post-body {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  margin: auto;
+  text-align: left;
+  justify-content: center;
+  width: 700px;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+  margin-bottom: 100px;
+  background-color: transparent !important;
+}
+
+.post-body h1 {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: 35px !important;
+  color: white !important;
+  font-weight: 800 !important;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+
+.post-body img {
+  width: 700px !important;
+  max-height: 500px !important;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  object-fit: scale-down;
+  background-color: rgb(24, 26, 28) !important;
+}
+
+.post-body h2 {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  font-size: 28px !important;
+  line-height: 250% !important;
+  color: white !important;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+.post-body h3 {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: 25px !important;
+  color: white !important;
+  font-weight: 700;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+.post-body blockquote {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: 25px !important;
+  word-wrap: break-word !important;
+  width: inherit;
+  font-weight: 800 !important;
+  background-color: rgba(255, 61, 22, 0.616);
+  border-radius: 8px !important;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+.post-body p {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+.post-body code,
+pre {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: 15px !important;
+  color: white;
+  background-color: rgb(65, 65, 65) !important;
+  white-space: pre-line !important;
+  border-radius: 8px !important;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+
+.post-body em,
+strong,
+del {
+  letter-spacing: 0.4px !important;
+  word-spacing: 1px !important;
+  line-height: 215% !important;
+  font-size: inherit !important;
+  font-weight: 800 !important;
+  color: white;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
+}
+
+.related-post__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  padding-top: 5%;
+}
+
+.related-post__content {
+  width: 900px;
+  display: flex;
+  justify-content: center;
+  height: auto;
+  font-size: 30px;
+  padding: 45px;
+  border-top: 5px solid gray;
+}
+
