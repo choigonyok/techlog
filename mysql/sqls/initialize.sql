@@ -26,7 +26,7 @@ CREATE TABLE `post` (
         `tag` VARCHAR(255) NOT NULL DEFAULT "",
         `title` VARCHAR(255) NOT NULL DEFAULT "",
         `text` TEXT NOT NULL DEFAULT "",
-        `writetime` DATETIME NOT NULL DEFAULT "00-00-00",
+        `writetime` VARCHAR(100) NOT NULL DEFAULT "00-00-00",
         `imgpath` VARCHAR(255),
         `imgnum` INT);
 

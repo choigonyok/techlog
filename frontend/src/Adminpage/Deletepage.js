@@ -211,9 +211,9 @@ const Deletepage = () => {
                   {allPost.map((item, index) => (
                     <div className="delete-inlist">
                       <div className="delete-post">
-                        <h2 className="delete-date">{item.Datetime}</h2>
-                        <h2 className="delete-title">{item.Title}</h2>
-                        <h2 className="delete-tag">{item.Tag}</h2>
+                        <h2 className="delete-date">{item.writetime}</h2>
+                        <h2 className="delete-title">{item.title}</h2>
+                        <h2 className="delete-tag">{item.tag}</h2>
                       </div>
                       <div className="delete-button__container">
                         <input
@@ -221,7 +221,7 @@ const Deletepage = () => {
                           type="button"
                           value="삭제"
                           onClick={() => {
-                            deleteHandler(item.Id);
+                            deleteHandler(item.id);
                           }}
                         />
                         <input
@@ -229,7 +229,7 @@ const Deletepage = () => {
                           type="button"
                           value="수정"
                           onClick={() => {
-                            modifyHandler(item.Id);
+                            modifyHandler(item.id);
                           }}
                         />
                       </div>
@@ -246,7 +246,7 @@ const Deletepage = () => {
               comInfo.map((item, index) => (
                 <div className="delete-inlist">
                   <div className="delete-post">
-                    <h2 className="delete-comment">{item.comments}</h2>
+                    <h2 className="delete-comment">{item.text}</h2>
                     <h2 className="delete-tag">{item.comid}</h2>
                   </div>
                   <div className="delete-button__container">
@@ -255,7 +255,7 @@ const Deletepage = () => {
                       type="button"
                       value="삭제"
                       onClick={() => {
-                        CommentDeleteHandler(item.uniqueid);
+                        CommentDeleteHandler(item.id);
                       }}
                     />
                   </div>
