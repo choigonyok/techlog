@@ -13,8 +13,6 @@ import (
 func originConfig() cors.Config{
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{os.Getenv("ORIGIN")} 
-	// 허용할 오리진 설정, 원래 리액트의 port가 아니라 리액트가 있는 container의 port 번호를 origin allow 해줘야함
-	// localhost:3000로 origin allow 하면 통신 안됨
 	config.AllowMethods= []string{"GET", "POST", "DELETE", "PUT"}
 	config.AllowHeaders = []string{"Content-type"}
 	config.AllowCredentials = true
