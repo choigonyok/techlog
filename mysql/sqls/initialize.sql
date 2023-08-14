@@ -26,9 +26,9 @@ CREATE TABLE `post` (
         `tag` VARCHAR(255) NOT NULL DEFAULT "",
         `title` VARCHAR(255) NOT NULL DEFAULT "",
         `text` TEXT NOT NULL DEFAULT "",
-        `writetime` VARCHAR(100) NOT NULL DEFAULT "00-00-00",
-        `imgpath` VARCHAR(255),
-        `imgnum` INT);
+        `writetime` VARCHAR(255) NOT NULL DEFAULT "",
+        `imgpath` VARCHAR(255) NOT NULL DEFAULT "",
+        `imgnum` INT NOT NULL DEFAULT 0);
 
 CREATE TABLE `reply` (
         `id` INT AUTO_INCREMENT PRIMARY KEY,

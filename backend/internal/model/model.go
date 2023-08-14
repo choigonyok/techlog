@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -22,8 +21,8 @@ type Post struct {
 	ID        int       `json:"id"`
 	Tag       string    `json:"tag"`
 	Title     string    `json:"title"`
-	Text      string    `json:"string"`
-	WriteTime time.Time `json:"writetime"`
+	Text      string    `json:"text"`
+	WriteTime string 	`json:"writetime"`
 	ImagePath string    `json:"imagepath"`
 	ImageNum  int       `json:"imagenum"`
 }
@@ -118,8 +117,9 @@ func GetRecentPostID() (int, error) {
 	}
 	return idnum, nil
 }
-func AddPost(postID int, tag, title, body string, writetime string) error {
-	_, err := db.Query(`INSERT INTO post (id, tag, writetime, title, text) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + writetime + `','` + title + `','` + body + `')`)
+func AddPost(tag, title, text, writetime string) error {
+	_, err := db.Exec(`INSERT INTO post (tag, writetime, title, text) values ('` + tag + `', '`+writetime+`' ,'` + title + `','` + text + `')`)
+	DBTest()
 	return err
 }
 
@@ -128,8 +128,8 @@ func UpdatePostImagePath(recentID int, imagename string) error {
 	return err
 }
 
-func UpdatePost(title, text, tag, postID string, writetime string) error {
-	_, err := db.Query(`UPDATE post SET title = '` + title + `', text = '` + text + `', tag ='` + tag + `', writetime = '` + writetime + `' where id = ` + postID)
+func UpdatePost(title, text, tag, postID string) error {
+	_, err := db.Query(`UPDATE post SET title = '` + title + `', text = '` + text + `', tag ='` + tag + `'  where id = ` + postID)
 	return err
 }
 
@@ -359,4 +359,48 @@ func CountTodayVisit() error {
 		return err
 	}
 	return nil
+}
+
+func DBTest() {
+	r1, _ := db.Query("SELECT id, postid, admin, text, writerid, writerpw FROM comment")
+	var comment Comment
+	var comments []Comment
+	for r1.Next() {
+		r1.Scan(&comment.ID, &comment.PostID, &comment.Admin, &comment.Text, &comment.WriterID, &comment.WriterPW)
+		comments = append(comments, comment)
+	}
+	fmt.Println("comment: ", comments)
+
+	r2, _ := db.Query("SELECT id, tag, title, text, writetime, imgpath, imgnum FROM post")
+	var post Post
+	var posts []Post
+	for r2.Next() {
+		r2.Scan(&post.ID, &post.Tag, &post.Title, &post.Text, &post.WriteTime, &post.ImagePath, &post.ImageNum)
+		posts = append(posts, post)
+	}
+	fmt.Println("post: ", posts)
+
+	r3, _ := db.Query("SELECT id, admin, writerid, writerpw, text, commentid FROM reply")
+	var reply Reply
+	var replys []Reply
+	for r3.Next() {
+		r3.Scan(&reply.ID, &reply.Admin, &reply.WriterID, &reply.WriterPW, &reply.Text, &reply.CommentID)
+		replys = append(replys, reply)
+	}
+	fmt.Println("reply: ", replys)
+
+	r4, _ := db.Query("SELECT value FROM cookie")
+	var cookie Cookie
+	r4.Next()
+	r4.Scan(&cookie.Value)
+	fmt.Println("cookie: ", cookie.Value)
+
+	r5, _ := db.Query("SELECT today, total FROM visitor")
+	var visitor Visitor
+	var visitors []Visitor
+	for r5.Next() {
+		r5.Scan(&visitor.Today, &visitor.Total)
+		visitors = append(visitors, visitor)
+	}
+	fmt.Println("visitor: ", visitors)
 }

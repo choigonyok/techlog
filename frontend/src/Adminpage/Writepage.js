@@ -25,8 +25,7 @@ const Writepage = () => {
     const postdata = {
       title: titleText,
       tag: tagText,
-      datetime: dateText,
-      body: bodyText,
+      text: bodyText,
     };
     axios
       .post(process.env.REACT_APP_HOST+"/api/post", postdata, {
@@ -69,6 +68,10 @@ const Writepage = () => {
     setDateText(e.target.value);
   };
 
+  useEffect(()=>{
+    setBodyText(md);
+  },[md])
+
   const imgHandler = (e) => {
     setIMG((img) => [...img, ...e.target.files]);
     // setIMG(e.target.files);
@@ -89,10 +92,6 @@ const Writepage = () => {
       img.filter((element) => String(element.name) !== img.at(value).name)
     );
   };
-
-  useEffect(() => {
-    setBodyText(md);
-  }, [md]);
 
   useEffect(() => {
     if (!mounted.current) {
@@ -120,7 +119,7 @@ const Writepage = () => {
           }
         });
     }
-  }, [unlock]);
+  }, [unlock]);  
 
   return (
     <div>

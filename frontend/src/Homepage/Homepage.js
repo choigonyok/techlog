@@ -59,7 +59,7 @@ const Homepage = () => {
           </a>
         </div>
         <div className="introduce-text__year">
-          <h4>꾸준함이란 도구로 성장하기를 즐기는 웹 개발자 최윤석입니다</h4>
+          <h4>꾸준함이란 도구로 성장하기를 즐기는 데브옵스 엔지니어 최윤석입니다</h4>
         </div>
         <div className="introduce-text__year">
           <h5>

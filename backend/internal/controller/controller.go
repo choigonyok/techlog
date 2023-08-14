@@ -85,16 +85,11 @@ func WritePostHandler(c *gin.Context) {
 	var data model.Post
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	recentPostID, err := model.GetRecentPostID()
-	if err != nil {
-		fmt.Println("ERROR #2 : ", err.Error())
-		c.Writer.WriteHeader(http.StatusInternalServerError)
+		fmt.Println("ERROR #37: ", err.Error())
 		return
 	}
 	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
-	err = model.AddPost(recentPostID+1, data.Tag, data.Title, data.Text, getTimeNow().Format("2006-01-02"))
+	err := model.AddPost(data.Tag, data.Title, data.Text, getTimeNow().Format("2006-01-02"))
 	if err != nil {
 		fmt.Println("ERROR #3 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -228,7 +223,7 @@ func ModifyPostHandler(c *gin.Context) {
 		return
 	}
 	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
-	err = model.UpdatePost(data.Title, data.Text, data.Tag, postID, data.WriteTime.Format("2006-01-02"))
+	err = model.UpdatePost(data.Title, data.Text, data.Tag, postID)
 	if err != nil {
 		fmt.Println("ERROR #5 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusUnauthorized)
@@ -553,9 +548,7 @@ func GetPostHandler(c *gin.Context) {
 		for _, v := range datas {
 			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
 			v.Tag = strings.ToUpper(v.Tag)
-			fmt.Println(v.WriteTime) // TEST
-			fmt.Println(v.WriteTime) // TEST
-			fmt.Println(v.WriteTime) // TEST
+			model.DBTest()
 		}
 		marshaledData, err := json.Marshal(datas)
 		if err != nil {
