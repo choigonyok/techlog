@@ -39,6 +39,10 @@
         - K8S 배포
         - Code refactoring
         - 게시글에 특정 기호 못넣던 이슈 해결
+        - 프론트엔드 레포지토리 통합 
+<br>
+
+[Frontend Repository](https://github.com/choigonyok/blog-project-frontend)
 
 <br>
 
