@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -159,19 +158,15 @@ func UpdatePost(title, body, tag, postID string, datetime time.Time) error {
 	return err
 }
 
-func SelectPostByTag(tag string) ([]SendData, error) {
+func SelectPostByTag(tag string) ([]Post, error) {
 	r, err := db.Query("SELECT id,tag,title,body,datetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by datetime desc")
 	if err != nil {
 		return nil, err
 	}
-	var data SendData
-	var datas []SendData
+	var data Post
+	var datas []Post
 	for r.Next() {
-		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
-		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
-		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
-		data.Tag = strings.ToUpper(data.Tag)
-		data.Title = strings.ToUpper(data.Title)
+		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
 		datas = append(datas, data)
 	}
 	return datas, nil
@@ -216,13 +211,25 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
 }
 
 func DeleteEveryCommentByCommentID(commentID string) error {
-	_, err := db.Query("DELETE FROM comments WHERE uniqueid = " + commentID)
-	return err
-}
-
-func DeleteEveryReplyByCommentID(commentID string) error {
-	_, err := db.Query("DELETE FROM reply WHERE commentid = " + commentID)
-	return err
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("DELETE FROM comments WHERE uniqueid = " + commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	_, err = db.Exec("DELETE FROM reply WHERE commentid = " + commentID)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func GetRecentCommentID() (int, error) {
@@ -245,7 +252,7 @@ func InsertComment(postID, commentID, isAdmin int, commentText, writerID, writer
 func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	r, err := db.Query("SELECT writerpw FROM comments WHERE uniqueid =" + commentID)
 	var writerPW string
-	// r.Next()
+	r.Next()
 	err = r.Scan(&writerPW)
 	return writerPW, err
 }
@@ -265,30 +272,30 @@ func SelectNotAdminWriterComment(postID int) ([]CommentData, error) {
 	return datas, nil
 }
 
-func SelectCommentByPostID(postID int) ([]CommentData, error) {
+func SelectCommentByPostID(postID int) ([]Comment, error) {
 	r, err := db.Query(`SELECT writerid, writerpw, contents, isadmin, uniqueid FROM comments WHERE id = ` + strconv.Itoa(postID))
 	if err != nil {
 		return nil, err
 	}
-	datas := []CommentData{}
-	data := CommentData{}
+	datas := []Comment{}
+	data := Comment{}
 	for r.Next() {
-		r.Scan(&data.CommentID, &data.CommentPW, &data.Comments, &data.IsAdmin, &data.ID)
-		data.PostId = postID
+		r.Scan(&data.WriterID, &data.WriterPW, &data.Text, &data.Admin, &data.ID)
+		data.PostID = postID
 		datas = append(datas, data)
 	}
 	return datas, nil
 }
 
-func SelectReplyByCommentID(commentID string) ([]ReplyData, error) {
+func SelectReplyByCommentID(commentID string) ([]Reply, error) {
 	r, err := db.Query("SELECT replyuniqueid, replyisadmin, replywriterid, replywriterpw, replycontents FROM reply WHERE commentid = " + commentID + " order by replyuniqueid asc")
 	if err != nil {
 		return nil, err
 	}
-	datas := []ReplyData{}
-	data := ReplyData{}
+	var datas []Reply
+	var data Reply
 	for r.Next() {
-		r.Scan(&data.ReplyUniqueID, &data.ReplyID, &data.ReplyPW, &data.Reply)
+		r.Scan(&data.ID, &data.Admin ,&data.WriterID, &data.WriterPW, &data.Text)
 		datas = append(datas, data)
 	}
 	return datas, nil
@@ -327,36 +334,28 @@ func DeleteReplyByReplyID(replyID string) error {
 	return err
 }
 
-func GetEveryPost() ([]SendData, error) {
+func GetEveryPost() ([]Post, error) {
 	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post")
 	if err != nil {
 		return nil, err
 	}
-	var datas []SendData
-	var data SendData
+	var datas []Post
+	var data Post
 	for r.Next() {
-		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
-		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
-		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
-		data.Tag = strings.ToUpper(data.Tag)
-		data.Title = strings.ToUpper(data.Title)
+		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
 		datas = append(datas, data)
 	}
 	return datas, nil
 }
-func GetPostByPostID(postID string) ([]SendData, error) {
+func GetPostByPostID(postID string) ([]Post, error) {
 	r, err := db.Query("SELECT id, tag,title,body,datetime,imgpath FROM post where id = " + postID)
 	if err != nil {
 		return nil, err
 	}
-	var datas []SendData
-	var data SendData
+	var datas []Post
+	var data Post
 	for r.Next() {
-		r.Scan(&data.Id, &data.Tag, &data.Title, &data.Body, &data.Datetime, &data.ImagePath)
-		data.Datetime = strings.TrimSuffix(data.Datetime, " 00:00:00")
-		data.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
-		data.Tag = strings.ToUpper(data.Tag)
-		data.Title = strings.ToUpper(data.Title)
+		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
 		datas = append(datas, data)
 	}
 	return datas, nil

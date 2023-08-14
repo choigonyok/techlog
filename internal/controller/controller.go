@@ -185,12 +185,6 @@ func DeletePostHandler(c *gin.Context) {
 				c.Writer.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			err = model.DeleteEveryReplyByCommentID(v)
-			if err != nil {
-				fmt.Println("ERROR #16 : ", err.Error())
-				c.Writer.WriteHeader(http.StatusInternalServerError)
-				return
-			}
 		}
 	}
 	c.Writer.WriteHeader(http.StatusOK)
@@ -258,13 +252,17 @@ func GetPostsByTagHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	for _, v := range datas {
+		// v.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
+		v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
+		v.Tag = strings.ToUpper(data.Tag)
+	}
 	marshaledData, err := json.Marshal(datas)
 	if err != nil {
 		fmt.Println("ERROR #23 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.Write(marshaledData)
 }
 
@@ -313,7 +311,6 @@ func GetEveryTagHandler(c *gin.Context) {
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.Write(marshaledData)
 }
 
@@ -344,6 +341,7 @@ func AddCommentHandler(c *gin.Context) {
 	}
 	strings.ReplaceAll(data.WriterID, `'`, `\'`)
 	strings.ReplaceAll(data.WriterPW, `'`, `\'`)
+	strings.ReplaceAll(data.Text, `'`, `\'`)
 	recentCommentID, err := model.GetRecentCommentID()
 	if err != nil {
 		fmt.Println("ERROR #12 : ", err.Error())
@@ -382,39 +380,34 @@ func GetCommentPWHandler(c *gin.Context) {
 }
 
 func DeleteCommentByAdminHandler(c *gin.Context) {
-	param := c.Param("postid")
-	_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
-	if err == http.ErrNoCookie {
-		c.String(http.StatusUnauthorized, "THERE IS NO COOKIE")
+	postID := c.Param("postid")
+	if !isCookieAdmin(c) {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	err := model.DeleteEveryCommentByCommentID(postID)
+	if err != nil {
+		fmt.Println("ERROR #17 : ", err.Error())
 	} else {
-		err := model.DeleteEveryReplyByCommentID(param)
-		if err != nil {
-			fmt.Println("ERROR #15 : ", err.Error())
-		}
-		err = model.DeleteEveryCommentByCommentID(param)
-		if err != nil {
-			fmt.Println("ERROR #17 : ", err.Error())
-		} else {
-			c.Writer.WriteHeader(http.StatusOK)
-		}
+		c.Writer.WriteHeader(http.StatusOK)
 	}
 }
 
 func DeleteCommentHandler(c *gin.Context) {
-	comid := c.Query("comid")
-	inputpw := c.Query("inputpw")
-	writerPW, err := model.GetCommentWriterPWByCommentID(comid)
+	comnmentID := c.Query("comid")
+	inputPW := c.Query("inputpw")
+	writerPW, err := model.GetCommentWriterPWByCommentID(comnmentID)
 	if err != nil {
 		fmt.Println("ERROR #18 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	if inputpw == writerPW {
-		err := model.DeleteEveryReplyByCommentID(comid)
+	if inputPW == writerPW {
+		err := model.DeleteEveryCommentByCommentID(comnmentID)
 		if err != nil {
-			fmt.Println("ERROR #19 : ", err.Error())
-		}
-		err2 := model.DeleteEveryCommentByCommentID(comid)
-		if err2 != nil {
 			fmt.Println("ERROR #20 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 	} else {
@@ -439,96 +432,121 @@ func GetCommentHandler(c *gin.Context) {
 		commentSlice, err := model.SelectCommentByPostID(postID)
 		if err != nil {
 			fmt.Println("ERROR #22 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		for _, v := range commentSlice {
+			v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
+			v.WriterPW = strings.ReplaceAll(v.Text, `\'`, `'`)
+			v.WriterID = strings.ReplaceAll(v.Text, `\'`, `'`)
 		}
 		marshaledData, err := json.Marshal(commentSlice)
 		if err != nil {
 			fmt.Println("ERROR #23 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		c.Writer.Write(marshaledData)
 	}
 }
 
-// 여기서부터 시작
-// 여기서부터 시작
-// 여기서부터 시작
 func GetReplyHandler(c *gin.Context) {
 	commentID := c.Param("commentid")
 	replySlice, err := model.SelectReplyByCommentID(commentID)
+	for _, v := range replySlice {
+		v.Text = strings.ReplaceAll(v.Text,`\'`, `'`)
+		v.WriterPW = strings.ReplaceAll(v.Text,`\'`, `'`)
+		v.WriterID = strings.ReplaceAll(v.Text,`\'`, `'`)
+	}
 	if err != nil {
 		fmt.Println("ERROR #24 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	marshaledData, err := json.Marshal(replySlice)
 	if err != nil {
 		fmt.Println("ERROR #25 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	c.Writer.WriteHeader(http.StatusOK)
 	c.Writer.Write(marshaledData)
 }
 
 func AddReplyHandler(c *gin.Context) {
-	commentid := c.Param("commentid")
-	data := model.ReplyData{}
+	commentID := c.Param("commentid")
+	data := model.Reply{}
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("REPLY JSON BINDING ERROR")
 		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	// 빈 텍스트가 있는지 확인
-	isReplyEmpty, err := regexp.MatchString("^$", data.Reply)
+	isReplyEmpty, err := regexp.MatchString("^$", data.Text)
 	if err != nil {
-		fmt.Println("REGEXP ERROR1")
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	isIDEmpty, err := regexp.MatchString("^$", data.ReplyID)
+	isIDEmpty, err := regexp.MatchString("^$", data.WriterID)
 	if err != nil {
-		fmt.Println("REGEXP ERROR2")
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	if isReplyEmpty || isIDEmpty {
-		c.Writer.WriteHeader(http.StatusLengthRequired)
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	isPWValid, err := regexp.MatchString("^[0-9]+$", data.WriterPW)
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if !isPWValid {
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
+		
+	}
+	if !isCookieAdmin(c) {
+		data.Admin = 0
 	} else {
-		// password 숫자 맞는지 확인
-		isPwNumber, err := regexp.MatchString("^[0-9]+$", data.ReplyPW)
-		if err != nil {
-			fmt.Println("REGEXP ERROR3")
-		}
-		if !isPwNumber {
-			c.Writer.WriteHeader(http.StatusNotAcceptable)
-		} else {
-			_, err := c.Cookie("admin") // 쿠키 : admin 권한 확인
-			if err == http.ErrNoCookie {
-				data.ReplyIsAdmin = 0
-			} else {
-				data.ReplyIsAdmin = 1
-			}
-			if strings.Contains(data.Reply, `'`) || strings.Contains(data.ReplyPW, `'`) || strings.Contains(data.ReplyID, `'`) {
-				c.Writer.WriteHeader(http.StatusBadRequest)
-			} else {
-				recentReplyID, err := model.GetRecentReplyID()
-				if err != nil {
-					fmt.Println("ERROR #26 : ", err.Error())
-				}
-				err = model.InsertReply(data.ReplyIsAdmin, recentReplyID+1, commentid, data.Reply, data.ReplyID, data.ReplyPW)
-				if err != nil {
-					fmt.Println("ERROR #27 : ", err.Error())
-					c.Writer.WriteHeader(http.StatusInternalServerError)
-				} else {
-					c.Writer.WriteHeader(http.StatusOK)
-				}
-			}
-		}
+		data.Admin = 1
+	}
+	recentReplyID, err := model.GetRecentReplyID()
+	if err != nil {
+		fmt.Println("ERROR #26 : ", err.Error())
+	}
+	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
+	data.WriterID = strings.ReplaceAll(data.WriterID, `'`, `\'`)
+	data.WriterPW = strings.ReplaceAll(data.WriterPW, `'`, `\'`)
+	err = model.InsertReply(data.Admin, recentReplyID+1, commentID, data.Text, data.WriterID, data.WriterPW)
+	if err != nil {
+		fmt.Println("ERROR #27 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+	} else {
+		c.Writer.WriteHeader(http.StatusOK)
 	}
 }
 
+
+// 여기서부터 시작
+// 여기서부터 시작
+// 여기서부터 시작
+
 func DeleteReplyHandler(c *gin.Context) {
-	inputpw := c.Query("inputpw")
-	replyid := c.Query("replyid")
-	replyPW, err := model.GetReplyPWByReplyID(replyid)
+	inputPW := c.Query("inputpw")
+	ID := c.Query("replyid")
+	replyPW, err := model.GetReplyPWByReplyID(ID)
 	if err != nil {
 		fmt.Println("ERROR #28 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	if replyPW == inputpw {
-		err := model.DeleteReplyByReplyID(replyid)
+	if replyPW == inputPW {
+		err := model.DeleteReplyByReplyID(ID)
 		if err != nil {
 			fmt.Println("ERROR #29 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 	} else {
@@ -537,24 +555,37 @@ func DeleteReplyHandler(c *gin.Context) {
 }
 
 func GetPostHandler(c *gin.Context) {
-	postid := c.Param("postid")
-	if postid == "all" {
-		postData, err := model.GetEveryPost()
+	postID := c.Param("postid")
+	if postID == "all" {
+		datas, err := model.GetEveryPost()
 		if err != nil {
 			fmt.Println("ERROR #30 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-		marshaledData, err := json.Marshal(postData)
+		for _, v := range datas {
+			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
+			v.Tag = strings.ToUpper(v.Tag)
+		}
+		marshaledData, err := json.Marshal(datas)
 		if err != nil {
 			fmt.Println("ERROR #32 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		c.Writer.Write(marshaledData)
 	} else {
-		postData, err := model.GetPostByPostID(postid)
+		datas, err := model.GetPostByPostID(postID)
+		for _, v := range datas {
+			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
+			v.Tag = strings.ToUpper(v.Tag)
+		}
 		if err != nil {
 			fmt.Println("ERROR #31 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-		marshaledData, err := json.Marshal(postData)
+		marshaledData, err := json.Marshal(datas)
 		if err != nil {
 			http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 			return
@@ -564,21 +595,17 @@ func GetPostHandler(c *gin.Context) {
 }
 
 func GetThumbnailHandler(c *gin.Context) {
-	imgname := c.Param("imgname")
-	imgname = strings.ReplaceAll(imgname, " ", "")
-	file, err := os.Open("IMAGES/" + imgname)
+	imgName := c.Param("imgname")
+	imgName = strings.ReplaceAll(imgName, " ", "")
+	file, err := os.Open("assets/" + imgName)
 	if err != nil {
-		// 파일 열기에 실패한 경우 에러 처리
-		http.Error(c.Writer, "파일 오픈 실패", http.StatusInternalServerError)
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	defer file.Close()
 	_, err = io.Copy(c.Writer, file)
 	if err != nil {
-		// 파일 전송에 실패한 경우 에러 처리
-		http.Error(c.Writer, "Failed to send file", http.StatusInternalServerError)
+		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-
 }
