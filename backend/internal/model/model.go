@@ -118,8 +118,8 @@ func GetRecentPostID() (int, error) {
 	}
 	return idnum, nil
 }
-func AddPost(postID int, tag, title, body string, datetime string) error {
-	_, err := db.Query(`INSERT INTO post (id, tag, writetime, title, text) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + datetime + `','` + title + `','` + body + `')`)
+func AddPost(postID int, tag, title, body string, writetime string) error {
+	_, err := db.Query(`INSERT INTO post (id, tag, writetime, title, text) values (` + strconv.Itoa(postID) + `, '` + tag + `','` + writetime + `','` + title + `','` + body + `')`)
 	return err
 }
 

@@ -94,7 +94,7 @@ func WritePostHandler(c *gin.Context) {
 		return
 	}
 	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
-	err = model.AddPost(recentPostID+1, data.Tag, data.Title, data.Text, data.WriteTime.Format("2006-01-02"))
+	err = model.AddPost(recentPostID+1, data.Tag, data.Title, data.Text, getTimeNow().Format("2006-01-02"))
 	if err != nil {
 		fmt.Println("ERROR #3 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -553,6 +553,9 @@ func GetPostHandler(c *gin.Context) {
 		for _, v := range datas {
 			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
 			v.Tag = strings.ToUpper(v.Tag)
+			fmt.Println(v.WriteTime) // TEST
+			fmt.Println(v.WriteTime) // TEST
+			fmt.Println(v.WriteTime) // TEST
 		}
 		marshaledData, err := json.Marshal(datas)
 		if err != nil {
