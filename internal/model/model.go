@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type SendData struct {
@@ -68,6 +70,11 @@ type Cookie struct {
 	Value string `json:"value"`
 }
 
+type Visitor struct {
+	Today int `json:"today"`
+	Total int `json:"total"`
+}
+
 var db *sql.DB
 
 func GetCookieValue(inputValue string) (string, error) {
@@ -77,6 +84,29 @@ func GetCookieValue(inputValue string) (string, error) {
 	}
 	var cookieValue string
 	r.Scan(&cookieValue)
+	return cookieValue, nil
+}
+
+func UpdateCookieRecord() (uuid.UUID, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return uuid.Nil, err
+	}
+	_, err =  db.Exec("DELETE * FROM cookie")
+	if err != nil {
+		tx.Rollback()
+		return uuid.Nil, err
+	}
+	cookieValue := uuid.New()
+	_, err = db.Exec(`INSERT INTO cookie (value) VALUES ("`+cookieValue.String()+`")`)
+	if err != nil {
+		tx.Rollback()
+		return uuid.Nil, err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return uuid.Nil, err
+	}
 	return cookieValue, nil
 }
 
@@ -330,4 +360,29 @@ func GetPostByPostID(postID string) ([]SendData, error) {
 		datas = append(datas, data)
 	}
 	return datas, nil
+}
+
+func CountTodayVisit() error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	r, err := tx.Query("SELECT today, total FROM visitor")
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	var visitor Visitor
+	r.Next()
+	r.Scan(&visitor.Today, &visitor.Total)
+	_, err = tx.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
 }

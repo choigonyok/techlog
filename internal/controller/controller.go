@@ -9,11 +9,32 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/choigonyok/blog-project-backend/internal/model"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
+
+func isCookieAdmin(c *gin.Context) bool {
+	inputValue, CookieErr := c.Cookie("admin")
+	cookieValue, err := model.GetCookieValue(inputValue)
+	if err != nil {
+		return false
+	}
+	if CookieErr != nil || cookieValue != inputValue {
+		return false
+	}
+	return true
+}
+
+func isCookieValid(c *gin.Context) bool {
+	visitTime, err := c.Cookie("visitTime")
+	if err == http.ErrNoCookie {
+		return false
+	}
+	isValid := strings.Contains(visitTime, getTimeNow().Format("2006-01-02"))
+	return isValid
+}
 
 func ConnectDB(driverName, dbData string) {
 	err := model.OpenDB(driverName, dbData)
@@ -37,33 +58,27 @@ func CheckAdminIDAndPW(c *gin.Context) {
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		fmt.Println("ERROR #1 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	if data.ID != os.Getenv("BLOG_ID") || data.Password != os.Getenv("BLOG_PW") {
+		fmt.Println("ERROR #31 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	cookieValue := uuid.New()
-	fmt.Println(cookieValue.String()) // TEST
-	fmt.Println(cookieValue.String()) // TEST
-	fmt.Println(cookieValue.String()) // TEST
-	c.SetCookie("admin", cookieValue.String(), 60*60*12, "/", "choigonyok.com", false, true)
+	
+	cookieValue, err := model.UpdateCookieRecord()
+	if err != nil {
+		fmt.Println("ERROR #30 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.SetCookie("admin", cookieValue.String(), 60*60*12, "/", os.Getenv("ORIGIN"), false, true)
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
-func isCookieValid(c *gin.Context) bool {
-	inputValue, CookieErr := c.Cookie("admin")
-	cookieValue, err := model.GetCookieValue(inputValue)
-	if err != nil {
-		return false
-	}
-	if CookieErr != nil || cookieValue != inputValue {
-		return false
-	}
-	return true
-}
-
 func WritePostHandler(c *gin.Context) {
-	if !isCookieValid(c) {
+	if !isCookieAdmin(c) {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -89,7 +104,7 @@ func WritePostHandler(c *gin.Context) {
 }
 
 func WritePostImageHandler(c *gin.Context) {
-	if !isCookieValid(c) {
+	if !isCookieAdmin(c) {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -107,7 +122,7 @@ func WritePostImageHandler(c *gin.Context) {
 	everyIMG := imgFile.File["file"]
 	for _, v := range everyIMG {
 		noSpaceImageName := strings.ReplaceAll(v.Filename, " ", "")
-		err = c.SaveUploadedFile(v, "IMAGES/"+strconv.Itoa(recentID)+"-"+noSpaceImageName)
+		err = c.SaveUploadedFile(v, "assets/"+strconv.Itoa(recentID)+"-"+noSpaceImageName)
 		if err != nil {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
@@ -121,11 +136,91 @@ func WritePostImageHandler(c *gin.Context) {
 	}
 }
 
+func DeletePostHandler(c *gin.Context) {
+	if !isCookieAdmin(c) {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	postID := c.Param("postid")
+
+	// 이미지 없이 작성된 글 삭제
+	if postID == "0" {
+		err := model.DeleteRecentPost()
+		if err != nil {
+			fmt.Println("ERROR #7 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	} else {
+		err := model.DeletePostByPostID(postID)
+		if err != nil {
+			fmt.Println("ERROR #8 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		imageList, err := os.ReadDir("assets")
+		if err != nil {
+			fmt.Println("ERROR #9 : ", err.Error())
+		}
+		for _, v := range imageList {
+			if strings.HasPrefix(v.Name(), postID+"-") {
+				os.Remove("assets/" + v.Name())
+				if err != nil {
+					fmt.Println("ERROR #26 : ", err.Error())
+					c.Writer.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
+		}
+		commentsIDs, err := model.SelectEveryCommentIDByPostID(postID)
+		if err != nil {
+			fmt.Println("ERROR #10 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		for _, v := range commentsIDs {
+			err = model.DeleteEveryCommentByCommentID(v)
+			if err != nil {
+				fmt.Println("ERROR #12 : ", err.Error())
+				c.Writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			err = model.DeleteEveryReplyByCommentID(v)
+			if err != nil {
+				fmt.Println("ERROR #16 : ", err.Error())
+				c.Writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+	c.Writer.WriteHeader(http.StatusOK)
+}
+
+func getTimeNow() time.Time {
+	loc, err := time.LoadLocation("Asia/Seoul")
+	if err != nil {
+		fmt.Println("ERROR #32 : ", err.Error())
+	}
+	now := time.Now()
+	t := now.In(loc)
+	return t
+}
+
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
+	if !isCookieValid(c) {
+		err := model.CountTodayVisit()
+		if err != nil {
+			fmt.Println("ERROR #33 : ", err.Error())
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("ORIGIN"), false, true)
+	}
+	c.Writer.WriteHeader(http.StatusOK)
 }
 
 func ModifyPostHandler(c *gin.Context) {
-	if !isCookieValid(c) {
+	if !isCookieAdmin(c) {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -222,66 +317,6 @@ func GetEveryTagHandler(c *gin.Context) {
 	c.Writer.Write(marshaledData)
 }
 
-func DeletePostHandler(c *gin.Context) {
-	if !isCookieValid(c) {
-		c.Writer.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	postID := c.Param("postid")
-
-	// 이미지 없이 작성된 글 삭제
-	if postID == "0" {
-		err := model.DeleteRecentPost()
-		if err != nil {
-			fmt.Println("ERROR #7 : ", err.Error())
-			c.Writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	} else {
-		err := model.DeletePostByPostID(postID)
-		if err != nil {
-			fmt.Println("ERROR #8 : ", err.Error())
-			c.Writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		imageList, err := os.ReadDir("assets")
-		if err != nil {
-			fmt.Println("ERROR #9 : ", err.Error())
-		}
-		for _, v := range imageList {
-			if strings.HasPrefix(v.Name(), postID+"-") {
-				os.Remove("assets/" + v.Name())
-				if err != nil {
-					fmt.Println("ERROR #26 : ", err.Error())
-					c.Writer.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-			}
-		}
-		commentsIDs, err := model.SelectEveryCommentIDByPostID(postID)
-		if err != nil {
-			fmt.Println("ERROR #10 : ", err.Error())
-			c.Writer.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		for _, v := range commentsIDs {
-			err = model.DeleteEveryCommentByCommentID(v)
-			if err != nil {
-				fmt.Println("ERROR #12 : ", err.Error())
-				c.Writer.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			err = model.DeleteEveryReplyByCommentID(v)
-			if err != nil {
-				fmt.Println("ERROR #16 : ", err.Error())
-				c.Writer.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-		}
-	}
-	c.Writer.WriteHeader(http.StatusOK)
-}
-
 func AddCommentHandler(c *gin.Context) {
 	var data model.Comment
 	err := c.ShouldBindJSON(&data)
@@ -302,7 +337,7 @@ func AddCommentHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if !isCookieValid(c) {
+	if !isCookieAdmin(c) {
 		data.Admin = 1
 	} else {
 		data.Admin = 0
