@@ -29,7 +29,7 @@ const Writepage = () => {
       body: bodyText,
     };
     axios
-      .post("https://choigonyok.com/api/post/post", postdata, {
+      .post(process.env.REACT_APP_HOST+"/api/post", postdata, {
         withCredentials: true,
       })
       .then((response) => {
@@ -49,7 +49,7 @@ const Writepage = () => {
 
   const deleteWronglyWrittenPost = () => {
     axios
-      .delete("https://choigonyok.com/api/post/delete0", {
+      .delete(process.env.REACT_APP_HOST+"/api/post/0", {
         withCredentials: true,
       })
       .catch((error) => {
@@ -103,7 +103,7 @@ const Writepage = () => {
         formData.append("file", img[i]);
       }
       axios
-        .post("https://choigonyok.com/api/post/img", formData, {
+        .post(process.env.REACT_APP_HOST+"/api/post/image", formData, {
           "Content-type": "multipart/form-data",
           withCredentials: true,
         })

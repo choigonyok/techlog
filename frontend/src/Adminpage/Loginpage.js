@@ -21,7 +21,7 @@ const Loginpage = () => {
   const loginHandler = () => {
     const logindata = { id: id, pw: pw };
     axios
-      .post("https://choigonyok.com/api/login/pw", logindata)
+      .post(process.env.REACT_APP_HOST+"/api/login", logindata)
       .then((response) => {
         alert("로그인 성공!");
         navigate("/")

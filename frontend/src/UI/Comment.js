@@ -56,7 +56,7 @@ const Comment = (props) => {
   };
   const commentSendHandler = () => {
       axios
-        .put(process.env.REACT_APP_HOST+ "/api/comments", comData)
+        .post(process.env.REACT_APP_HOST+ "/api/comment", comData)
         .then((response) => {
           resetReply();
         })
@@ -79,7 +79,7 @@ const Comment = (props) => {
   // post id로 해당 post의 comments get
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/post/comments/" + props.id)
+      .get(process.env.REACT_APP_HOST+ "/api/comment/" + props.id)
       .then((response) => {
         setComInfo([...response.data]);
       })
@@ -102,7 +102,7 @@ const Comment = (props) => {
   const CheckPasswordHandler = (value) => {
     axios
       .post(
-        process.env.REACT_APP_HOST+ "/api/post/comments?comid=" +
+        process.env.REACT_APP_HOST+ "/api/comment?commentid=" +
           value.uniqueid +
           "&inputpw=" +
           deletePW
@@ -151,7 +151,7 @@ const Comment = (props) => {
     //   alert("작성되지 않은 항목이 존재합니다.");
     // } else {
       axios
-        .put(process.env.REACT_APP_HOST+ "/api/reply/" + value, comData)
+        .post(process.env.REACT_APP_HOST+ "/api/reply/" + value, comData)
         .then((response) => {
           resetReply();
           setReply(0);

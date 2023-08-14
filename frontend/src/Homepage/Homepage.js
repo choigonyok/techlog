@@ -14,10 +14,10 @@ const Homepage = () => {
 
   useEffect(() => {
     axios
-      .get("http://choigonyok.com/api/cookie")
+      .get(process.env.REACT_APP_HOST+"/api/cookie")
       .then((response) => {
-        console.log(response.data.VisitNumber);
-        console.log(response.data.TotalNumber);
+        console.log(response.data.today);
+        console.log(response.data.total);
         setTotalNum(response.data.TotalNumber);
         setVisitNum(response.data.VisitNumber);
       })

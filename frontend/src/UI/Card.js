@@ -20,7 +20,7 @@ const Card = (props) => {
                   <img
                     className="postcard-image"
                     alt="my"
-                    src={process.env.REACT_APP_HOST+ "/api/IMAGES/"+item.ImagePath}
+                    src={process.env.REACT_APP_HOST+ "/api/assets/"+item.ImagePath}
                   />
                 </div>
                 <div className="postcard-text">

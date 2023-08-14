@@ -36,7 +36,7 @@ const Reply = (props) => {
 
   const CheckPasswordHandler = (value) => {
     axios
-      .post(
+      .delete(
         process.env.REACT_APP_HOST+ "/api/reply?replyid=" +
           value.replyuniqueid +
           "&inputpw=" +

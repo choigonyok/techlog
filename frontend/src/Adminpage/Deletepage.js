@@ -33,7 +33,7 @@ const Deletepage = () => {
       body: bodyText,
     };
     axios
-      .post("https://choigonyok.com/api/mod/" + id, postdata, {
+      .put(process.env.REACT_APP_HOST+"/api/post/" + id, postdata, {
         withCredentials: true,
       })
       .then((response) => {
@@ -55,7 +55,7 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get("https://choigonyok.com/api/post/all")
+      .get(process.env.REACT_APP_HOST+"/api/post/all")
       .then((response) => {
         setAllPost(response.data);
       })
@@ -74,7 +74,7 @@ const Deletepage = () => {
 
   const deleteHandler = (value) => {
     axios
-      .delete("https://choigonyok.com/api/post/delete" + value, {
+      .delete(process.env.REACT_APP_HOST+"/api/post/" + value, {
         withCredentials: true,
       })
       .then((response) => {
@@ -89,7 +89,7 @@ const Deletepage = () => {
 
   const modifyHandler = (value) => {
     axios
-      .get("https://choigonyok.com/api/post/" + value)
+      .get(process.env.REACT_APP_HOST+"/api/post/" + value)
       .then((response) => {
         setToModify(true);
         setID(value);
@@ -124,7 +124,7 @@ const Deletepage = () => {
 
   const CommentDeleteHandler = (value) => {
     axios
-      .delete("https://choigonyok.com/api/post/comments/" + value)
+      .delete(process.env.REACT_APP_HOST+"/api/comment/" + value)
       .then((response) => {
         setPostRequest(!postRequest);
       })
@@ -145,7 +145,7 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get("https://choigonyok.com/api/post/comments/0")
+      .get(process.env.REACT_APP_HOST+"/api/comment/0")
       .then((response) => {
         setComInfo([...response.data]);
       })
