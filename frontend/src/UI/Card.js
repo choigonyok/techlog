@@ -15,22 +15,22 @@ const Card = (props) => {
         <div className="cardcontainer">
           {props.postdata.map((item, index) => (
             <div>
-              <h2 className="postcard" onClick={()=>{cardClickHandler(item.Id)}}>
+              <h2 className="postcard" onClick={()=>{cardClickHandler(item.id)}}>
                 <div>
                   <img
                     className="postcard-image"
                     alt="my"
-                    src={process.env.REACT_APP_HOST+ "/api/assets/"+item.ImagePath}
+                    src={process.env.REACT_APP_HOST+ "/api/assets/"+item.imagepath}
                   />
                 </div>
                 <div className="postcard-text">
-                  <p>{item.Title}</p>
+                  <p>{item.title}</p>
                 </div>
                 <div className="postcard-tag">
-                  <p>{item.Tag}</p>
+                  <p>{item.tag}</p>
                 </div>
                 <div className="postcard-date">
-                  <p className="postcard-date__box">{item.Datetime}</p>
+                  <p className="postcard-date__box">{item.writetime}</p>
                 </div>
               </h2>
             </div>

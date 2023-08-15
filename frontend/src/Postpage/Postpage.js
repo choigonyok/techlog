@@ -35,7 +35,7 @@ const Postpage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/post/" + JSON.stringify(postid))
+      .get(process.env.REACT_APP_HOST+ "/api/post/" + postid)
       .then((response) => {
         setPostData(response.data); 
         setChangeEvent(!changeEvent);

@@ -578,8 +578,11 @@ func GetPostHandler(c *gin.Context) {
 }
 
 func GetThumbnailHandler(c *gin.Context) {
-	imgName := c.Param("imgname")
+	imgName := c.Param("namee")
 	imgName = strings.ReplaceAll(imgName, " ", "")
+	fmt.Println(imgName)//TEST
+	fmt.Println(imgName)//TEST
+	fmt.Println(imgName) //TEST
 	file, err := os.Open("assets/" + imgName)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
