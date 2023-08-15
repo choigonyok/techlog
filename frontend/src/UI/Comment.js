@@ -4,7 +4,6 @@ import axios from "axios";
 import Reply from "./Reply";
 
 const Comment = (props) => {
-
   const [nowComment, setNowComment] = useState("");
   const [nowID, setNowID] = useState("");
   const [nowPW, setNowPW] = useState("");
@@ -25,7 +24,7 @@ const Comment = (props) => {
   // 댓글용
   useEffect(() => {
     setComData({
-      postid:  parseInt(props.id, 10),
+      postid: parseInt(props.id, 10),
       text: nowComment,
       writerid: nowID,
       writerpw: nowPW,
@@ -56,31 +55,31 @@ const Comment = (props) => {
     }
   };
   const commentSendHandler = () => {
-      axios
-        .post(process.env.REACT_APP_HOST+ "/api/comment", comData)
-        .then((response) => {
-          resetReply();
-        })
-        .catch((error) => {
-          if (error.response.status === 500) {
-            console.log(error);
-            alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
-          } else if (error.response.status === 400) {
-            alert("특수문자 ' 은 입력하실 수 없습니다.");
-          } else if (error.response.status === 406){
-            alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.")
-          } else if (error.response.status === 411){
-            alert("빈 칸이 존재합니다.")
-          } else {
-            console.log(error);
-          }
-        });
+    axios
+      .post(process.env.REACT_APP_HOST + "/api/comment", comData)
+      .then((response) => {
+        resetReply();
+      })
+      .catch((error) => {
+        if (error.response.status === 500) {
+          console.log(error);
+          alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
+        } else if (error.response.status === 400) {
+          alert("특수문자 ' 은 입력하실 수 없습니다.");
+        } else if (error.response.status === 406) {
+          alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.");
+        } else if (error.response.status === 411) {
+          alert("빈 칸이 존재합니다.");
+        } else {
+          console.log(error);
+        }
+      });
   };
 
   // post id로 해당 post의 comments get
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/comment/" + props.id)
+      .get(process.env.REACT_APP_HOST + "/api/comment/" + props.id)
       .then((response) => {
         setComInfo([...response.data]);
       })
@@ -103,7 +102,8 @@ const Comment = (props) => {
   const CheckPasswordHandler = (value) => {
     axios
       .delete(
-        process.env.REACT_APP_HOST+ "/api/comment?commentid=" +
+        process.env.REACT_APP_HOST +
+          "/api/comment?commentid=" +
           value.id +
           "&inputpw=" +
           deletePW
@@ -151,26 +151,26 @@ const Comment = (props) => {
     // ) {
     //   alert("작성되지 않은 항목이 존재합니다.");
     // } else {
-      axios
-        .post(process.env.REACT_APP_HOST+ "/api/reply/" + value, comData)
-        .then((response) => {
-          resetReply();
-          setReply(0);
-        })
-        .catch((error) => {
-          if (error.response.status === 500) {
-            console.log(error);
-            alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
-          } else if (error.response.status === 400) {
-            alert("특수문자 ' 은 입력하실 수 없습니다.");
-          } else if (error.response.status === 406){
-            alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.")
-          } else if (error.response.status === 411){
-            alert("빈 칸이 존재합니다.")
-          } else {
-            console.log(error);
-          }
-        });
+    axios
+      .post(process.env.REACT_APP_HOST + "/api/reply/" + value, comData)
+      .then((response) => {
+        resetReply();
+        setReply(0);
+      })
+      .catch((error) => {
+        if (error.response.status === 500) {
+          console.log(error);
+          alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
+        } else if (error.response.status === 400) {
+          alert("특수문자 ' 은 입력하실 수 없습니다.");
+        } else if (error.response.status === 406) {
+          alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.");
+        } else if (error.response.status === 411) {
+          alert("빈 칸이 존재합니다.");
+        } else {
+          console.log(error);
+        }
+      });
     // }
   };
 
@@ -180,7 +180,7 @@ const Comment = (props) => {
         {comInfo &&
           comInfo.map((item, index) => {
             return (
-              <div>
+              <div className="comment-container__2">
                 <div
                   className={
                     item.admin === 1
@@ -248,7 +248,7 @@ const Comment = (props) => {
                     </div>
                   </div>
                 )}
-                <Reply id={item.id} rerender={isFinished}/>
+                <Reply id={item.id} rerender={isFinished} />
               </div>
             );
           })}

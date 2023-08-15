@@ -1,10 +1,10 @@
 input[type="text"]:focus{
-  border: 5px solid rgb(255, 42, 0);
+  border: 0.3rem solid rgb(255, 42, 0);
   transition: 400ms;
 }
 
 input[type="password"]:focus{
-  border: 5px solid rgb(255, 42, 0);
+  border: 0.3rem solid rgb(255, 42, 0);
   transition: 400ms;
 }
 .imgname-button:hover{
@@ -13,35 +13,35 @@ input[type="password"]:focus{
 
 .file-button:hover{
   background-color: black;
-  border: 5px solid rgb(255, 42, 0);
+  border: 0.3rem solid rgb(255, 42, 0);
   color: white;
   transition: 300ms;
 }
 
 
 input[type="text"]{
-  width: 600px;
-  border: 5px solid rgb(38, 46, 59);
+  width: 20rem;
+  border: 0.3rem solid rgb(38, 46, 59);
   background-color: rgb(59, 59, 59);
   color: white;
   padding: 1%;
   padding-left: 2.5%;
-  border-radius: 30px;
-  font-size: 17px;
+  border-radius: 1.8rem;
+  font-size: 1.1rem;
   height: auto;
   outline: none;
   transition: 400ms;
 }
 
 input[type="password"]{
-  width: 600px;
-  border: 5px solid rgb(38, 46, 59);
+  width: 20rem;
+  border: 0.3rem solid rgb(38, 46, 59);
   background-color: rgb(59, 59, 59);
   color: white;
   padding: 1%;
   padding-left: 2.5%;
-  border-radius: 30px;
-  font-size: 17px;
+  border-radius: 1.8rem;
+  font-size: 1.1rem;
   height: auto;
   outline: none;
   transition: 400ms;
@@ -49,7 +49,7 @@ input[type="password"]{
 
 .admin-button:hover{
   background-color: black;
-  border: 5px solid rgb(255, 42, 0);
+  border: 0.3rem solid rgb(255, 42, 0);
   color: white;
   transition: 300ms;
 }
@@ -76,19 +76,19 @@ input[type="password"]{
 }
 .admin-editor {
   margin-top: 2rem;
-  width: 1200px;
+  width: 55rem;
   font-family: sans-serif !important;
 }
 .admin-main {
   text-align: center;
-  font-size: 60px;
+  font-size: 4rem;
 }
 .admin-titletagdate {
   display: flex;
   flex-direction: column;
   margin: 0.5rem;
   width: 700px;
-  font-size: 16px;
+  font-size: 1rem;
   height: auto;
   text-align: center;
   align-items: center;
@@ -101,7 +101,7 @@ input[type="file"]{
 .imgname-container{
   display: flex;
   justify-content: space-between;
-  width: 400px;
+  width: 26rem;
   font-size: 0.9rem;
   align-items: center;
 }
@@ -131,45 +131,45 @@ input[type="file"]{
   align-items: center;
 }
 .w-md-editor-text-input {
-  font-size: 16px;
-  letter-spacing: 0.26px !important;
-  word-spacing: 1px !important;
+  font-size: 1rem;
+  letter-spacing: 0.02rem !important;
+  word-spacing: 0.08rem !important;
   line-height: 202% !important;
 }
 .button-container {
   display: flex;
   flex-direction: column;
-  width: 700px;
+  width: 45rem;
   padding: 3%;
   justify-content: center;
   text-align: center;
 }
 .admin-button {
-  font-size: 20px;
+  font-size: 1.25rem;
   width: auto;
   text-align: center;
   padding: 2%;
-  border: 5px solid rgb(38, 46, 59);
+  border: 0.3rem solid rgb(38, 46, 59);
   background-color: rgb(240, 236, 255);
   background-clip: padding-box;
   color: black;
-  border-radius: 30px;
+  border-radius: 1.8rem;
   cursor: pointer;
   transition: 500ms;
 }
 .file-button{
-  font-size: 14px;
+  font-size: 1.2rem;
   display: flex;
   width: 15rem;
   justify-content: center;
   padding: 2%;
   padding-left: 10%;
   padding-right: 10%;
-  border: 5px solid rgb(38, 46, 59);
+  border: 0.3rem solid rgb(38, 46, 59);
   background-color: rgb(240, 236, 255);
   background-clip: padding-box;
   color: black;
-  border-radius: 30px;
+  border-radius: 1.8rem;
   cursor: pointer;
   transition: 500ms;
 }

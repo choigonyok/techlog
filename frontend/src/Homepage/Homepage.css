@@ -33,9 +33,8 @@
   margin-right: 30%;
   height: auto;
   width: auto;
-  /* border: 0.2px solid rgba(255, 255, 255, 0.459);
-        border-radius: 20px; */
   text-align: center;
+  gap: 1.5rem;
 }
 
 .visitnum {
@@ -43,7 +42,7 @@
   width: inherit;
   height: auto;
   margin-top: 8%;
-  font-weight: 700;
+  font-weight: 100;
   font-size: 1.3rem;
   justify-content: center;
 }

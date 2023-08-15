@@ -1,11 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
 
 .image-container {
-  margin-top: 5%;
   display: flex;
-  height: 500px;
-  width: 100%;
   height: auto;
+  width: 100%;
   justify-content: center;
   align-items: center;
   margin: 0;
@@ -27,72 +25,74 @@
 
 .image {
   border: none;
-  border-radius: 50px;
+  border-radius: 2.5rem;
   display: flex;
   justify-content: center;
-  width: 900px;
-  max-height: 570px;
+  width: 60rem;
+  max-height: 36rem;
   align-items: center;
   object-fit: cover;
 }
 
 .post-title {
   display: flex;
-  margin-top: 2%;
+  margin-top: 4rem;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  height: 200px;
-  
+  height: 13rem;
+  gap: 1.5rem;
 }
 
 .post-tagsbox {
   margin: 0;
   display: flex;
   align-items: center;
-  width: 700px;
+  width: 100%;
   height: auto;
-  gap: 10px;
+  gap: 0.6rem;
   justify-content: center;
   align-items: center;
 }
 
 .post-tags__button {
-  font-size: 20px;
-  padding-left: 2%;
-  padding-right: 2%;
-  padding-top: 2%;
-  padding-bottom: 0.5%;
+  font-size: 1.2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
   width: auto;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
+  font-weight: 700;
+  height: 3.3rem;
   text-align: center;
-  padding-bottom: 1.5%;
-  border: 5px solid rgb(255, 42, 0, 0.75);
+  border: 0.3rem solid rgb(255, 42, 0, 0.75);
   background-color: rgb(232, 232, 232);
   background-clip: padding-box;
   color: black;
-  border-radius: 30px;
+  border-radius: 2rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .written-date {
-  margin-bottom: 1vh;
+  margin-bottom: 1rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   width: inherit;
   height: auto;
-  font-size: 20px;
+  font-size: 1.2rem;
+  font-weight: 100;
   font-style: italic;
 }
 
 .post-title__item {
   margin: 0;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  font-size: 42px;
+  text-align: center;
+  font-size: 2.6rem;
   width: inherit;
   height: auto;
   font-weight: 800;
@@ -100,23 +100,23 @@
 
 .post-body {
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 18px !important;
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 215% !important;
   margin: auto;
   text-align: left;
   justify-content: center;
-  width: 900px;
-  margin-bottom: 100px;
+  width: 55rem;
+  margin-bottom: 6rem;
   background-color: transparent !important;
 }
 
 .post-body h1 {
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 130% !important;
-  font-size: 42px !important;
+  font-size: 2.6rem !important;
   color: white !important;
   font-weight: 800 !important;
   width: inherit;
@@ -124,8 +124,8 @@
 }
 
 .post-body img {
-  width: 700px !important;
-  max-height: 500px !important;
+  width: 50rem !important;
+  max-height: 31rem !important;
   display: flex;
   justify-content: center !important;
   align-items: center !important;
@@ -134,9 +134,9 @@
 }
 
 .post-body h2 {
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
-  font-size: 33px !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
+  font-size: 2rem !important;
   font-weight: bold !important;
   line-height: 250% !important;
   color: white !important;
@@ -144,34 +144,33 @@
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body h3 {
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 215% !important;
-  font-size: 28px !important;
+  font-size: 1.7rem !important;
   color: white !important;
   font-weight: 700;
   width: inherit;
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body blockquote {
-  letter-spacing: 0.2px !important;
-  word-spacing: 1px !important;
-  font-size: 25px !important;
+  letter-spacing: 0.012rem !important;
+  word-spacing: 0.006rem !important;
+  font-size: 1.6rem !important;
   width: auto;
   font-weight: 100 !important;
   background-color: rgba(255, 61, 22, 0.377);
-  border-radius: 8px !important;
+  border-radius: 0.5rem !important;
   word-break: break-all;
   line-height: 215%;
   word-wrap: break-word;
-  font-size: 5px;
 }
 
 .post-body p {
-  letter-spacing: 0.2px !important;
-  word-spacing: 1px !important;
+  letter-spacing: 0.012rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 180% !important;
-  font-size: 20px !important;
+  font-size: 1.2rem !important;
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.88) !important;
   width: inherit;
@@ -179,14 +178,14 @@
 }
 .post-body code,
 pre {
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 150% !important;
-  font-size: 18px !important;
+  font-size: 1.1rem !important;
   color: white;
   background-color: rgb(65, 65, 65) !important;
   white-space: pre-line !important;
-  border-radius: 8px !important;
+  border-radius: 0.5rem !important;
   width: inherit;
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
@@ -194,8 +193,8 @@ pre {
 .post-body em,
 strong,
 del {
-  letter-spacing: 0.4px !important;
-  word-spacing: 1px !important;
+  letter-spacing: 0.025rem !important;
+  word-spacing: 0.006rem !important;
   line-height: 215% !important;
   font-size: inherit !important;
   font-weight: 800 !important;
@@ -213,12 +212,12 @@ del {
 }
 
 .related-post__content {
-  width: 900px;
+  width: 55rem;
   display: flex;
   justify-content: center;
   height: auto;
-  font-size: 30px;
-  padding: 45px;
-  border-top: 5px solid gray;
+  font-size: 1.9rem;
+  padding: 2.8rem;
+  border-top: 0.4rem solid gray;
 }
 

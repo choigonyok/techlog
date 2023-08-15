@@ -1,9 +1,9 @@
 .footer {
-  height: 6vw;
+  height: 10rem;
   flex-direction: column;
   text-align: center;
   display: flex;
   justify-content: center;
-  font-size: 1vw;
+  font-size: 1.5rem;
   font-style: italic;
 }

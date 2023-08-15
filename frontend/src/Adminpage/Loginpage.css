@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 1.7rem;
   width: auto;
-  font-size: 30px;
+  font-size: 2rem;
   height: auto;
   align-items: center;
   justify-content: space-around;
@@ -12,7 +12,7 @@
 .login-button {
   display: flex;
   flex-direction: column;
-  width: 500px;
+  width: 40rem;
   padding-left: 5%;
   padding-right: 5%;
   margin-bottom: 3%;
