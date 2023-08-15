@@ -572,6 +572,7 @@ func GetPostHandler(c *gin.Context) {
 	} else {
 		datas, err := model.GetPostByPostID(postID)
 		datas[0].Tag = strings.ToUpper(datas[0].Tag)
+		datas[0].Text = strings.ReplaceAll(datas[0].Text, `\'`, `'`)
 		if err != nil {
 			fmt.Println("ERROR #31 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)

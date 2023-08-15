@@ -28,8 +28,6 @@ const Button = (props) => {
     axios
      .get(process.env.REACT_APP_HOST+ "/api/tag")
       .then((response) => {
-        // 응답 데이터 수신
-        // console.log(response.data);
         setTagsData(response.data);
 
         // props.onSeeTaggedPost(jsonArray);
@@ -69,12 +67,12 @@ const Button = (props) => {
           <input
             type="button"
             className={
-              item.Tagname === PostData.Tag
+              item.tag === PostData.Tag
                 ? "tags-button__clicked"
                 : "tags-button"
             }
-            value={item.Tagname}
-            onClick={() => ClickHandler(item.Tagname)}
+            value={item.tag}
+            onClick={() => ClickHandler(item.tag)}
           />
         ))}
       </div>
