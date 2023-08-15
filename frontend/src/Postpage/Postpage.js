@@ -19,10 +19,9 @@ const Postpage = () => {
   const [postData, setPostData] = useState({});
   const [relatedPostData, setRelatedPostData] = useState([]);
 
-
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/cookie")
+      .get(process.env.REACT_APP_HOST + "/api/visitor")
       .then((response) => {})
       .catch((error) => {
         console.log(error);
@@ -35,9 +34,10 @@ const Postpage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/post/" + postid)
+      .get(process.env.REACT_APP_HOST + "/api/post/" + postid)
       .then((response) => {
-        setPostData(response.data); 
+        console.log(response.data[0]);
+        setPostData(response.data[0]);
         setChangeEvent(!changeEvent);
       })
       .catch((error) => {
@@ -50,7 +50,7 @@ const Postpage = () => {
       mounted.current = true;
     } else {
       axios
-        .post(process.env.REACT_APP_HOST+ "/api/tag", postData)
+        .post(process.env.REACT_APP_HOST + "/api/tag", postData)
         .then((response) => {
           const jsonArray = Object.values(response.data);
           setRelatedPostData(
@@ -72,17 +72,23 @@ const Postpage = () => {
       <br />
       <div>
         <div className="image-container">
-          <img className="image" alt="my" src={process.env.REACT_APP_HOST+ "/api/IMAGES/"+postData.ImagePath}/>
+          <img
+            className="image"
+            alt="my"
+            src={
+              process.env.REACT_APP_HOST + "/api/assets/" + postData.imagepath
+            }
+          />
         </div>
         <div className="post-title">
           <div className="post-tagsbox">
-            <button className="post-tags__button">{postData.Tag}</button>
+            <button className="post-tags__button">{postData.tag}</button>
           </div>
-          <p className="post-title__item">{postData.Title}</p>
-          <p className="written-date">{postData.Datetime}</p>
+          <p className="post-title__item">{postData.title}</p>
+          <p className="written-date">{postData.writetime}</p>
         </div>
         <div>
-          <MDEditor.Markdown className="post-body" source={postData.Body} />
+          <MDEditor.Markdown className="post-body" source={postData.text} />
         </div>
       </div>
       <div className="related-post__container">

@@ -30,7 +30,7 @@ const Deletepage = () => {
       title: titleText,
       tag: tagText,
       datetime: dateText,
-      body: bodyText,
+      text: bodyText,
     };
     axios
       .put(process.env.REACT_APP_HOST+"/api/post/" + id, postdata, {
