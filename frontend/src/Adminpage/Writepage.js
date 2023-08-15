@@ -144,16 +144,6 @@ const Writepage = () => {
           />
           {/* <input type="button" value="적용" onClick={TitleClickHandler} /> */}
         </div>
-
-        <div className="admin-titletagdate">
-          <input
-            type="text"
-            placeholder="DATE : 2023-01-01"
-            value={dateText}
-            onChange={dateHandler}
-          />
-          {/* <input type="button" value="적용" onClick={DateClickHandler} /> */}
-        </div>
         <div className="admin-titletagdate">
           <label for="imgfile">
             <div class="file-button">IMG UPLOAD</div>

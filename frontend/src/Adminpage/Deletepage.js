@@ -187,9 +187,6 @@ const Deletepage = () => {
                     onChange={titleHandler}
                   />
                 </div>
-                <div className="admin-titletagdate">
-                  <input type="text" value={dateText} onChange={dateHandler} />
-                </div>
                 <div>
                   <div className="admin-editor">
                     <MDEditor height={400} value={md} onChange={setMD} />
