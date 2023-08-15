@@ -14,7 +14,7 @@ const Homepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+"/api/visitor")
+      .get(process.env.REACT_APP_HOST + "/api/visitor")
       .then((response) => {
         setTotalNum(response.data.today);
         setVisitNum(response.data.total);
@@ -22,7 +22,7 @@ const Homepage = () => {
       .catch((error) => {
         console.log(error);
       });
-  },[]);
+  }, []);
 
   const [totalNum, setTotalNum] = useState("");
   const [visitNum, setVisitNum] = useState("");
@@ -31,7 +31,6 @@ const Homepage = () => {
 
   const seeTaggedPostHandler = (taggedPostData) => {
     setPostData(taggedPostData);
-    
   };
 
   useEffect(() => {
@@ -43,7 +42,7 @@ const Homepage = () => {
       <Header /> {/* 6/2 Header 컴포넌트 재사용 위해서 분리 */}
       <div className="introduce">
         <div className="visitnum">
-          <h5>TODAY : {visitNum} / TOTAL : {totalNum}</h5>
+          TODAY : {visitNum} / TOTAL : {totalNum}
         </div>
         <div className="home-image__container">
           <img className="home-image" alt="my" src={profileimage} />
@@ -56,19 +55,17 @@ const Homepage = () => {
             <img className="icon-image" alt="my" src={instagram} />
           </a>
         </div>
-        <div className="introduce-text__year">
-          <h4>꾸준함이란 도구로 성장하기를 즐기는 데브옵스 엔지니어 최윤석입니다</h4>
+        <div className="introduce-text__text">
+          꾸준함이란 도구로 성장하기를 즐기는 데브옵스 엔지니어 최윤석입니다
         </div>
         <div className="introduce-text__year">
-          <h5>
-            2017.03~ &nbsp;&nbsp;&nbsp; KYUNGHEE UNIV. COMPUTER ENGINEERING
-          </h5>
+          2017.03~ &nbsp;&nbsp;&nbsp; KYUNGHEE UNIV. COMPUTER ENGINEERING
         </div>
       </div>
       <Button onSeeTaggedPost={seeTaggedPostHandler} />
       {/* <p>Today : 1 &nbsp; / &nbsp; Total : 10</p> */}
-      {postData && <Card postdata={postData}/>}
-      <Footer/>
+      {postData && <Card postdata={postData} />}
+      <Footer />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Tilt+Prism&display=swap');
 
 .home-image__container {
   display: flex;
@@ -12,11 +13,11 @@
 
 .home-image {
   border-radius: 50%;
-  border: 0.3vw solid rgb(255, 42, 0);
+  border: 0.3rem solid rgb(255, 42, 0);
   display: flex;
   justify-content: center;
-  width: 9vw;
-  height: 9vw;
+  width: 10rem;
+  height: 10rem;
   min-width: 60px;
   min-height: 60px;
   margin-top: 0;
@@ -28,7 +29,6 @@
 .introduce {
   display: flex;
   flex-direction: column;
-  margin-top: 6vw;
   margin-left: 30%;
   margin-right: 30%;
   height: auto;
@@ -43,22 +43,30 @@
   width: inherit;
   height: auto;
   margin-top: 8%;
+  font-weight: 700;
+  font-size: 1.3rem;
   justify-content: center;
 }
 
 .introduce-text__text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 5%;
-}
-.introduce-text__year {
+  font-weight: 400;
+  font-size: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 5%;
   
 }
+
+.introduce-text__year {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5%;
+  font-weight: 100;
+  font-size: 1.3rem;
+}
+
 .icon-container {
   display: flex;
   width: inherit;
@@ -70,85 +78,9 @@
 .icon-image {
   display: flex;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 2rem;
+  height: 2rem;
   object-fit: fill;
   align-items: center;
   object-fit: cover;
-}
-
-@media (554px <= width <= 1024px) {
-  .home-image {
-    border-radius: 50%;
-    border: 0.3vw solid rgb(255, 42, 0);
-    display: flex;
-    justify-content: center;
-    width: 90px;
-    height: 90px;
-    margin-top: 0;
-    margin-bottom: 0;
-    align-items: center;
-    object-fit: cover;
-  }
-  .icon-image {
-    display: flex;
-    justify-content: center;
-    width: 15px;
-    height: 15px;
-    object-fit: fill;
-    align-items: center;
-    object-fit: cover;
-  }
-  .h5{
-    font-size: 0.6vw;
-  }
-  .introduce {
-    display: flex;
-    flex-direction: column;
-    margin-top: 6vw;
-    margin-left: 20%;
-    margin-right: 20%;
-    height: auto;
-    width: auto;
-    text-align: center;
-  }
-}
-
-@media (width <= 553px) {
-  .introduce {
-    display: flex;
-    flex-direction: column;
-    margin-top: 6vw;
-    margin-left: 5%;
-    margin-right: 5%;
-    height: auto;
-    width: auto;
-    text-align: center;
-  }
-
-  
-  .h5{
-    font-size: 0.1vw;
-  }
-  .home-image {
-    border-radius: 50%;
-    border: 0.3vw solid rgb(255, 42, 0);
-    display: flex;
-    justify-content: center;
-    width: 75px;
-    height: 75px;
-    margin-top: 0;
-    margin-bottom: 0;
-    align-items: center;
-    object-fit: cover;
-  }
-  .icon-image {
-    display: flex;
-    justify-content: center;
-    width: 15px;
-    height: 15px;
-    object-fit: fill;
-    align-items: center;
-    object-fit: cover;
-  }
 }

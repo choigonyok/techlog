@@ -92,11 +92,11 @@ const Postpage = () => {
         </div>
       </div>
       <div className="related-post__container">
-        <p className="related-post__content">- COMMENTS -</p>
+        <div className="related-post__content">- COMMENTS -</div>
       </div>
       <Comment id={postid} />
       <div className="related-post__container">
-        <p className="related-post__content">- RELATED POSTS -</p>
+        <div className="related-post__content">- RELATED POSTS -</div>
       </div>
 
       {relatedPostData && <Card postdata={relatedPostData} />}

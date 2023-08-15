@@ -79,7 +79,7 @@ const Reply = (props) => {
                 }
                 // onClick={() => ReplyHandler(item)}
               >
-                {item.commentid}
+                {item.writerid}
               </div>
               <div className="reply-box__text">
                 <div className="reply-delete">

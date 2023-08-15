@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+
 .image-container {
   margin-top: 5%;
   display: flex;
@@ -41,6 +43,7 @@
   align-items: center;
   justify-content: space-around;
   height: 200px;
+  
 }
 
 .post-tagsbox {
@@ -55,7 +58,7 @@
 }
 
 .post-tags__button {
-  font-size: 12px;
+  font-size: 20px;
   padding-left: 2%;
   padding-right: 2%;
   padding-top: 2%;
@@ -74,13 +77,13 @@
 }
 
 .written-date {
-  margin: 0;
+  margin-bottom: 1vh;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   width: inherit;
   height: auto;
-  font-size: large;
+  font-size: 20px;
   font-style: italic;
 }
 
@@ -89,21 +92,22 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  font-size: 37px;
+  font-size: 42px;
   width: inherit;
   height: auto;
   font-weight: 800;
 }
 
 .post-body {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 18px !important;
   letter-spacing: 0.4px !important;
   word-spacing: 1px !important;
   line-height: 215% !important;
   margin: auto;
   text-align: left;
   justify-content: center;
-  width: 700px;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
+  width: 900px;
   margin-bottom: 100px;
   background-color: transparent !important;
 }
@@ -111,8 +115,8 @@
 .post-body h1 {
   letter-spacing: 0.4px !important;
   word-spacing: 1px !important;
-  line-height: 215% !important;
-  font-size: 35px !important;
+  line-height: 130% !important;
+  font-size: 42px !important;
   color: white !important;
   font-weight: 800 !important;
   width: inherit;
@@ -132,7 +136,8 @@
 .post-body h2 {
   letter-spacing: 0.4px !important;
   word-spacing: 1px !important;
-  font-size: 28px !important;
+  font-size: 33px !important;
+  font-weight: bold !important;
   line-height: 250% !important;
   color: white !important;
   width: inherit;
@@ -142,29 +147,31 @@
   letter-spacing: 0.4px !important;
   word-spacing: 1px !important;
   line-height: 215% !important;
-  font-size: 25px !important;
+  font-size: 28px !important;
   color: white !important;
   font-weight: 700;
   width: inherit;
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body blockquote {
-  letter-spacing: 0.4px !important;
+  letter-spacing: 0.2px !important;
   word-spacing: 1px !important;
-  line-height: 215% !important;
   font-size: 25px !important;
-  word-wrap: break-word !important;
-  width: inherit;
-  font-weight: 800 !important;
-  background-color: rgba(255, 61, 22, 0.616);
+  width: auto;
+  font-weight: 100 !important;
+  background-color: rgba(255, 61, 22, 0.377);
   border-radius: 8px !important;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
+  word-break: break-all;
+  line-height: 215%;
+  word-wrap: break-word;
+  font-size: 5px;
 }
+
 .post-body p {
-  letter-spacing: 0.4px !important;
+  letter-spacing: 0.2px !important;
   word-spacing: 1px !important;
-  line-height: 215% !important;
-  font-size: 16px !important;
+  line-height: 180% !important;
+  font-size: 20px !important;
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.88) !important;
   width: inherit;
@@ -174,8 +181,8 @@
 pre {
   letter-spacing: 0.4px !important;
   word-spacing: 1px !important;
-  line-height: 215% !important;
-  font-size: 15px !important;
+  line-height: 150% !important;
+  font-size: 18px !important;
   color: white;
   background-color: rgb(65, 65, 65) !important;
   white-space: pre-line !important;

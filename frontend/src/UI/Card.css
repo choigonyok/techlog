@@ -5,105 +5,65 @@
   height: auto;
   width: inherit;
   flex-wrap: wrap;
-  row-gap: 5vw;
+  row-gap: 6rem;
 }
 
 .postcard {
-  margin-left: 2vw;
-  margin-right: 2vw;
-  width: 25vw;
-  min-width: 250px;
-  height: 28vw;
-  min-height: 270px;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  width: 40rem;
+  height: 45rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 1.5rem;
   box-shadow: 0px 19px 20px 4px #000000;
   transition: 800ms;
   cursor: pointer;
 }
 .postcard-image {
   display: flex;
-  height: 16.8vw;
-  min-height: 150px;
-  width: 25vw;
-  min-width: 250px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  height: 27rem;
+  width: 40rem;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
   object-fit: cover;
 }
 .postcard-tag {
-  font-size: 1vw;
+  font-size: 1.6rem;
   padding-left: 3%;
   padding-right: 3%;
   display: flex;
-  height: 3vw;
-  min-height: 30px;
+  height: 5rem;
   width: auto;
   justify-content: left;
   align-items: center;
 }
 
 .postcard-text {
-  font-size: 1.4vw;
+  font-size: 2.2rem;
   padding-left: 3% !important;
   padding-right: 3% !important;
   padding-top: 4% !important;
   padding-bottom: auto;
   display: flex;
-  height: 5vw;
-  min-height: 55px;
+  height: 8rem;
   width: auto;
   justify-content: left;
   align-items: flex-start;
 }
 
-@media (width <= 553px) {
-  .postcard-text {
-    font-size: 15px;
-    padding-left: 3%;
-    padding-right: 3%;
-    padding-top: 4%;
-    padding-bottom: auto;
-    display: flex;
-    height: 5vw;
-    min-height: 55px;
-    width: auto;
-    justify-content: left;
-    align-items: flex-start;
-  }
-}
-@media (554px <= width <= 1024px) {
-  .postcard-text {
-    font-size: 17px;
-    padding-left: 3%;
-    padding-right: 3%;
-    padding-top: 4%;
-    padding-bottom: auto;
-    display: flex;
-    height: 5vw;
-    min-height: 55px;
-    width: auto;
-    justify-content: left;
-    align-items: flex-start;
-  }
-}
-
 .postcard-date {
-  font-size: 1vw;
+  font-size: 1.6rem;
   padding: 3%;
   display: flex;
-  height: 3vw;
-  min-height: 30px;
+  height: 4.8rem;
   width: auto;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
   justify-content: right;
   align-items: center;
   align-items: flex-end;
 }
 .postcard-date__box {
-  border: 0.15vw solid white;
-  border-radius: 20px;
+  border: 0.2rem solid white;
+  border-radius: 2rem;
   padding: 2%;
 }
 
