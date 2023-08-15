@@ -199,15 +199,28 @@ func getTimeNow() time.Time {
 
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 	if !isCookieValid(c) {
-		err := model.CountTodayVisit()
+		visitor,err := model.GetVisitorCount()
 		if err != nil {
 			fmt.Println("ERROR #33 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		err = model.AddVisitorCount(visitor)
 		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("ORIGIN"), false, true)
 	}
-	c.Writer.WriteHeader(http.StatusOK)
+	visitor, err := model.GetVisitorCount()
+	if err != nil {
+		fmt.Println("ERROR #41 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	marshaledData, err := json.Marshal(visitor)
+	if err != nil {
+		fmt.Println("ERROR #40 : ", err.Error())
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	c.Writer.Write(marshaledData)
 }
 
 func ModifyPostHandler(c *gin.Context) {

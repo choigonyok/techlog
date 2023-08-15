@@ -14,12 +14,10 @@ const Homepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+"/api/cookie")
+      .get(process.env.REACT_APP_HOST+"/api/visitor")
       .then((response) => {
-        console.log(response.data.today);
-        console.log(response.data.total);
-        setTotalNum(response.data.TotalNumber);
-        setVisitNum(response.data.VisitNumber);
+        setTotalNum(response.data.today);
+        setVisitNum(response.data.total);
       })
       .catch((error) => {
         console.log(error);

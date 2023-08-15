@@ -353,25 +353,29 @@ func GetPostByPostID(postID string) ([]Post, error) {
 	return datas, nil
 }
 
-func CountTodayVisit() error {
-	r, err := db.Query("SELECT today, total FROM visitor")
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-	var visitor Visitor
-	if !r.Next() {
-		_, err := db.Exec(`INSERT INTO visitor (today, total) VALUES (0, 0)`)
-		if err != nil {
-			return err
-		}	
-	}
-	r.Scan(&visitor.Today, &visitor.Total)
-	_, err = db.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
+func AddVisitorCount(visitor Visitor) error {
+	_, err := db.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
 	if err != nil {
 		return err
 	}	
 	return nil
+}
+
+func GetVisitorCount() (Visitor, error) {
+	var visitor Visitor
+	r, err := db.Query("SELECT today, total FROM visitor")
+	if err != nil {
+		return visitor, err
+	}
+	defer r.Close()
+	if !r.Next() {
+		_, err := db.Exec(`INSERT INTO visitor (today, total) VALUES (0, 0)`)
+		if err != nil {
+			return visitor, err
+		}	
+	}
+	r.Scan(&visitor.Today, &visitor.Total)
+	return visitor, nil
 }
 
 func DBTest() {

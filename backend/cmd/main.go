@@ -45,7 +45,7 @@ func main() {
 	eg.POST("/api/reply/:commentid", controller.AddReplyHandler) // 답글 작성
 	eg.DELETE("/api/reply", controller.DeleteReplyHandler)       // 답글 삭제
 
-	eg.GET("/api/cookie", controller.GetTodayAndTotalVisitorNumHandler) // today, total 방문자 수 확인
+	eg.GET("/api/visitor", controller.GetTodayAndTotalVisitorNumHandler) // today, total 방문자 수 확인
 
 	eg.POST("/api/login", controller.CheckAdminIDAndPW) // 로그인
 
