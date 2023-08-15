@@ -136,7 +136,7 @@ func UpdatePost(title, text, tag, postID string) error {
 }
 
 func SelectPostByTag(tag string) ([]Post, error) {
-	r, err := db.Query("SELECT id,tag,title,text,writetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by writetime desc")
+	r, err := db.Query("SELECT id,tag,title,text,writetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by id desc")
 	if err != nil {
 		return nil, err
 	}
@@ -328,7 +328,7 @@ func DeleteReplyByReplyID(replyID string) error {
 }
 
 func GetEveryPost() ([]Post, error) {
-	r, err := db.Query("SELECT id, tag,title,text,writetime,imgpath FROM post")
+	r, err := db.Query("SELECT id, tag,title,text,writetime,imgpath FROM post ORDER BY id desc")
 	if err != nil {
 		return nil, err
 	}
@@ -339,6 +339,7 @@ func GetEveryPost() ([]Post, error) {
 		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
 		datas = append(datas, data)
 	}
+	fmt.Println(datas)
 	return datas, nil
 }
 func GetPostByPostID(postID string) ([]Post, error) {
