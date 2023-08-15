@@ -36,6 +36,13 @@ func isCookieValid(c *gin.Context) bool {
 	return isValid
 }
 
+func InitializeDB() {
+	err := model.InitializeDB()
+	if err != nil {
+		fmt.Println("ERROR #38 : ", err.Error())
+	}
+}
+
 func ConnectDB(driverName, dbData string) {
 	err := model.OpenDB(driverName, dbData)
 	if err != nil {
@@ -578,11 +585,8 @@ func GetPostHandler(c *gin.Context) {
 }
 
 func GetThumbnailHandler(c *gin.Context) {
-	imgName := c.Param("namee")
+	imgName := c.Param("name")
 	imgName = strings.ReplaceAll(imgName, " ", "")
-	fmt.Println(imgName)//TEST
-	fmt.Println(imgName)//TEST
-	fmt.Println(imgName) //TEST
 	file, err := os.Open("assets/" + imgName)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)

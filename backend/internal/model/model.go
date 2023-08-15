@@ -52,6 +52,7 @@ func GetCookieValue(inputValue string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	r.Close()
 	var cookieValue string
 	r.Next()
 	r.Scan(&cookieValue)
@@ -111,6 +112,7 @@ func GetRecentPostID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	r.Close()
 	for r.Next() {
 		r.Scan(
 			&idnum)
@@ -138,6 +140,7 @@ func SelectPostByTag(tag string) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	var data Post
 	var datas []Post
 	for r.Next() {
@@ -152,6 +155,7 @@ func GetEveryTagAsString() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	r.Close()
 	tagdata := Post{}
 	sum := ""
 	for r.Next() {
@@ -176,6 +180,7 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	var commentsSlice []string
 	var tempString string
 	for r.Next() {
@@ -212,6 +217,7 @@ func GetRecentCommentID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	r.Close()
 	var recentCommentID int
 	for r.Next() {
 		r.Scan(&recentCommentID)
@@ -226,6 +232,10 @@ func InsertComment(postID, id, admin int, text, writerID, writerPW string) error
 
 func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	r, err := db.Query("SELECT writerpw FROM comment WHERE id =" + commentID)
+	if err != nil {
+		return "", err
+	}
+	r.Close()
 	var writerPW string
 	r.Next()
 	err = r.Scan(&writerPW)
@@ -237,6 +247,7 @@ func SelectNotAdminWriterComment(postID int) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	datas := []Comment{}
 	data := Comment{}
 	for r.Next() {
@@ -252,6 +263,7 @@ func SelectCommentByPostID(postID int) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	datas := []Comment{}
 	data := Comment{}
 	for r.Next() {
@@ -267,6 +279,7 @@ func SelectReplyByCommentID(commentID string) ([]Reply, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	var datas []Reply
 	var data Reply
 	for r.Next() {
@@ -281,6 +294,7 @@ func GetRecentReplyID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	r.Close()
 	var recentReplyID int
 	for r.Next() {
 		r.Scan(&recentReplyID)
@@ -298,6 +312,7 @@ func GetReplyPWByReplyID(replyID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	r.Close()
 	var replyPW string
 	r.Next()
 	r.Scan(&replyPW)
@@ -314,6 +329,7 @@ func GetEveryPost() ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	var datas []Post
 	var data Post
 	for r.Next() {
@@ -327,6 +343,7 @@ func GetPostByPostID(postID string) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	r.Close()
 	var datas []Post
 	var data Post
 	for r.Next() {
@@ -334,6 +351,11 @@ func GetPostByPostID(postID string) ([]Post, error) {
 		datas = append(datas, data)
 	}
 	return datas, nil
+}
+
+func InitializeDB() error {
+	_, err := db.Exec(`INSERT INTO visitor (today, total) VALUE (0, 0)`)
+	return err
 }
 
 func CountTodayVisit() error {
@@ -346,6 +368,8 @@ func CountTodayVisit() error {
 		tx.Rollback()
 		return err
 	}
+	r.Close()
+	DBTest()//TEST
 	var visitor Visitor
 	r.Next()
 	r.Scan(&visitor.Today, &visitor.Total)
@@ -353,7 +377,7 @@ func CountTodayVisit() error {
 	if err != nil {
 		tx.Rollback()
 		return err
-	}
+	}	
 	err = tx.Commit()
 	if err != nil {
 		return err
@@ -363,6 +387,7 @@ func CountTodayVisit() error {
 
 func DBTest() {
 	r1, _ := db.Query("SELECT id, postid, admin, text, writerid, writerpw FROM comment")
+	r1.Close()
 	var comment Comment
 	var comments []Comment
 	for r1.Next() {
@@ -372,6 +397,7 @@ func DBTest() {
 	fmt.Println("comment: ", comments)
 
 	r2, _ := db.Query("SELECT id, tag, title, text, writetime, imgpath, imgnum FROM post")
+	r2.Close()
 	var post Post
 	var posts []Post
 	for r2.Next() {
@@ -381,6 +407,7 @@ func DBTest() {
 	fmt.Println("post: ", posts)
 
 	r3, _ := db.Query("SELECT id, admin, writerid, writerpw, text, commentid FROM reply")
+	r3.Close()
 	var reply Reply
 	var replys []Reply
 	for r3.Next() {
@@ -390,17 +417,17 @@ func DBTest() {
 	fmt.Println("reply: ", replys)
 
 	r4, _ := db.Query("SELECT value FROM cookie")
+	r4.Close()
 	var cookie Cookie
 	r4.Next()
 	r4.Scan(&cookie.Value)
 	fmt.Println("cookie: ", cookie.Value)
 
 	r5, _ := db.Query("SELECT today, total FROM visitor")
+	r5.Close()
 	var visitor Visitor
-	var visitors []Visitor
 	for r5.Next() {
 		r5.Scan(&visitor.Today, &visitor.Total)
-		visitors = append(visitors, visitor)
 	}
-	fmt.Println("visitor: ", visitors)
+	fmt.Println("visitor: ", visitor.Today, visitor.Total)
 }
