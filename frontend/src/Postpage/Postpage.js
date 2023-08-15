@@ -54,7 +54,7 @@ const Postpage = () => {
         .then((response) => {
           const jsonArray = Object.values(response.data);
           setRelatedPostData(
-            jsonArray.filter((post) => String(post.Id) !== postid)
+            jsonArray.filter((post) => String(post.id) !== postid)
           );
         })
         .catch((error) => {

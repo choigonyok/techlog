@@ -141,6 +141,7 @@ const Deletepage = () => {
   const isPostsHandler = () => {
     setIsComments(false);
     setIsPosts(true);
+    setToModify(false);
   };
 
   useEffect(() => {

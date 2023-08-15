@@ -262,10 +262,11 @@ func GetPostsByTagHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	for _, v := range datas {
-		v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
-		v.Tag = strings.ToUpper(data.Tag)
+	for i := range datas {
+		datas[i].Text = strings.ReplaceAll(datas[i].Text, `\'`, `'`)
+		datas[i].Tag = strings.ToUpper(datas[i].Tag)
 	}
+
 	marshaledData, err := json.Marshal(datas)
 	if err != nil {
 		fmt.Println("ERROR #23 : ", err.Error())
@@ -296,6 +297,9 @@ func GetEveryTagHandler(c *gin.Context) {
 		post.Tag = strings.ToUpper(b)
 		tagString = a
 		posts = append(posts, post)
+	}
+	for i := range posts {
+		fmt.Println(posts[i].Tag)	
 	}
 	post.Tag = strings.ToUpper(tagString)
 	posts = append(posts, post)
@@ -548,9 +552,8 @@ func GetPostHandler(c *gin.Context) {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		for _, v := range datas {
-			v.Tag = strings.ToUpper(v.Tag)
-			model.DBTest()
+		for i := range datas {
+			datas[i].Tag = strings.ToUpper(datas[i].Tag)
 		}
 		marshaledData, err := json.Marshal(datas)
 		if err != nil {
