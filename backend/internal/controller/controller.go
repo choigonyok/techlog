@@ -28,19 +28,13 @@ func isCookieAdmin(c *gin.Context) bool {
 }
 
 func isCookieValid(c *gin.Context) bool {
-	visitTime, err := c.Cookie("visitTime")
+	_, err := c.Cookie("visitTime")
 	if err == http.ErrNoCookie {
 		return false
 	}
-	isValid := strings.Contains(visitTime, getTimeNow().Format("2006-01-02"))
-	return isValid
-}
-
-func InitializeDB() {
-	err := model.InitializeDB()
-	if err != nil {
-		fmt.Println("ERROR #38 : ", err.Error())
-	}
+	// isValid := strings.Contains(visitTime, getTimeNow().Format("2006-01-02"))
+	// return isVali
+	return true
 }
 
 func ConnectDB(driverName, dbData string) {

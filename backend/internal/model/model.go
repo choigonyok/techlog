@@ -52,7 +52,7 @@ func GetCookieValue(inputValue string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	r.Close()
+	defer r.Close()
 	var cookieValue string
 	r.Next()
 	r.Scan(&cookieValue)
@@ -112,7 +112,7 @@ func GetRecentPostID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	r.Close()
+	defer r.Close()
 	for r.Next() {
 		r.Scan(
 			&idnum)
@@ -140,7 +140,7 @@ func SelectPostByTag(tag string) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	var data Post
 	var datas []Post
 	for r.Next() {
@@ -155,7 +155,7 @@ func GetEveryTagAsString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	r.Close()
+	defer r.Close()
 	tagdata := Post{}
 	sum := ""
 	for r.Next() {
@@ -180,7 +180,7 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	var commentsSlice []string
 	var tempString string
 	for r.Next() {
@@ -217,7 +217,7 @@ func GetRecentCommentID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	r.Close()
+	defer r.Close()
 	var recentCommentID int
 	for r.Next() {
 		r.Scan(&recentCommentID)
@@ -235,7 +235,7 @@ func GetCommentWriterPWByCommentID(commentID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	r.Close()
+	defer r.Close()
 	var writerPW string
 	r.Next()
 	err = r.Scan(&writerPW)
@@ -247,7 +247,7 @@ func SelectNotAdminWriterComment(postID int) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	datas := []Comment{}
 	data := Comment{}
 	for r.Next() {
@@ -263,7 +263,7 @@ func SelectCommentByPostID(postID int) ([]Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	datas := []Comment{}
 	data := Comment{}
 	for r.Next() {
@@ -279,7 +279,7 @@ func SelectReplyByCommentID(commentID string) ([]Reply, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	var datas []Reply
 	var data Reply
 	for r.Next() {
@@ -294,7 +294,7 @@ func GetRecentReplyID() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	r.Close()
+	defer r.Close()
 	var recentReplyID int
 	for r.Next() {
 		r.Scan(&recentReplyID)
@@ -312,7 +312,7 @@ func GetReplyPWByReplyID(replyID string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	r.Close()
+	defer r.Close()
 	var replyPW string
 	r.Next()
 	r.Scan(&replyPW)
@@ -329,7 +329,7 @@ func GetEveryPost() ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	var datas []Post
 	var data Post
 	for r.Next() {
@@ -343,7 +343,7 @@ func GetPostByPostID(postID string) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	r.Close()
+	defer r.Close()
 	var datas []Post
 	var data Post
 	for r.Next() {
@@ -353,35 +353,24 @@ func GetPostByPostID(postID string) ([]Post, error) {
 	return datas, nil
 }
 
-func InitializeDB() error {
-	_, err := db.Exec(`INSERT INTO visitor (today, total) VALUE (0, 0)`)
-	return err
-}
-
 func CountTodayVisit() error {
-	tx, err := db.Begin()
+	r, err := db.Query("SELECT today, total FROM visitor")
 	if err != nil {
 		return err
 	}
-	r, err := tx.Query("SELECT today, total FROM visitor")
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	r.Close()
-	DBTest()//TEST
+	defer r.Close()
 	var visitor Visitor
-	r.Next()
+	if !r.Next() {
+		_, err := db.Exec(`INSERT INTO visitor (today, total) VALUES (0, 0)`)
+		if err != nil {
+			return err
+		}	
+	}
 	r.Scan(&visitor.Today, &visitor.Total)
-	_, err = tx.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
+	_, err = db.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
 	if err != nil {
-		tx.Rollback()
 		return err
 	}	
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
