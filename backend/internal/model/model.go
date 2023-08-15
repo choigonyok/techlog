@@ -278,7 +278,7 @@ func SelectCommentByPostID(postID int) ([]Comment, error) {
 }
 
 func SelectReplyByCommentID(commentID string) ([]Reply, error) {
-	r, err := db.Query("SELECT commentid, admin, writerid, writerpw, text FROM reply WHERE commentid = " + commentID + " order by id asc")
+	r, err := db.Query("SELECT id, admin, writerid, writerpw, text FROM reply WHERE commentid = " + commentID + " order by id asc")
 	if err != nil {
 		return nil, err
 	}
@@ -305,13 +305,13 @@ func GetRecentReplyID() (int, error) {
 	return recentReplyID, nil
 }
 
-func InsertReply(isAdmin, recentReplyID int, commentID, replyText, writerID, writerPW string) error {
-	_, err := db.Query(`INSERT INTO reply (commentid, text, writerid, writerpw, admin, id) values (` + commentID + `,'` + replyText + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(isAdmin) + `,` + strconv.Itoa(recentReplyID) + `)`)
+func InsertReply(admin int, commentID, text, writerID, writerPW string) error {
+	_, err := db.Query("INSERT INTO reply (commentid, text, writerid, writerpw, admin) values (" + commentID + ",'" + text + "','" + writerID + "','" + writerPW + `',` + strconv.Itoa(admin) + `)`)
 	return err
 }
 
 func GetReplyPWByReplyID(replyID string) (string, error) {
-	r, err := db.Query("SELECT writerpw FROM reply WHERE id =" + replyID)
+	r, err := db.Query("SELECT writerpw FROM reply WHERE id = " + replyID)
 	if err != nil {
 		return "", err
 	}

@@ -4,6 +4,7 @@ import axios from "axios";
 import Reply from "./Reply";
 
 const Comment = (props) => {
+
   const [nowComment, setNowComment] = useState("");
   const [nowID, setNowID] = useState("");
   const [nowPW, setNowPW] = useState("");
@@ -133,11 +134,11 @@ const Comment = (props) => {
 
   const ReplyHandler = (value) => {
     resetReply();
-    if (reply === value.uniqueid && passwordComment === 0) {
+    if (reply === value.id && passwordComment === 0) {
       setReply(0);
     } else {
       setPasswordComment(0);
-      setReply(value.uniqueid);
+      setReply(value.id);
     }
   };
 
@@ -221,7 +222,7 @@ const Comment = (props) => {
                   <div className="reply-container__write">
                     <textarea
                       className="comment"
-                      placeholder={"REPLY TO " + item.commentid}
+                      placeholder={"REPLY TO " + item.writerid}
                       onChange={commentHandler}
                       value={nowComment}
                     />

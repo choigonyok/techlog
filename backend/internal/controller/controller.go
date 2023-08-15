@@ -347,7 +347,6 @@ func AddCommentHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("4")//TEST
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
@@ -412,6 +411,7 @@ func DeleteCommentHandler(c *gin.Context) {
 func GetCommentHandler(c *gin.Context) {
 	param := c.Param("postid")
 	postID, _ := strconv.Atoi(param)
+
 	if param == "0" { // 전체 댓글 중 admin 댓글이 아닌 것
 		commentSlice, err := model.SelectNotAdminWriterComment(postID)
 		if err != nil {
@@ -453,7 +453,6 @@ func GetReplyHandler(c *gin.Context) {
 	}
 	for _, v := range replySlice {
 		v.Text = strings.ReplaceAll(v.Text,`\'`, `'`)
-		v.WriterPW = strings.ReplaceAll(v.Text,`\'`, `'`)
 		v.WriterID = strings.ReplaceAll(v.Text,`\'`, `'`)
 	}
 	marshaledData, err := json.Marshal(replySlice)
@@ -504,14 +503,9 @@ func AddReplyHandler(c *gin.Context) {
 	} else {
 		data.Admin = 1
 	}
-	recentReplyID, err := model.GetRecentReplyID()
-	if err != nil {
-		fmt.Println("ERROR #26 : ", err.Error())
-	}
 	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
 	data.WriterID = strings.ReplaceAll(data.WriterID, `'`, `\'`)
-	data.WriterPW = strings.ReplaceAll(data.WriterPW, `'`, `\'`)
-	err = model.InsertReply(data.Admin, recentReplyID+1, commentID, data.Text, data.WriterID, data.WriterPW)
+	err = model.InsertReply(data.Admin, commentID, data.Text, data.WriterID, data.WriterPW)
 	if err != nil {
 		fmt.Println("ERROR #27 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -523,12 +517,15 @@ func AddReplyHandler(c *gin.Context) {
 func DeleteReplyHandler(c *gin.Context) {
 	inputPW := c.Query("inputpw")
 	ID := c.Query("replyid")
+	fmt.Println(inputPW)
+	fmt.Println(ID)
 	replyPW, err := model.GetReplyPWByReplyID(ID)
 	if err != nil {
 		fmt.Println("ERROR #28 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	fmt.Println(replyPW)
 	if replyPW == inputPW {
 		err := model.DeleteReplyByReplyID(ID)
 		if err != nil {

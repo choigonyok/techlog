@@ -38,7 +38,7 @@ const Reply = (props) => {
     axios
       .delete(
         process.env.REACT_APP_HOST+ "/api/reply?replyid=" +
-          value.replyuniqueid +
+          value.id +          
           "&inputpw=" +
           deletePW
       )
@@ -73,25 +73,25 @@ const Reply = (props) => {
             <div>
               <div
                 className={
-                  item.replyisadmin === 1
+                  item.admin === 1
                     ? "reply-box__adminwriter"
                     : "reply-box__writer"
                 }
                 // onClick={() => ReplyHandler(item)}
               >
-                {item.comid}
+                {item.commentid}
               </div>
               <div className="reply-box__text">
                 <div className="reply-delete">
-                  <div>{item.comments}</div>
+                  <div>{item.text}</div>
                 </div>
                 <div className="comment-delete__button">
-                  <h2 onClick={() => showPasswordInput(item.replyuniqueid)}>
+                  <h2 onClick={() => showPasswordInput(item.id)}>
                     X
                   </h2>
                 </div>
               </div>
-              {replyID === item.replyuniqueid ? (
+              {replyID === item.id ? (
                 <div className="password-container__reply">
                   <input
                     type="password"
