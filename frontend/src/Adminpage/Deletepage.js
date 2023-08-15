@@ -93,10 +93,10 @@ const Deletepage = () => {
       .then((response) => {
         setToModify(true);
         setID(value);
-        setTitleText(response.data.Title);
-        setTagText(response.data.Tag);
-        setDateText(response.data.Datetime);
-        setMD(response.data.Body);
+        setTitleText(response.data[0].title);
+        setTagText(response.data[0].tag);
+        setDateText(response.data[0].writetime);
+        setMD(response.data[0].text);
         setChangeEvent(!changeEvent);
       })
       .catch((error) => {

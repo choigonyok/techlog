@@ -263,7 +263,6 @@ func GetPostsByTagHandler(c *gin.Context) {
 		return
 	}
 	for _, v := range datas {
-		// v.Datetime = strings.ReplaceAll(data.Datetime, "-", "/")
 		v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
 		v.Tag = strings.ToUpper(data.Tag)
 	}
@@ -560,7 +559,6 @@ func GetPostHandler(c *gin.Context) {
 			return
 		}
 		for _, v := range datas {
-			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
 			v.Tag = strings.ToUpper(v.Tag)
 			model.DBTest()
 		}
@@ -573,10 +571,7 @@ func GetPostHandler(c *gin.Context) {
 		c.Writer.Write(marshaledData)
 	} else {
 		datas, err := model.GetPostByPostID(postID)
-		for _, v := range datas {
-			//v.WriteTime = strings.ReplaceAll(data.Datetime, "-", "/")
-			v.Tag = strings.ToUpper(v.Tag)
-		}
+		datas[0].Tag = strings.ToUpper(datas[0].Tag)
 		if err != nil {
 			fmt.Println("ERROR #31 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)
