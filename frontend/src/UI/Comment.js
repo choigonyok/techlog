@@ -24,10 +24,10 @@ const Comment = (props) => {
   // 댓글용
   useEffect(() => {
     setComData({
-      postid: props.id,
-      comments: nowComment,
-      comid: nowID,
-      compw: nowPW,
+      postid:  parseInt(props.id, 10),
+      text: nowComment,
+      writerid: nowID,
+      writerpw: nowPW,
     });
   }, [nowComment, nowID, nowPW]);
 
@@ -101,9 +101,9 @@ const Comment = (props) => {
 
   const CheckPasswordHandler = (value) => {
     axios
-      .post(
+      .delete(
         process.env.REACT_APP_HOST+ "/api/comment?commentid=" +
-          value.uniqueid +
+          value.id +
           "&inputpw=" +
           deletePW
       )
@@ -182,23 +182,23 @@ const Comment = (props) => {
               <div>
                 <div
                   className={
-                    item.isadmin === 1
+                    item.admin === 1
                       ? "comment-box__adminwriter"
                       : "comment-box__writer"
                   }
                   onClick={() => ReplyHandler(item)}
                 >
-                  {item.comid}
+                  {item.writerid}
                 </div>
                 <div className="comment-box">
                   <div className="comment-delete">
-                    <div>{item.comments}</div>
+                    <div>{item.text}</div>
                   </div>
                   <div className="comment-delete__button">
-                    <h2 onClick={() => showPasswordInput(item.uniqueid)}>X</h2>
+                    <h2 onClick={() => showPasswordInput(item.id)}>X</h2>
                   </div>
                 </div>
-                {passwordComment === item.uniqueid ? (
+                {passwordComment === item.id ? (
                   <div className="password-container">
                     <input
                       type="password"
@@ -217,11 +217,11 @@ const Comment = (props) => {
                   ""
                 )}
 
-                {reply === item.uniqueid && passwordComment === 0 && (
+                {reply === item.id && passwordComment === 0 && (
                   <div className="reply-container__write">
                     <textarea
                       className="comment"
-                      placeholder={"REPLY TO " + item.comid}
+                      placeholder={"REPLY TO " + item.commentid}
                       onChange={commentHandler}
                       value={nowComment}
                     />
@@ -242,12 +242,12 @@ const Comment = (props) => {
                         type="button"
                         className="comment-button__submit"
                         value="POST"
-                        onClick={() => replySendHandler(item.uniqueid)}
+                        onClick={() => replySendHandler(item.id)}
                       />
                     </div>
                   </div>
                 )}
-                <Reply id={item.uniqueid} rerender={isFinished}/>
+                <Reply id={item.id} rerender={isFinished}/>
               </div>
             );
           })}

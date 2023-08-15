@@ -247,7 +247,7 @@ const Deletepage = () => {
                 <div className="delete-inlist">
                   <div className="delete-post">
                     <h2 className="delete-comment">{item.text}</h2>
-                    <h2 className="delete-tag">{item.comid}</h2>
+                    <h2 className="delete-tag">{item.writerid}</h2>
                   </div>
                   <div className="delete-button__container">
                     <input

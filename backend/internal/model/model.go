@@ -190,7 +190,7 @@ func SelectEveryCommentIDByPostID(postID string) ([]string, error) {
 	return commentsSlice, nil
 }
 
-func DeleteEveryCommentByCommentID(commentID string) error {
+func DeleteCommentByCommentID(commentID string) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -225,8 +225,11 @@ func GetRecentCommentID() (int, error) {
 	return recentCommentID, nil
 }
 
-func InsertComment(postID, id, admin int, text, writerID, writerPW string) error {
-	_, err := db.Query(`INSERT INTO comment(postid, text, writerid, writerpw, admin, id) values (` + strconv.Itoa(postID) + `,'` + text + `','` + writerID + `','` + writerPW + `',` + strconv.Itoa(admin) + `,` + strconv.Itoa(id) + `)`)
+func InsertComment(postID, admin int, text, writerID, writerPW string) error {
+	fmt.Println(text)
+	fmt.Println(text)
+	fmt.Println(text)
+	_, err := db.Query(`INSERT INTO comment(postid, text, writerid, writerpw, admin) values (` + strconv.Itoa(postID) + ",'" + text + "','" + writerID + "','" + writerPW + "'," + strconv.Itoa(admin) + ")")
 	return err
 }
 
@@ -275,7 +278,7 @@ func SelectCommentByPostID(postID int) ([]Comment, error) {
 }
 
 func SelectReplyByCommentID(commentID string) ([]Reply, error) {
-	r, err := db.Query("SELECT id, admin, replywriterid, writerpw, text FROM reply WHERE commentid = " + commentID + " order by id asc")
+	r, err := db.Query("SELECT commentid, admin, writerid, writerpw, text FROM reply WHERE commentid = " + commentID + " order by id asc")
 	if err != nil {
 		return nil, err
 	}

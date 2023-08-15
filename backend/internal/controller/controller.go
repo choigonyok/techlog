@@ -176,7 +176,7 @@ func DeletePostHandler(c *gin.Context) {
 			return
 		}
 		for _, v := range commentsIDs {
-			err = model.DeleteEveryCommentByCommentID(v)
+			err = model.DeleteCommentByCommentID(v)
 			if err != nil {
 				fmt.Println("ERROR #12 : ", err.Error())
 				c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -237,9 +237,6 @@ func ModifyPostHandler(c *gin.Context) {
 		return
 	}
 	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
-	fmt.Println(data.Text)//TEST
-	fmt.Println(data.Text)//TEST
-	fmt.Println(data.Text)//TEST
 	err = model.UpdatePost(data.Title, data.Text, data.Tag, postID)
 	if err != nil {
 		fmt.Println("ERROR #5 : ", err.Error())
@@ -333,30 +330,24 @@ func AddCommentHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if !isTextEmpty || !isIDEmpty || !isPwValid {
+	if isTextEmpty || isIDEmpty || !isPwValid {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	if !isCookieAdmin(c) {
+	if isCookieAdmin(c) {
 		data.Admin = 1
 	} else {
 		data.Admin = 0
 	}
-	strings.ReplaceAll(data.WriterID, `'`, `\'`)
-	strings.ReplaceAll(data.WriterPW, `'`, `\'`)
-	strings.ReplaceAll(data.Text, `'`, `\'`)
-	recentCommentID, err := model.GetRecentCommentID()
-	if err != nil {
-		fmt.Println("ERROR #12 : ", err.Error())
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	err = model.InsertComment(data.PostID, recentCommentID+1, data.Admin, data.Text, data.WriterID, data.WriterPW)
+	data.WriterID = strings.ReplaceAll(data.WriterID, `'`, `\'`)
+	data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
+	err = model.InsertComment(data.PostID, data.Admin, data.Text, data.WriterID, data.WriterPW)
 	if err != nil {
 		fmt.Println("ERROR #13 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	fmt.Println("4")//TEST
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
@@ -388,7 +379,7 @@ func DeleteCommentByAdminHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	err := model.DeleteEveryCommentByCommentID(postID)
+	err := model.DeleteCommentByCommentID(postID)
 	if err != nil {
 		fmt.Println("ERROR #17 : ", err.Error())
 	} else {
@@ -406,7 +397,7 @@ func DeleteCommentHandler(c *gin.Context) {
 		return
 	}
 	if inputPW == writerPW {
-		err := model.DeleteEveryCommentByCommentID(comnmentID)
+		err := model.DeleteCommentByCommentID(comnmentID)
 		if err != nil {
 			fmt.Println("ERROR #20 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -440,7 +431,6 @@ func GetCommentHandler(c *gin.Context) {
 		}
 		for _, v := range commentSlice {
 			v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
-			v.WriterPW = strings.ReplaceAll(v.Text, `\'`, `'`)
 			v.WriterID = strings.ReplaceAll(v.Text, `\'`, `'`)
 		}
 		marshaledData, err := json.Marshal(commentSlice)
@@ -456,15 +446,15 @@ func GetCommentHandler(c *gin.Context) {
 func GetReplyHandler(c *gin.Context) {
 	commentID := c.Param("commentid")
 	replySlice, err := model.SelectReplyByCommentID(commentID)
-	for _, v := range replySlice {
-		v.Text = strings.ReplaceAll(v.Text,`\'`, `'`)
-		v.WriterPW = strings.ReplaceAll(v.Text,`\'`, `'`)
-		v.WriterID = strings.ReplaceAll(v.Text,`\'`, `'`)
-	}
 	if err != nil {
 		fmt.Println("ERROR #24 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	for _, v := range replySlice {
+		v.Text = strings.ReplaceAll(v.Text,`\'`, `'`)
+		v.WriterPW = strings.ReplaceAll(v.Text,`\'`, `'`)
+		v.WriterID = strings.ReplaceAll(v.Text,`\'`, `'`)
 	}
 	marshaledData, err := json.Marshal(replySlice)
 	if err != nil {
