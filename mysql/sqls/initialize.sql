@@ -15,12 +15,12 @@ CREATE TABLE `comment` (
         `postid` INT NOT NULL DEFAULT 0);
 
 CREATE TABLE `cookie` (
-        `value` VARCHAR(255) NOT NULL DEFAULT "",
-        `today` VARCHAR(255));
+        `value` VARCHAR(255) NOT NULL DEFAULT "");
 
 CREATE TABLE `visitor` (
         `today` INT NOT NULL DEFAULT 0,
-        `total` INT NOT NULL DEFAULT 0);
+        `total` INT NOT NULL DEFAULT 0,
+        `date` VARCHAR(255));
 
 CREATE TABLE `post` (
         `id` INT AUTO_INCREMENT PRIMARY KEY,
