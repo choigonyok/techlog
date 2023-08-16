@@ -21,7 +21,7 @@ spec:
         - name: DB_HOST
           value: database-service
         - name: ORIGIN
-          value: "http://{NLB_DNS_NAME}:3000"
+          value: "http://frontend-service"
         - name: DB_DRIVER
           value: mysql
         - name: DB_USER

@@ -24,6 +24,3 @@ const App = () => {
 };
 
 export default App;
-
-//css는 아래쪽에 있는 코드를 우선순위로 생각한다.
-//클래스네임 여러개는  "class1 class2" 로 표현
