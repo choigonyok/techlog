@@ -42,7 +42,6 @@
   justify-content: space-around;
   height: 13rem;
   gap: 1.5rem;
-  
 }
 
 .post-tagsbox {
@@ -61,11 +60,9 @@
   padding-right: 1rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
-
   width: auto;
   font-weight: 700;
   height: 3.3rem;
-  
   border: 0.3rem solid rgb(255, 42, 0, 0.75);
   background-color: rgb(232, 232, 232);
   background-clip: padding-box;
@@ -102,7 +99,7 @@
 
 .post-body {
   font-family: 'Noto Sans KR', sans-serif;
-  font-size: 1.1rem !important;
+  font-size: 0.1rem !important;
   letter-spacing: 0.025rem !important;
   word-spacing: 0.006rem !important;
   line-height: 215% !important;
@@ -112,6 +109,17 @@
   width: 55rem;
   margin-bottom: 6rem;
   background-color: transparent !important;
+}
+
+.post-body p {
+  letter-spacing: 0.012rem !important;
+  word-spacing: 0.006rem !important;
+  line-height: 180% !important;
+  font-size: 21px !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  width: inherit;
+  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 
 .post-body h1 {
@@ -124,7 +132,6 @@
   width: inherit;
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
-
 .post-body img {
   width: 50rem !important;
   max-height: 31rem !important;
@@ -134,6 +141,8 @@
   object-fit: scale-down;
   background-color: rgb(24, 26, 28) !important;
 }
+
+
 
 .post-body h2 {
   letter-spacing: 0.025rem !important;
@@ -168,16 +177,17 @@
   word-wrap: break-word;
 }
 
-.post-body p {
+.post-body ol {
   letter-spacing: 0.012rem !important;
   word-spacing: 0.006rem !important;
   line-height: 180% !important;
-  font-size: 1.2rem !important;
+  font-size: 21px !important;
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.88) !important;
   width: inherit;
   font-family: "LeferiPoint-BlackObliqueA" !important;
 }
+
 .post-body code,
 pre {
   letter-spacing: 0.025rem !important;
@@ -198,7 +208,7 @@ del {
   letter-spacing: 0.025rem !important;
   word-spacing: 0.006rem !important;
   line-height: 215% !important;
-  font-size: inherit !important;
+  font-size: inherit;
   font-weight: 800 !important;
   color: white;
   width: inherit;
@@ -222,3 +232,66 @@ del {
   border-top: 0.4rem solid gray;
 }
 
+
+@media (max-width: 1100px) {
+  .written-date {
+    font-size: 12px;
+    letter-spacing: 1px !important;
+  }
+  .post-tags__button {
+    font-size: 12px !important;
+    padding: 10px;
+  }
+  .post-title {
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
+  .post-title__item {
+    font-size: 25px !important;
+    font-weight: 800 !important;
+    word-break:keep-all;
+  }
+  .post-body p {
+    font-size: 16px !important;
+    font-weight: 400 !important;
+  }
+  .post-body h2 {
+    font-size: 21px !important;
+    word-break:keep-all;
+    font-weight: 600 !important;
+  }
+  .post-body h1 {
+    font-size: 25px !important;
+    font-weight: 800 !important;
+    word-break:keep-all;
+  }
+  .post-body h3 {
+    font-size: 18px !important;
+    font-style: italic;
+  font-weight: 500 !important;
+    word-break:keep-all;
+  }
+  .post-body ol {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    word-break:keep-all;
+  }
+  .post-body ul {
+    font-size: 13px !important;
+    font-style: italic;
+    font-weight: 700 !important;
+    word-break:keep-all;
+  }
+  .post-body blockquote {
+    font-size: 16px !important;
+    width: auto;
+    font-style: italic;
+    font-weight: 100 !important;
+    background-color: rgba(255, 0, 0, 0.404);
+    word-break:keep-all;
+  }
+  .post-body code,
+pre {
+  font-size: 15px !important;
+}
+}
