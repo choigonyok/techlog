@@ -16,8 +16,8 @@ const Homepage = () => {
     axios
       .get(process.env.REACT_APP_HOST + "/api/visitor")
       .then((response) => {
-        setTotalNum(response.data.today);
-        setVisitNum(response.data.total);
+        setTotalNum(response.data.total);
+        setVisitNum(response.data.today);
       })
       .catch((error) => {
         console.log(error);

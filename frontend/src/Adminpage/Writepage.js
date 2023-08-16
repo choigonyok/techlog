@@ -32,7 +32,6 @@ const Writepage = () => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log(response);
         setUnLock(!unlock);
       })
       .catch((error) => {

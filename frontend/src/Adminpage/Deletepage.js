@@ -37,7 +37,6 @@ const Deletepage = () => {
         withCredentials: true,
       })
       .then((response) => {
-        console.log("SUCCESSSSS");
         setToModify(false);
         setIsDeleted(!isDeleted);
         setChangeEvent(!changeEvent);
