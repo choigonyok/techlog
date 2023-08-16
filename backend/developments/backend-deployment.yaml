@@ -14,12 +14,14 @@ spec:
     spec:
       containers:
       - name: backend-deployment
-        image: achoistic98/blog_backend:1.0
+        image: achoistic98/blog_backend:latest
         ports:
         - containerPort: 8080
         env:
         - name: DB_HOST
           value: database-service
+        - name: ORIGIN
+          value: "http://{NLB_DNS_NAME}:3000"
         - name: DB_DRIVER
           value: mysql
         - name: DB_USER

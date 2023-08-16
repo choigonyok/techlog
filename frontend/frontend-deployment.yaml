@@ -17,6 +17,3 @@ spec:
         image: achoistic98/blog_frontend:latest
         ports:
         - containerPort: 3000
-        env:
-        - name: REACT_APP_HOST
-          value: "backend-service:8080"
