@@ -17,7 +17,7 @@ const Header = () => {
   return (
     <div className="header">
       <button className="header-title" onClick={homePageHandler}>
-        _TECHLOG
+        Techlog.
       </button>
       <div className="header-empty" />
       <div>

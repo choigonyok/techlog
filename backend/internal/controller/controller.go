@@ -116,18 +116,22 @@ func WritePostImageHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	var thumbnailName string
 	everyIMG := imgFile.File["file"]
-	for _, v := range everyIMG {
-		noSpaceImageName := strings.ReplaceAll(v.Filename, " ", "")
-		err = c.SaveUploadedFile(v, "assets/"+strconv.Itoa(recentID)+"-"+noSpaceImageName)
+	for i, v := range everyIMG {
+		dotIndex := strings.LastIndex(v.Filename, ".")
+		exetension := v.Filename[dotIndex:]
+		if i == 0 {
+			thumbnailName = exetension
+		}
+		err = c.SaveUploadedFile(v, "assets/"+strconv.Itoa(recentID)+"-"+strconv.Itoa(i)+exetension)
 		if err != nil {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			fmt.Println("ERROR #34 : ", err.Error())
 			return
 		}
 	}
-	noSpaceThumbnailName := strings.ReplaceAll(everyIMG[0].Filename, " ", "")
-	err = model.UpdatePostImagePath(recentID, noSpaceThumbnailName)
+	err = model.UpdatePostImagePath(recentID, strconv.Itoa(recentID)+"-0"+thumbnailName)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		fmt.Println("ERROR #36 : ", err.Error())
@@ -602,7 +606,6 @@ func GetPostHandler(c *gin.Context) {
 
 func GetThumbnailHandler(c *gin.Context) {
 	imgName := c.Param("name")
-	imgName = strings.ReplaceAll(imgName, " ", "")
 	file, err := os.Open("assets/" + imgName)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)

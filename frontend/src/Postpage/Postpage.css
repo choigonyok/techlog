@@ -119,7 +119,6 @@
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.88) !important;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 
 .post-body h1 {
@@ -130,7 +129,6 @@
   color: white !important;
   font-weight: 800 !important;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body img {
   width: 50rem !important;
@@ -152,7 +150,6 @@
   line-height: 250% !important;
   color: white !important;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body h3 {
   letter-spacing: 0.025rem !important;
@@ -162,7 +159,6 @@
   color: white !important;
   font-weight: 700;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 .post-body blockquote {
   letter-spacing: 0.012rem !important;
@@ -185,7 +181,6 @@
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.88) !important;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 
 .post-body code,
@@ -199,7 +194,6 @@ pre {
   white-space: pre-line !important;
   border-radius: 0.5rem !important;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 
 .post-body em,
@@ -212,7 +206,6 @@ del {
   font-weight: 800 !important;
   color: white;
   width: inherit;
-  font-family: "LeferiPoint-BlackObliqueA" !important;
 }
 
 .related-post__container {
@@ -240,10 +233,10 @@ del {
   }
   .post-tags__button {
     font-size: 12px !important;
-    padding: 10px;
+    padding: 12px;
   }
   .post-title {
-    margin-top: 40px;
+    margin-top: 70px;
     margin-bottom: 30px;
   }
   .post-title__item {

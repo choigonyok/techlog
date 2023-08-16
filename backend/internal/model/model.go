@@ -125,7 +125,7 @@ func AddPost(tag, title, text, writetime string) error {
 }
 
 func UpdatePostImagePath(recentID int, imagename string) error {
-	_, err := db.Query(`UPDATE post SET imgpath = '` + strconv.Itoa(recentID) + `-` + imagename + `' where id = ` + strconv.Itoa(recentID))
+	_, err := db.Query(`UPDATE post SET imgpath = '` + imagename + `' where id = ` + strconv.Itoa(recentID))
 	return err
 }
 
