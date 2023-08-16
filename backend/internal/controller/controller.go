@@ -220,7 +220,20 @@ func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 		err = model.AddVisitorCount(visitor)
 		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("ORIGIN"), false, true)
 	}
-
+	todayRecord, err := model.GetTodayRecord()
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if today != todayRecord {
+		err := model.ResetTodayVisitorNum(today)
+		if err != nil {
+			c.Writer.WriteHeader(http.StatusInternalServerError)
+			fmt.Println("ERROR #40 : ", err.Error())
+			return
+		}	
+	}
+	
 	visitor, err := model.GetVisitorCount()
 	if err != nil {
 		fmt.Println("ERROR #41 : ", err.Error())

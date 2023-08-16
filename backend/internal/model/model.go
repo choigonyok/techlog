@@ -382,6 +382,22 @@ func GetVisitorCount() (Visitor, error) {
 	return visitor, nil
 }
 
+func GetTodayRecord() (string, error) {
+	r, err := db.Query("SELECT date FROM visitor")
+	if err != nil {
+		return "", err
+	}
+	var today string
+	r.Next()
+	r.Scan(&today)
+	return today, nil
+}
+
+func ResetTodayVisitorNum(date string) error {
+	_, err := db.Exec(`UPDATE visitor SET today = 1, date = "`+date+`"`)
+	return err
+}
+
 func DBTest() {
 	r1, _ := db.Query("SELECT id, postid, admin, text, writerid, writerpw FROM comment")
 	r1.Close()
