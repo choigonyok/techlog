@@ -80,3 +80,18 @@
   gap: 1.2rem;
   margin-bottom: 3%;
 }
+
+@media (max-width: 1100px) {
+  .tags-button {
+    font-size: 12px !important;
+    padding: 6px;
+  }
+  .tags-button__clicked {
+    font-size: 12px !important;
+    padding: 6px;
+  }
+  .container{
+    padding-left: 15%;
+    padding-right: 15%;
+  }
+}
