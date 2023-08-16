@@ -198,7 +198,19 @@ func getTimeNow() time.Time {
 }
 
 func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
-	if !isCookieValid(c) {
+	var cookieNeed bool
+	cookieNeed = false
+	today := getTimeNow().Format("2006-01-02")
+	cookieValue, err := c.Cookie("visitTime")
+	if err == http.ErrNoCookie {
+		cookieNeed = true
+	} else {
+		isValid := strings.Contains(cookieValue, today)
+		if !isValid {
+			cookieNeed = true
+		}
+	}
+	if cookieNeed {
 		visitor,err := model.GetVisitorCount()
 		if err != nil {
 			fmt.Println("ERROR #33 : ", err.Error())
@@ -208,6 +220,7 @@ func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 		err = model.AddVisitorCount(visitor)
 		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("ORIGIN"), false, true)
 	}
+
 	visitor, err := model.GetVisitorCount()
 	if err != nil {
 		fmt.Println("ERROR #41 : ", err.Error())
