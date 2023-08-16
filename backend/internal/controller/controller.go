@@ -318,14 +318,11 @@ func GetEveryTagHandler(c *gin.Context) {
 	for i := 0; i < tagCount; i++ {
 		b, a, ok := strings.Cut(tagString, " ")
 		if !ok {
-			fmt.Println("TAG COUNT ERROR OCCURED")
+			fmt.Println("ERROR #42 : ", err.Error())
 		}
 		post.Tag = strings.ToUpper(b)
 		tagString = a
 		posts = append(posts, post)
-	}
-	for i := range posts {
-		fmt.Println(posts[i].Tag)	
 	}
 	post.Tag = strings.ToUpper(tagString)
 	posts = append(posts, post)
@@ -500,7 +497,7 @@ func AddReplyHandler(c *gin.Context) {
 	data := model.Reply{}
 	err := c.ShouldBindJSON(&data)
 	if err != nil {
-		fmt.Println("REPLY JSON BINDING ERROR")
+		fmt.Println("ERROR #43 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -547,15 +544,12 @@ func AddReplyHandler(c *gin.Context) {
 func DeleteReplyHandler(c *gin.Context) {
 	inputPW := c.Query("inputpw")
 	ID := c.Query("replyid")
-	fmt.Println(inputPW)
-	fmt.Println(ID)
 	replyPW, err := model.GetReplyPWByReplyID(ID)
 	if err != nil {
 		fmt.Println("ERROR #28 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(replyPW)
 	if replyPW == inputPW {
 		err := model.DeleteReplyByReplyID(ID)
 		if err != nil {

@@ -121,7 +121,6 @@ func GetRecentPostID() (int, error) {
 }
 func AddPost(tag, title, text, writetime string) error {
 	_, err := db.Exec(`INSERT INTO post (tag, writetime, title, text) values ('` + tag + `', '`+writetime+`' ,'` + title + `','` + text + `')`)
-	DBTest()
 	return err
 }
 
@@ -226,9 +225,6 @@ func GetRecentCommentID() (int, error) {
 }
 
 func InsertComment(postID, admin int, text, writerID, writerPW string) error {
-	fmt.Println(text)
-	fmt.Println(text)
-	fmt.Println(text)
 	_, err := db.Query(`INSERT INTO comment(postid, text, writerid, writerpw, admin) values (` + strconv.Itoa(postID) + ",'" + text + "','" + writerID + "','" + writerPW + "'," + strconv.Itoa(admin) + ")")
 	return err
 }
@@ -339,7 +335,6 @@ func GetEveryPost() ([]Post, error) {
 		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
 		datas = append(datas, data)
 	}
-	fmt.Println(datas)
 	return datas, nil
 }
 func GetPostByPostID(postID string) ([]Post, error) {
@@ -396,51 +391,4 @@ func GetTodayRecord() (string, error) {
 func ResetTodayVisitorNum(date string) error {
 	_, err := db.Exec(`UPDATE visitor SET today = 1, date = "`+date+`"`)
 	return err
-}
-
-func DBTest() {
-	r1, _ := db.Query("SELECT id, postid, admin, text, writerid, writerpw FROM comment")
-	r1.Close()
-	var comment Comment
-	var comments []Comment
-	for r1.Next() {
-		r1.Scan(&comment.ID, &comment.PostID, &comment.Admin, &comment.Text, &comment.WriterID, &comment.WriterPW)
-		comments = append(comments, comment)
-	}
-	fmt.Println("comment: ", comments)
-
-	r2, _ := db.Query("SELECT id, tag, title, text, writetime, imgpath, imgnum FROM post")
-	r2.Close()
-	var post Post
-	var posts []Post
-	for r2.Next() {
-		r2.Scan(&post.ID, &post.Tag, &post.Title, &post.Text, &post.WriteTime, &post.ImagePath, &post.ImageNum)
-		posts = append(posts, post)
-	}
-	fmt.Println("post: ", posts)
-
-	r3, _ := db.Query("SELECT id, admin, writerid, writerpw, text, commentid FROM reply")
-	r3.Close()
-	var reply Reply
-	var replys []Reply
-	for r3.Next() {
-		r3.Scan(&reply.ID, &reply.Admin, &reply.WriterID, &reply.WriterPW, &reply.Text, &reply.CommentID)
-		replys = append(replys, reply)
-	}
-	fmt.Println("reply: ", replys)
-
-	r4, _ := db.Query("SELECT value FROM cookie")
-	r4.Close()
-	var cookie Cookie
-	r4.Next()
-	r4.Scan(&cookie.Value)
-	fmt.Println("cookie: ", cookie.Value)
-
-	r5, _ := db.Query("SELECT today, total FROM visitor")
-	r5.Close()
-	var visitor Visitor
-	for r5.Next() {
-		r5.Scan(&visitor.Today, &visitor.Total)
-	}
-	fmt.Println("visitor: ", visitor.Today, visitor.Total)
 }
