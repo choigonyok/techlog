@@ -19,7 +19,7 @@ spec:
         - containerPort: 8080
         env:
         - name: DB_HOST
-          value: database-service:3306
+          value: database-service
         - name: DB_DRIVER
           value: mysql
         - name: DB_USER
