@@ -82,7 +82,7 @@ resource "aws_lb_target_group" "tg" {
 resource "aws_lb_target_group_attachment" "tg_ip" {
   target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.ccs-worker.private_ip
-  port             = 31924
+  port             = 32665
 }
 
 
@@ -178,7 +178,7 @@ resource "aws_instance" "ccs-master" {
 
 resource "aws_instance" "ccs-worker" {
   ami           = "ami-0c9c942bd7bf113a2"
-  instance_type = "t3.small"
+  instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.cluster_sg.id]
   subnet_id = aws_subnet.public_subnet.id
   key_name = "Choigonyok"

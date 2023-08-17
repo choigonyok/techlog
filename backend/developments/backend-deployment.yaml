@@ -12,6 +12,16 @@ spec:
       labels:
         app: backend-deployment
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - database-deployment
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: backend-deployment
         image: achoistic98/blog_backend:latest
@@ -24,6 +34,8 @@ spec:
           value: "http://frontend-service"
         - name: DB_DRIVER
           value: mysql
+        - name: HOST
+          value: <DOMAIN FOR COOKIE>
         - name: DB_USER
           value: root
         - name: DB_PASSWORD
