@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "tg" {
 
 resource "aws_lb_target_group_attachment" "tg_ip" {
   target_group_arn = aws_lb_target_group.tg.arn
-  target_id        = aws_instance.ccs-workers[0].private_ip
+  target_id        = aws_instance.ccs-worker.private_ip
   port             = 31924
 }
 
@@ -176,17 +176,74 @@ resource "aws_instance" "ccs-master" {
   }
 }
 
-resource "aws_instance" "ccs-workers" {
+resource "aws_instance" "ccs-worker" {
   ami           = "ami-0c9c942bd7bf113a2"
-  instance_type = "t3.micro"
+  instance_type = "t3.small"
   vpc_security_group_ids = [aws_security_group.cluster_sg.id]
   subnet_id = aws_subnet.public_subnet.id
   key_name = "Choigonyok"
 
-  count = 3
+  tags = {
+    Name = "worker_node"
+  }  
+
+  connection {
+    type = "ssh"
+    user = "ubuntu"
+    private_key = file("../../../PEMKEY/Choigonyok.pem")    
+    host = self.public_ip
+  }
+   
+provisioner "remote-exec" {
+
+    inline = [
+      "cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf",
+      "overlay",
+      "br_netfilter",
+      "EOF",
+      "sudo modprobe overlay",
+      "sudo modprobe br_netfilter",
+      "cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf",
+      "net.bridge.bridge-nf-call-iptables  = 1",
+      "net.bridge.bridge-nf-call-ip6tables = 1",
+      "net.ipv4.ip_forward = 1",
+      "EOF",
+      "sudo sysctl --system",
+      "sudo swapoff -a",
+      "(crontab -l 2>/dev/null; echo '@reboot /sbin/swapoff -a') | crontab - || true",
+      "wget https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz",
+      "sudo tar Czxvf /usr/local containerd-1.7.3-linux-amd64.tar.gz",
+      "wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service",
+      "sudo mv containerd.service /usr/lib/systemd/system/",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl enable --now containerd",
+      "wget https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64",
+      "sudo install -m 755 runc.amd64 /usr/local/sbin/runc",
+      "sudo mkdir -p /etc/containerd/",
+      "containerd config default | sudo tee /etc/containerd/config.toml",
+      "sudo sed -i 's/SystemdCgroup \\= false/SystemdCgroup \\= true/g' /etc/containerd/config.toml",
+      "sudo systemctl restart containerd",
+      "sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl",
+      "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -",
+      "cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list",
+      "deb https://apt.kubernetes.io/ kubernetes-xenial main",
+      "EOF",
+      "sudo apt-get update",
+      "sudo apt-get install -y kubelet kubeadm kubectl",
+      "sudo apt-mark hold kubelet kubeadm kubectl containerd",
+    ]
+  }
+}
+
+resource "aws_instance" "ccs-worker-database" {
+  ami           = "ami-0c9c942bd7bf113a2"
+  instance_type = "t3.small"
+  vpc_security_group_ids = [aws_security_group.cluster_sg.id]
+  subnet_id = aws_subnet.public_subnet.id
+  key_name = "Choigonyok"
 
   tags = {
-    Name = "worker_node${count.index}"
+    Name = "worker_node_database"
   }  
 
   connection {
@@ -241,14 +298,14 @@ output "master-ip" {
   value = "${aws_instance.ccs-master.public_ip}"
 }
 
-output "worker1-ip" {
-  value = "${aws_instance.ccs-workers[0].public_ip}"
+output "worker-database-ip" {
+  value = "${aws_instance.ccs-worker-database.public_ip}"
 }
 
-output "worker2-ip" {
-  value = "${aws_instance.ccs-workers[1].public_ip}"
+output "worker-ip" {
+  value = "${aws_instance.ccs-worker.public_ip}"
 }
 
-output "worker3-ip" {
-  value = "${aws_instance.ccs-workers[2].public_ip}"
+output "lb-dnsname" {
+  value = "${aws_lb.nlb.dns_name}"
 }
