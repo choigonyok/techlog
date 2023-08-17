@@ -294,8 +294,8 @@ func GetPostsByTagHandler(c *gin.Context) {
 	if data.Tag == "ALL" {
 		data.Tag = ""
 	}
-	mainTag, _, _ := strings.Cut(data.Tag, " ")
-	datas, err := model.SelectPostByTag(mainTag)
+	tagSlice := strings.Split(data.Tag, " ")
+	datas, err := model.SelectPostByTag(tagSlice)
 	if err != nil {
 		fmt.Println("ERROR #6 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)

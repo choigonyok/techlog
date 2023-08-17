@@ -134,18 +134,21 @@ func UpdatePost(title, text, tag, postID string) error {
 	return err
 }
 
-func SelectPostByTag(tag string) ([]Post, error) {
-	r, err := db.Query("SELECT id,tag,title,text,writetime,imgpath FROM post where tag LIKE '%" + tag + "%' order by id desc")
-	if err != nil {
-		return nil, err
-	}
-	defer r.Close()
+func SelectPostByTag(tagSlice []string) ([]Post, error) {
 	var data Post
 	var datas []Post
-	for r.Next() {
-		r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
-		datas = append(datas, data)
+	for _, v := range tagSlice {
+		r, err := db.Query("SELECT id,tag,title,text,writetime,imgpath FROM post where tag LIKE '%" + v + "%' order by id desc")
+		if err != nil {
+			return nil, err
+		}
+		defer r.Close()
+		for r.Next() {
+			r.Scan(&data.ID, &data.Tag, &data.Title, &data.Text, &data.WriteTime, &data.ImagePath)
+			datas = append(datas, data)
+		}
 	}
+
 	return datas, nil
 }
 
