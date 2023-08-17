@@ -82,7 +82,7 @@ resource "aws_lb_target_group" "tg" {
 resource "aws_lb_target_group_attachment" "tg_ip" {
   target_group_arn = aws_lb_target_group.tg.arn
   target_id        = aws_instance.ccs-workers[0].private_ip
-  port             = 30000
+  port             = 31924
 }
 
 

@@ -72,7 +72,6 @@ func CheckAdminIDAndPWHandler(c *gin.Context) {
 		return
 	}
 	if data.ID != os.Getenv("BLOG_ID") || data.Password != os.Getenv("BLOG_PW") {
-		fmt.Println("ERROR #31 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -83,7 +82,7 @@ func CheckAdminIDAndPWHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	c.SetCookie("admin", cookieValue.String(), 60*60*12, "/", os.Getenv("ORIGIN"), false, true)
+	c.SetCookie("admin", cookieValue.String(), 60*60*12, "/", os.Getenv("HOST"), false, true)
 	c.Writer.WriteHeader(http.StatusOK)
 }
 
@@ -231,7 +230,7 @@ func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 			return
 		}
 		err = model.AddVisitorCount(visitor)
-		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("ORIGIN"), false, true)
+		c.SetCookie("visitTime", getTimeNow().String(), 0, "/", os.Getenv("HOST"), false, true)
 	}
 	todayRecord, err := model.GetTodayRecord()
 	if err != nil {
@@ -595,21 +594,23 @@ func GetPostHandler(c *gin.Context) {
 			return
 		}
 		c.Writer.Write(marshaledData)
+		return
 	} else {
 		datas, err := model.GetPostByPostID(postID)
-		datas[0].Tag = strings.ToUpper(datas[0].Tag)
-		datas[0].Text = strings.ReplaceAll(datas[0].Text, `\'`, `'`)
 		if err != nil {
 			fmt.Println("ERROR #31 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		datas[0].Tag = strings.ToUpper(datas[0].Tag)
+		datas[0].Text = strings.ReplaceAll(datas[0].Text, `\'`, `'`)
 		marshaledData, err := json.Marshal(datas)
 		if err != nil {
 			http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		c.Writer.Write(marshaledData)
+		return
 	}
 }
 

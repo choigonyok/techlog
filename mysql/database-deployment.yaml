@@ -29,18 +29,3 @@ spec:
         - name: database-volume
           hostPath:
             path: /volumes # Replace with the actual path on your host machine
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: database-service
-spec:
-  selector:
-    app: database-deployment
-  ports:
-    - protocol: TCP
-      port: 3306
-      targetPort: 3306
-  type: ClusterIP

@@ -85,11 +85,11 @@
 
 @media (max-width: 1100px) {
   .tags-button {
-    font-size: 15px !important;
+    font-size: 13px !important;
     padding: 7px;
   }
   .tags-button__clicked {
-    font-size: 15px !important;
+    font-size: 13px !important;
     padding: 7px;
   }
   .container{

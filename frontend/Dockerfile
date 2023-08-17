@@ -1,7 +1,5 @@
 FROM --platform=linux/amd64 node:16-alpine AS build
 
-RUN mkdir app
-
 WORKDIR /app
 
 COPY . .
