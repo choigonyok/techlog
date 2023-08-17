@@ -51,7 +51,16 @@ func UnConnectDB() {
 	}
 }
 
-func CheckAdminIDAndPW(c *gin.Context) {
+func CheckCookieHandelr(c *gin.Context){
+	if isCookieAdmin(c) {
+		c.Writer.WriteHeader(http.StatusOK)
+	} else {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+	}
+	return
+}
+
+func CheckAdminIDAndPWHandler(c *gin.Context) {
 	data := struct {
 		ID       string `json:"id"`
 		Password string `json:"pw"`

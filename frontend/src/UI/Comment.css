@@ -9,6 +9,7 @@
     transition: 300ms;
   }
 }
+@media (min-width: 1100px) {
 .comment-box__adminwriter:hover {
   cursor: pointer;
   color: white;
@@ -20,6 +21,7 @@
   color: white;
   transition: 300ms;
   font-size: 1.5rem;
+}
 }
 .comment-delete__button:hover {
   cursor: pointer;
@@ -227,4 +229,16 @@
   padding: 0.5rem;
   padding-left: 1rem;
   transition: 300ms;
+}
+
+@media (max-width: 1100px) {
+  .comment-box__writer {
+    font-size: 16px;
+  }
+  .comment-box__adminwriter {
+    font-size: 16px;
+  }
+  .comment-delete {
+    font-size: 14px;
+  }
 }

@@ -122,9 +122,7 @@ const Writepage = () => {
 
   return (
     <div>
-      <Header />
       <div className="admin-container">
-        <div className="admin-main">WRITE</div>
         <div className="admin-titletagdate">
           <input
             type="text"

@@ -47,7 +47,8 @@ func main() {
 
 	eg.GET("/api/visitor", controller.GetTodayAndTotalVisitorNumHandler) // today, total 방문자 수 확인
 
-	eg.POST("/api/login", controller.CheckAdminIDAndPW) // 로그인
+	eg.POST("/api/login", controller.CheckAdminIDAndPWHandler) // 로그인
+	eg.GET("/api/login", controller.CheckCookieHandelr) // 로그인
 
 	eg.POST("/api/tag", controller.GetPostsByTagHandler) // 태그 클릭시 포스트 출력
 	eg.GET("/api/tag", controller.GetEveryTagHandler)    // 현재 존재하는 모든 태그 불러오기

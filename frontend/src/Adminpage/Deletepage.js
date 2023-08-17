@@ -4,8 +4,26 @@ import Footer from "../UI/Footer";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
+import Writepage from "./Writepage"
+import { useNavigate } from "react-router-dom";
 
 const Deletepage = () => {
+  const navigator = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get(process.env.REACT_APP_HOST + "/api/login")
+      .then((response) => {
+      })
+      .catch((error) => {
+        if (error.response.status === 401) {
+          navigator("/login");
+          console.log("1111");
+        }
+        console.error(error);
+      });
+  }, []);
+
   axios.defaults.withCredentials = true;
 
   const [changeEvent, setChangeEvent] = useState(false);
@@ -21,9 +39,9 @@ const Deletepage = () => {
   const [postData, setPostData] = useState([]);
   const [isPosts, setIsPosts] = useState(false);
   const [isComments, setIsComments] = useState(false);
+  const [isWrite, setIsWrites] = useState(false);
   const [comInfo, setComInfo] = useState([]);
   const [postRequest, setPostRequest] = useState(false);
-
 
   const postHandler = () => {
     const postdata = {
@@ -33,7 +51,7 @@ const Deletepage = () => {
       text: bodyText,
     };
     axios
-      .put(process.env.REACT_APP_HOST+"/api/post/" + id, postdata, {
+      .put(process.env.REACT_APP_HOST + "/api/post/" + id, postdata, {
         withCredentials: true,
       })
       .then((response) => {
@@ -54,7 +72,7 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+"/api/post/all")
+      .get(process.env.REACT_APP_HOST + "/api/post/all")
       .then((response) => {
         setAllPost(response.data);
       })
@@ -73,7 +91,7 @@ const Deletepage = () => {
 
   const deleteHandler = (value) => {
     axios
-      .delete(process.env.REACT_APP_HOST+"/api/post/" + value, {
+      .delete(process.env.REACT_APP_HOST + "/api/post/" + value, {
         withCredentials: true,
       })
       .then((response) => {
@@ -88,7 +106,7 @@ const Deletepage = () => {
 
   const modifyHandler = (value) => {
     axios
-      .get(process.env.REACT_APP_HOST+"/api/post/" + value)
+      .get(process.env.REACT_APP_HOST + "/api/post/" + value)
       .then((response) => {
         setToModify(true);
         setID(value);
@@ -119,18 +137,19 @@ const Deletepage = () => {
     setIsComments(true);
     setIsPosts(false);
     setPostRequest(!postRequest);
+    setIsWrites(false);
   };
 
   const CommentDeleteHandler = (value) => {
     axios
-      .delete(process.env.REACT_APP_HOST+"/api/comment/" + value)
+      .delete(process.env.REACT_APP_HOST + "/api/comment/" + value)
       .then((response) => {
         setPostRequest(!postRequest);
       })
       .catch((error) => {
         if (error.response.status === 401) {
           console.log(error);
-            alert("로그인이 안된 사용자는 댓글 삭제 권한이 없습니다!");
+          alert("로그인이 안된 사용자는 댓글 삭제 권한이 없습니다!");
         } else {
           console.log(error);
         }
@@ -141,11 +160,18 @@ const Deletepage = () => {
     setIsComments(false);
     setIsPosts(true);
     setToModify(false);
+    setIsWrites(false);
+  };
+
+  const isWriteHandler = () => {
+    setIsComments(false);
+    setIsPosts(false);
+    setIsWrites(true);
   };
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+"/api/comment/0")
+      .get(process.env.REACT_APP_HOST + "/api/comment/0")
       .then((response) => {
         setComInfo([...response.data]);
       })
@@ -158,8 +184,14 @@ const Deletepage = () => {
     <div>
       <Header />
       <div className="delete-container">
-        <div className="delete-main">DELETE / MODIFY</div>
+        <div className="delete-main">ADMIN</div>
         <div className="select-container">
+          <input
+            type="button"
+            className="select-button"
+            value="WRITE"
+            onClick={isWriteHandler}
+          />
           <input
             type="button"
             className="select-button"
@@ -173,6 +205,9 @@ const Deletepage = () => {
             onClick={isCommentsHandler}
           />
         </div>
+        {isWrite && <div>
+          <Writepage/>
+          </div>}
         {isPosts && (
           <div>
             {toModify && (

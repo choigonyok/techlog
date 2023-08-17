@@ -183,6 +183,17 @@
   width: inherit;
 }
 
+.post-body ul {
+  letter-spacing: 0.012rem !important;
+  word-spacing: 0.006rem !important;
+  line-height: 180% !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.88) !important;
+  width: inherit;
+}
+
 .post-body code,
 pre {
   letter-spacing: 0.025rem !important;
@@ -286,5 +297,8 @@ del {
   .post-body code,
 pre {
   font-size: 15px !important;
+}
+.related-post__content {
+  font-size: 22px;
 }
 }

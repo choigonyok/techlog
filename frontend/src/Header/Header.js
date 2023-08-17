@@ -21,14 +21,8 @@ const Header = () => {
       </button>
       <div className="header-empty" />
       <div>
-        <a href="/admin/write" className="header-category">
-          write
-        </a>
         <a href="/admin/delete" className="header-category">
-          delete / modify
-        </a>
-        <a href="/admin" className="header-category">
-          login
+          admin
         </a>
       </div>
     </div>

@@ -84,4 +84,7 @@
   .header-title {
     font-size: 20px; 
   }
+  .header-title:hover {
+    transition-duration: unset;
+  }
 }
