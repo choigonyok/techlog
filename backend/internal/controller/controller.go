@@ -371,7 +371,7 @@ func AddCommentHandler(c *gin.Context) {
 		return
 	}
 	if isTextEmpty || isIDEmpty || !isPwValid {
-		c.Writer.WriteHeader(http.StatusBadRequest)
+		c.Writer.WriteHeader(http.StatusNoContent)
 		return
 	}
 	if isCookieAdmin(c) {
@@ -525,7 +525,7 @@ func AddReplyHandler(c *gin.Context) {
 		return
 	}
 	if isReplyEmpty || isIDEmpty {
-		c.Writer.WriteHeader(http.StatusBadRequest)
+		c.Writer.WriteHeader(http.StatusNoContent)
 		return
 	}
 	isPWValid, err := regexp.MatchString("^[0-9]+$", data.WriterPW)

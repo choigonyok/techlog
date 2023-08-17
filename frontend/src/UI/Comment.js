@@ -58,19 +58,18 @@ const Comment = (props) => {
     axios
       .post(process.env.REACT_APP_HOST + "/api/comment", comData)
       .then((response) => {
+        if (response.status === 204) {
+          alert("빈 칸이나 유효하지 않은 입력이 있습니다. 비밀번호는 최대 8자리의 숫자만 입력 가능합니다.")
+          return;
+        }
         resetReply();
       })
       .catch((error) => {
         if (error.response.status === 500) {
           console.log(error);
           alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
-        } else if (error.response.status === 400) {
-          alert("특수문자 ' 은 입력하실 수 없습니다.");
-        } else if (error.response.status === 406) {
-          alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.");
-        } else if (error.response.status === 411) {
-          alert("빈 칸이 존재합니다.");
-        } else {
+        }
+        else {
           console.log(error);
         }
       });
@@ -154,6 +153,10 @@ const Comment = (props) => {
     axios
       .post(process.env.REACT_APP_HOST + "/api/reply/" + value, comData)
       .then((response) => {
+        if (response.status === 204) {
+          alert("빈 칸이 존재합니다.");
+          return
+        }
         resetReply();
         setReply(0);
       })
@@ -162,11 +165,7 @@ const Comment = (props) => {
           console.log(error);
           alert("서버에 문제가 생겨 현재 답글을 작성할 수 없습니다.");
         } else if (error.response.status === 400) {
-          alert("특수문자 ' 은 입력하실 수 없습니다.");
-        } else if (error.response.status === 406) {
-          alert("PASSWORD는 1~8자리의 숫자만 입력 가능합니다.");
-        } else if (error.response.status === 411) {
-          alert("빈 칸이 존재합니다.");
+          alert("비밀번호는 최대 8자리의 숫자만 입력 가능합니다.");
         } else {
           console.log(error);
         }
