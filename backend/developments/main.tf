@@ -55,6 +55,57 @@ resource "aws_security_group" "cluster_sg" {
   }
 }
 
+resource "aws_lb" "nlb" {
+  name               = "blog-nlb"
+  internal           = false // # 체계 설정 내부로 할지 인터넷경계로 할지
+  load_balancer_type = "network" # for NLB or "application" for ALB
+  
+  subnet_mapping {
+    subnet_id = aws_subnet.public_subnet.id  # VPC1의 서브넷 ID
+  }
+
+  enable_deletion_protection = false # true이면 terraform이 LB 삭제하는 걸 막아줌, 디폴트가 false라 false면 굳이 안써도 되긴 함
+  
+  tags = {
+    Environment = "production"
+  }
+}
+
+resource "aws_lb_target_group" "tg" {
+  name     = "blog-tg"
+  port     = 80
+  protocol = "TCP"
+  target_type = "ip" # 인스턴스면 타켓타입 미표시. 람다, alb면 각각 "lambda", "alb"로 타겟 타입을 선언해줘야함
+  vpc_id   = aws_vpc.mainvpc.id  
+}
+
+resource "aws_lb_target_group_attachment" "tg_ip" {
+  target_group_arn = aws_lb_target_group.tg.arn
+  target_id        = aws_instance.ccs-workers[0].private_ip
+  port             = 30000
+}
+
+
+resource "aws_lb_listener" "nlb_listner" {
+  load_balancer_arn = aws_lb.nlb.arn
+  port              = "80"
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg.arn
+  }
+}
+# resource "aws_lb_listener_rule" "rule" {
+#   listener_arn = aws_lb_listener.nlb_listner.arn
+ 
+#   action {
+#     type = "forward"
+#     target_group_arn = aws_lb_target_group.tg.arn
+#   }
+# }
+# 여러 클러스터(vpc)에 분산해야할 때
+
 resource "aws_instance" "ccs-master" {
   ami           = "ami-0c9c942bd7bf113a2"
   instance_type = "t3.small"
