@@ -202,7 +202,6 @@ pre {
   font-size: 1.1rem !important;
   color: white;
   background-color: rgb(65, 65, 65) !important;
-  white-space: pre-line !important;
   border-radius: 0.5rem !important;
   width: inherit;
 }
