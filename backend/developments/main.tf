@@ -124,8 +124,12 @@ resource "aws_instance" "ccs-master" {
     host = self.public_ip
   }
 
+  root_block_device {
+    volume_size    = 8
+    volume_type    = "gp2"
+  }
 
-   provisioner "remote-exec" {
+  provisioner "remote-exec" {
 
     inline = [
       "cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf",
@@ -193,6 +197,11 @@ resource "aws_instance" "ccs-worker" {
     private_key = file("../../../PEMKEY/Choigonyok.pem")    
     host = self.public_ip
   }
+
+  root_block_device {
+    volume_size    = 16
+    volume_type    = "gp2"
+  }
    
 provisioner "remote-exec" {
 
@@ -251,6 +260,11 @@ resource "aws_instance" "ccs-worker-database" {
     user = "ubuntu"
     private_key = file("../../../PEMKEY/Choigonyok.pem")    
     host = self.public_ip
+  }
+
+  root_block_device {
+    volume_size    = 8
+    volume_type    = "gp2"
   }
    
 provisioner "remote-exec" {

@@ -27,6 +27,9 @@ spec:
         image: achoistic98/blog_backend:latest
         ports:
         - containerPort: 8080
+        volumeMounts:
+          - name: backend-volume
+            mountPath: /assets
         env:
         - name: DB_HOST
           value: database-service
@@ -46,3 +49,7 @@ spec:
           value: choigonyok
         - name: BLOG_PW
           value: devops
+      volumes:
+        - name: backend-volume        
+          hostPath:
+            path: /volumes
