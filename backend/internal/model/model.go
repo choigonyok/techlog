@@ -18,13 +18,13 @@ type Comment struct {
 }
 
 type Post struct {
-	ID        int       `json:"id"`
-	Tag       string    `json:"tag"`
-	Title     string    `json:"title"`
-	Text      string    `json:"text"`
-	WriteTime string 	`json:"writetime"`
-	ImagePath string    `json:"imagepath"`
-	ImageNum  int       `json:"imagenum"`
+	ID        int    `json:"id"`
+	Tag       string `json:"tag"`
+	Title     string `json:"title"`
+	Text      string `json:"text"`
+	WriteTime string `json:"writetime"`
+	ImagePath string `json:"imagepath"`
+	ImageNum  int    `json:"imagenum"`
 }
 
 type Reply struct {
@@ -64,13 +64,13 @@ func UpdateCookieRecord() (uuid.UUID, error) {
 	if err != nil {
 		return uuid.Nil, err
 	}
-	_, err =  db.Exec("DELETE FROM cookie")
+	_, err = db.Exec("DELETE FROM cookie")
 	if err != nil {
 		tx.Rollback()
 		return uuid.Nil, err
 	}
 	cookieValue := uuid.New()
-	_, err = db.Exec(`INSERT INTO cookie (value) VALUES ("`+cookieValue.String()+`")`)
+	_, err = db.Exec(`INSERT INTO cookie (value) VALUES ("` + cookieValue.String() + `")`)
 	if err != nil {
 		tx.Rollback()
 		return uuid.Nil, err
@@ -120,7 +120,7 @@ func GetRecentPostID() (int, error) {
 	return idnum, nil
 }
 func AddPost(tag, title, text, writetime string) error {
-	_, err := db.Exec(`INSERT INTO post (tag, writetime, title, text) values ('` + tag + `', '`+writetime+`' ,'` + title + `','` + text + `')`)
+	_, err := db.Exec(`INSERT INTO post (tag, writetime, title, text) values ('` + tag + `', '` + writetime + `' ,'` + title + `','` + text + `')`)
 	return err
 }
 
@@ -285,7 +285,7 @@ func SelectReplyByCommentID(commentID string) ([]Reply, error) {
 	var datas []Reply
 	var data Reply
 	for r.Next() {
-		r.Scan(&data.ID, &data.Admin ,&data.WriterID, &data.WriterPW, &data.Text)
+		r.Scan(&data.ID, &data.Admin, &data.WriterID, &data.WriterPW, &data.Text)
 		datas = append(datas, data)
 	}
 	return datas, nil
@@ -356,10 +356,10 @@ func GetPostByPostID(postID string) ([]Post, error) {
 }
 
 func AddVisitorCount(visitor Visitor) error {
-	_, err := db.Exec(`UPDATE visitor SET today = `+strconv.Itoa(visitor.Today+1)+`, total = `+strconv.Itoa(visitor.Total+1))
+	_, err := db.Exec(`UPDATE visitor SET today = ` + strconv.Itoa(visitor.Today+1) + `, total = ` + strconv.Itoa(visitor.Total+1))
 	if err != nil {
 		return err
-	}	
+	}
 	return nil
 }
 
@@ -374,7 +374,7 @@ func GetVisitorCount() (Visitor, error) {
 		_, err := db.Exec(`INSERT INTO visitor (today, total) VALUES (0, 0)`)
 		if err != nil {
 			return visitor, err
-		}	
+		}
 	}
 	r.Scan(&visitor.Today, &visitor.Total)
 	return visitor, nil
@@ -392,6 +392,6 @@ func GetTodayRecord() (string, error) {
 }
 
 func ResetTodayVisitorNum(date string) error {
-	_, err := db.Exec(`UPDATE visitor SET today = 1, date = "`+date+`"`)
+	_, err := db.Exec(`UPDATE visitor SET today = 1, date = "` + date + `"`)
 	return err
 }

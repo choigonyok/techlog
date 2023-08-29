@@ -51,7 +51,7 @@ func UnConnectDB() {
 	}
 }
 
-func CheckCookieHandelr(c *gin.Context){
+func CheckCookieHandelr(c *gin.Context) {
 	if isCookieAdmin(c) {
 		c.Writer.WriteHeader(http.StatusOK)
 	} else {
@@ -75,7 +75,7 @@ func CheckAdminIDAndPWHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 	cookieValue, err := model.UpdateCookieRecord()
 	if err != nil {
 		fmt.Println("ERROR #30 : ", err.Error())
@@ -223,7 +223,7 @@ func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 		}
 	}
 	if cookieNeed {
-		visitor,err := model.GetVisitorCount()
+		visitor, err := model.GetVisitorCount()
 		if err != nil {
 			fmt.Println("ERROR #33 : ", err.Error())
 			c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -243,9 +243,9 @@ func GetTodayAndTotalVisitorNumHandler(c *gin.Context) {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			fmt.Println("ERROR #40 : ", err.Error())
 			return
-		}	
+		}
 	}
-	
+
 	visitor, err := model.GetVisitorCount()
 	if err != nil {
 		fmt.Println("ERROR #41 : ", err.Error())
@@ -300,12 +300,21 @@ func GetPostsByTagHandler(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	for i := range datas {
-		datas[i].Text = strings.ReplaceAll(datas[i].Text, `\'`, `'`)
-		datas[i].Tag = strings.ToUpper(datas[i].Tag)
+	var realdata []model.Post
+	allKeys := make(map[int]bool)
+	for _, v := range datas {
+		if _, value := allKeys[v.ID]; !value {
+			realdata = append(realdata, v)
+			allKeys[v.ID] = true
+		} 
 	}
 
-	marshaledData, err := json.Marshal(datas)
+	for i := range realdata {
+		realdata[i].Text = strings.ReplaceAll(realdata[i].Text, `\'`, `'`)
+		realdata[i].Tag = strings.ToUpper(realdata[i].Tag)
+	}
+
+	marshaledData, err := json.Marshal(realdata)
 	if err != nil {
 		fmt.Println("ERROR #23 : ", err.Error())
 		c.Writer.WriteHeader(http.StatusInternalServerError)
@@ -491,8 +500,8 @@ func GetReplyHandler(c *gin.Context) {
 		return
 	}
 	for _, v := range replySlice {
-		v.Text = strings.ReplaceAll(v.Text,`\'`, `'`)
-		v.WriterID = strings.ReplaceAll(v.Text,`\'`, `'`)
+		v.Text = strings.ReplaceAll(v.Text, `\'`, `'`)
+		v.WriterID = strings.ReplaceAll(v.Text, `\'`, `'`)
 	}
 	marshaledData, err := json.Marshal(replySlice)
 	if err != nil {
@@ -535,7 +544,7 @@ func AddReplyHandler(c *gin.Context) {
 	if !isPWValid {
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		return
-		
+
 	}
 	if !isCookieAdmin(c) {
 		data.Admin = 0
