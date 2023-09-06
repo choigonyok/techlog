@@ -8,7 +8,7 @@ build:
       format: 01/02_15:04:05
   artifacts:
   - image: frontend
-    context: .
+    context: ./frontend
     docker:
       dockerfile: Dockerfile.dev
   #     requires:
