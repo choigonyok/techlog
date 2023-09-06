@@ -25,5 +25,6 @@ spec:
       containers:
       - name: frontend-deployment
         image: achoistic98/blog_frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
