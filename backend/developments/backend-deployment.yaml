@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: backend-deployment
-  template:
+  template: 
     metadata:
       labels:
         app: backend-deployment

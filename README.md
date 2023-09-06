@@ -116,17 +116,3 @@
 ### Today / Total 방문자 수 집계
 * visitor 쿠키를 활용한 Today 방문자 수 집계
 * Total 방문자는 누적, Today 방문자는 자정마다 초기화
-
-<br>
-
-# **관련 Posts**
-
-* [[BLOG #1]블로그를 직접 만들어보자](https://choigonyok.com/post/1)
-
-* [[BLOG #2]URL로 이미지 GET하기](https://choigonyok.com/post/8)
-
-* [[BLOG #3]태그로 RELATED POST 관리하기](https://choigonyok.com/post/9)
-
-* [[BLOG #4]여러 파일을 한 번에 업로드 하는 법](https://choigonyok.com/post/10)
-
-* [[BLOG #5]댓글/답글 기능 구현하기](https://choigonyok.com/post/13)

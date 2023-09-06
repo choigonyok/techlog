@@ -82,12 +82,20 @@
 
 @media (max-width: 1100px) {
   .tags-button {
+    font-family: 'Noto Sans KR', sans-serif;
     font-size: 13px !important;
-    padding: 12px;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
   .tags-button__clicked {
+    font-family: 'Noto Sans KR', sans-serif;
     font-size: 13px !important;
-    padding: 12px;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
   }
   .container{
     padding-left: 15%;

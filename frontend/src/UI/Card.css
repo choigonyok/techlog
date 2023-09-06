@@ -76,3 +76,61 @@
   transform: scale(1.1);
   transition: 300ms;
 }
+
+@media (max-width: 1100px) {
+  .postcard {
+    width: 55rem;
+    height: 60rem;
+  }
+  .postcard-image {
+    display: flex;
+    height: 38rem;
+    width: 55rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+    object-fit: cover;
+  }
+  .postcard-tag {
+    font-size: 1.6rem;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-top: 3%;
+    font-style: italic;
+    display: flex;
+    height: 5rem;
+    width: auto;
+    justify-content: left;
+    align-items: center;
+  }
+  
+  .postcard-text {
+    font-size: 3.5rem;
+    padding-left: 3% !important;
+    padding-right: 3% !important;
+    padding-top: 3% !important;
+    padding-bottom: auto;
+    line-height: 115%;
+    display: flex;
+    height: 12rem;
+    width: auto;
+    justify-content: left;
+    align-items: flex-start;
+  }
+  .postcard-date {
+    padding: 3%;
+    display: flex;
+    height: 5rem;
+    width: auto;
+    justify-content: right;
+    align-items: flex-end;
+  }
+  .postcard-date__box {
+    border: 0.2rem solid rgb(255, 255, 255);
+    border-radius: 2rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1.3rem;
+    padding: 2%;
+  }
+}

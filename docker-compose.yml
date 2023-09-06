@@ -20,7 +20,9 @@ services:
     - "80:80"
       
   mysql:
-    build: ./mysql
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./mysql
     restart: no
     ports:
       - "3306:3306"
@@ -40,3 +42,6 @@ services:
       - ./backend/:/app
     ports:
       - "8080:8080"
+
+
+

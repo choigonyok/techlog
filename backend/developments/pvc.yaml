@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ebs-csi-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeName: ebs-csi-pv
+  resources:
+    requests:
+      storage: 10Gi
