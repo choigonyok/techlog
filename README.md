@@ -12,7 +12,7 @@
 
 ### 🚀 [Techlog.](http://www.choigonyok.com) 🚀
 
-<img align="right" src="https://github.com/choigonyok/blog-project/assets/129271363/e3892e1e-8a0a-4635-837e-1c0c9fd46996" height="700" width="600"/>
+<img align="right" src="https://github.com/choigonyok/blog-project/assets/129271363/e3892e1e-8a0a-4635-837e-1c0c9fd46996" height="600" width="500"/>
 
 </br>
 
