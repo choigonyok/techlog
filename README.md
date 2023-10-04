@@ -1,91 +1,88 @@
-# BLOG PROJECT
+# Techlog. 🚀
 
-## **프로젝트명 : 리액트로 바위치기**
+### **_Make A Tech Blog On My Own_**
 
-<br>
+## ⭐ Release & Dependencies
 
-![리액트로-바위치기](https://github.com/choigonyok/blog-project-frontend/assets/129271363/fb779c88-d2eb-42db-92a0-7e9f9885622b)
+<img src="https://img.shields.io/badge/1.0-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
 
-<br>
+</br>
 
-# **개요**
+## ⭐ Result
 
-나만의 테크 블로그를 직접 개발해서 사용하자!
+### 🚀 [Techlog.](http://www.choigonyok.com) 🚀
 
-## **1-1 개발기간**
+<img align="right" src="https://github.com/choigonyok/blog-project/assets/129271363/e3892e1e-8a0a-4635-837e-1c0c9fd46996" height="700" width="600"/>
 
-        23.06.01 ~ 23.06.20 (20일)
+</br>
 
-## **1-2 역할**
+## ⭐ Duration
 
-        최윤석 (경희대 컴퓨터공학과)
+<table>
+<tr>
+<td align=center>
+Development
+</td>
+<td align=center>
+23.06.01 ~ 23.06.20 (20 days)
+</td>
+</tr>
+<tr>
+<td align=center>
+Refactoring
+</td>
+<td align=center>
+23.08.11 ~ 23.08.25 (15 days)
+</td>
+</tr>
+</table>
 
-* #### [instagram](https://www.instagram.com/choigonyok)
+## ⭐ Released Version
 
-* #### [blog](https://www.choigonyok.com)
+<table>
+<tr>
+<td align=center>
+v1.0
+</td>
+<td align=center>
+23.10.05
+</td>
+</tr>
+</table>
 
-> 설계, BE, FE, 배포 담당
+## ⭐ Features
 
-## **1-3 결과물**
+* MVC Design Pattern
+* Deploy in Kubernetes
+* Infrastructure Provisioning w/ Terraform
+* Responsive Web (in PC, Tablet, Mobile)
+* Administrator Page
+* Markdown Editor 
+* Anti-SQL Injection
+* Comment / Reply
+* Related Posts by Tags
+* Categorize by Tag Buttons
+* Today / Total Visitor Count
 
-### [www.choigonyok.com](https://www.choigonyok.com)
+</br>
 
-## **1-4 리팩토링**
+## ⭐ Technical Stacks
 
-        기간 : 23.08.11 ~ 
-        내용 : 
-        - MVC패턴 적용
-        - Go directory convention 적용
-        - K8S 배포
-        - Code refactoring
-        - 게시글에 특정 기호 못넣던 이슈 해결
-        - 프론트엔드 레포지토리 통합 
-        - 반응형 웹(모바일/PC)
-<br>
+<img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=Go&logoColor=white"> <img src="https://img.shields.io/badge/Gin-00ADD8?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=black"> <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=black"> <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=black"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=Kubernetes&logoColor=white"> <img src="https://img.shields.io/badge/Containerd-575757?style=for-the-badge&logo=Containerd&logoColor=white"> <img src="https://img.shields.io/badge/Kubeadm-575757?style=for-the-badge"> <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=Terraform&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white"> <img src="https://img.shields.io/badge/HAProxy-2496ED?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"> <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white"> <img src="https://img.shields.io/badge/ELB-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/EBS-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/EIP-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/VPC-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/ROUTE53-4053D6?style=for-the-badge&logo=Amazon&logoColor=white">
 
-[Frontend Repository](https://github.com/choigonyok/blog-project-frontend)
+</br>
 
-<br>
+## ⭐ Contributor
 
-# **개발이유**
-
-## **쉬워서**
-   
-블로그 개발은 너무 쉽다고들 한다. 오히려 잘 됐다고 생각했다. 첫 프로젝트인 만큼 과분하게 어려운 목표를 정하면 쉽게 지칠 수 있을 뿐더러 종국엔 프로젝트를 완성하지 못하는 상황이 생길 수 있다.
-
-또 쉽다는 이유로 많은 개발자들이 블로그 개발에 도전하기 때문에, 진행하면서 겪는 어려움이나 문제들을 쉽게 서칭할 수 있을 것이다.
-
-<br>
-
-## **클론 코딩 하지 않을거라서**
-
-클론 코딩의 정의가 사람들마다 나뉘는 것 같다.
-
-인프런, 유튜브 등 강의를 보면서 A-Z까지 하라는대로 따라서 만드는 것
-
-한 레퍼런스를 정하고 어떻게 기능들을 구현하였을까 고민하면서 같은 기능을 구현하는 것
-
-둘 중 클론코딩의 정의가 뭐가 됐던 난 둘 다 하지 않을 것이다.
-
-직접 들이박고 해결해내며 얻는 지식의 가치나 기쁨을 많이 느껴봤기 때문이다. 물론 문제에 직면했을 때, 빠르게 답을 찾아내 문제를 해결하는 것도 개발자의 중요한 덕목 중 하나이다.
-
-그러나 지금 개발에 막 뛰어든 나로써는 혼자 고민하고 탐구하며 기본기를 탄탄히 쌓아가는 것이 더 중요하다.
-
-<br>
-
-## **앞으로 유용하게 쓸 거라서**
-
-완성도있게 개발해두면 블로그에 대한 애정이 넘쳐서, 혹은 개발한 게 아까워서라도 블로그에 좋은 내용의 글을 더 담게 될 것이다. 블로그 개발이 학습에 대한 동기부여로 작용할 수 있다.
-
-<br>
-
-# **기술스택**
-
-* BE : Go, Gin
-* FE : React.js
-* Publishing : CSS, HTML
-* DB : MySQL
-* Version Management : Git / Github
-* Deployment : AWS EC2
-* Web Server : Nginx
-* Domain Name : AWS Route53
+<table>
+<tr>
+<td align=center>
+<img src="https://github.com/choigonyok/blog-project/assets/129271363/40334291-9fab-44f1-bacd-f06b56a0242d" height="150" width="150"/>
+</td>
+</tr>
+<tr>
+<td align=center>
+최윤석
+</td>
+</tr>
+</table>
