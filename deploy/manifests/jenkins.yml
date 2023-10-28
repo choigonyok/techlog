@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins
+spec:
+  capacity:
+    storage: 8Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: <EBS_VOLUME_ID>
+    volumeAttributes:
+      fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeName: jenkins
+  resources:
+    requests:
+      storage: 8Gi
+---      
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template: 
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: achoistic98/jenkins:blog
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: jenkins
+            mountPath: /var/jenkins_home
+      volumes:
+        - name: jenkins
+          persistentVolumeClaim:
+            claimName: jenkins
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+spec:
+  selector:
+    app: jenkins
+  ports:
+    - protocol: TCP
+      port: 5103
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+---

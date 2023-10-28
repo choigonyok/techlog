@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: database-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: database-deployment
@@ -31,3 +31,17 @@ spec:
             path: /volumes # Replace with the actual path on your host machine
       nodeSelector:
         instance: small
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service
+spec:
+  selector:
+    app: database-deployment
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
