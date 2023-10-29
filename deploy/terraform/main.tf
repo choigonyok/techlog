@@ -325,3 +325,4 @@ output "lb-dnsname" {
 }
 
 // EBS 생성
+// S3 버킷 생성

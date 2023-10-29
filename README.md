@@ -67,6 +67,7 @@ v1.0
 * Package Oriented Design
 * Backup Automation
 * Cache Server
+* Unit, Integration, E2E, Mocking Test
 
 [Refactoring #1]
 * MVC Design Pattern
