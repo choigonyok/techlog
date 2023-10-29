@@ -323,3 +323,6 @@ output "worker-ip" {
 output "lb-dnsname" {
   value = "${aws_lb.nlb.dns_name}"
 }
+
+// EBS 생성
+// S3 버킷 생성

@@ -35,6 +35,14 @@ Refactoring
 23.08.11 ~ 23.08.25 (15 days)
 </td>
 </tr>
+<tr>
+<td align=center>
+Refactoring
+</td>
+<td align=center>
+23.10.29 ~  (In Progress)
+</td>
+</tr>
 </table>
 
 ## ⭐ Released Version
@@ -52,13 +60,25 @@ v1.0
 
 ## ⭐ Features
 
+[Refactoring #2] (In Progress)
+* CI/CD Pipeline
+* AWS S3 BuildFile Serving
+* Golang Webserver for Dev Environment
+* Package Oriented Design
+* Backup Automation
+* Cache Server
+* Unit, Integration, E2E, Mocking Test
+
+[Refactoring #1]
 * MVC Design Pattern
 * Deploy in Kubernetes
 * Infrastructure Provisioning w/ Terraform
 * Responsive Web (in PC, Tablet, Mobile)
+* Anti-SQL Injection
+
+[Development]
 * Administrator Page
 * Markdown Editor 
-* Anti-SQL Injection
 * Comment / Reply
 * Related Posts by Tags
 * Categorize by Tag Buttons
@@ -68,7 +88,7 @@ v1.0
 
 ## ⭐ Technical Stacks
 
-<img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=Go&logoColor=white"> <img src="https://img.shields.io/badge/Gin-00ADD8?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=black"> <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=black"> <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=black"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=Kubernetes&logoColor=white"> <img src="https://img.shields.io/badge/Containerd-575757?style=for-the-badge&logo=Containerd&logoColor=white"> <img src="https://img.shields.io/badge/Kubeadm-575757?style=for-the-badge"> <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=Terraform&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white"> <img src="https://img.shields.io/badge/HAProxy-2496ED?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"> <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white"> <img src="https://img.shields.io/badge/ELB-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/EBS-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/EIP-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/VPC-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/ROUTE53-4053D6?style=for-the-badge&logo=Amazon&logoColor=white">
+<img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=Go&logoColor=white"> <img src="https://img.shields.io/badge/Gin-00ADD8?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=black"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=Kubernetes&logoColor=white"> <img src="https://img.shields.io/badge/Containerd-575757?style=for-the-badge&logo=Containerd&logoColor=white"> <img src="https://img.shields.io/badge/Kubeadm-575757?style=for-the-badge"> <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=Terraform&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white"> <img src="https://img.shields.io/badge/HAProxy-2496ED?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"> <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/ROUTE53-4053D6?style=for-the-badge&logo=Amazon&logoColor=white">
 
 </br>
 

@@ -1,0 +1,7 @@
+FROM jenkins/jenkins:lts
+
+RUN apt-get update && apt-get install -y docker.io git
+
+RUN chown -R jenkins:jenkins /var/jenkins_home
+
+USER jenkins

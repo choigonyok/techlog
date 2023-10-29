@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-deployment
+  name: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: backend-deployment
+      app: backend
   template: 
     metadata:
       labels:
-        app: backend-deployment
+        app: backend
     spec:
       affinity:
         podAntiAffinity:
@@ -53,3 +53,16 @@ spec:
         - name: backend-volume        
           hostPath:
             path: /volumes
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend-deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP            
