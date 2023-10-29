@@ -1,7 +1,17 @@
 .env
+.DS_Store
 
 # Terraform
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
 .terraform.lock.hcl
+
+# MySQL
+/mysql_data
+sql/initialize.sql
+
+# Backend
+tables
+/assets/*
+main
