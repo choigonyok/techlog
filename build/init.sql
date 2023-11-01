@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS `visitor`;
 CREATE TABLE `visitor` (
         `today` INT NOT NULL DEFAULT 0,
         `total` INT NOT NULL DEFAULT 0,
-        `data` VARCHAR(20) DEFAULT NULL
+        `date` VARCHAR(20) DEFAULT NULL
 );
 INSERT INTO `visitor` VALUES (1,199,'2023-10-29');
 
