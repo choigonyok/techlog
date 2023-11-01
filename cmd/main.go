@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/choigonyok/techlog/pkg/database"
-	"github.com/choigonyok/techlog/pkg/handler"
 	"github.com/choigonyok/techlog/pkg/middleware"
 	"github.com/choigonyok/techlog/pkg/router"
 	"github.com/choigonyok/techlog/pkg/server"
@@ -31,22 +30,20 @@ var (
 func main() {
 	godotenv.Load(".env")
 
-	connector := database.New(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
+	database := database.NewDatabase(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
 
-	db, _ := connector.Open()
-	defer connector.Close(db)
+	db, _ := database.Open()
+	defer database.Close(db)
 
 	middleware := &middleware.Middleware{}
 	middleware.AllowConfig(allowOrigin, allowMethods, allowHeaders, allowCredentials)
 
-	// router.New(middleware)
-	router := router.New(middleware)
+	router := router.NewRouter(middleware)
+	routes := router.NewRoutes(handlerPrefix)
+	router.SetRoutes(routes)
+	httpHandler := router.GetHTTPHandler()
 
-	handlers := handler.NewHandlers(handlerPrefix)
-	router.SetHandlers(handlers)
-	httpHandlers := router.GetHTTPHandlers()
-
-	server := server.New(httpHandlers, listenAddress)
+	server := server.New(httpHandler, listenAddress)
 	err := server.Start()
 	if err != nil {
 		fmt.Println("server starting error...", err.Error())

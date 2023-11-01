@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type Connector struct {
+type Database struct {
 	driverName   string
 	password     string
 	user         string
@@ -14,23 +14,27 @@ type Connector struct {
 	databaseName string
 }
 
-func (c *Connector) Open() (*sql.DB, error) {
-	db, err := sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
+var (
+	DB *sql.DB
+)
 
-	fmt.Println(c.user + ":" + c.password + "@tcp(" + c.host + ")/" + c.databaseName)
+func (c *Database) Open() (*sql.DB, error) {
+	var err error
+	DB, err = sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
 	if err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	fmt.Println(c.user + ":" + c.password + "@tcp(" + c.host + ")/" + c.databaseName)
+	return DB, nil
 }
 
-func (c *Connector) Close(db *sql.DB) {
+func (c *Database) Close(db *sql.DB) {
 	db.Close()
 }
 
-func New(driver, password, user, port, host, databasename string) *Connector {
-	newConnector := &Connector{
+func NewDatabase(driver, password, user, port, host, databasename string) *Database {
+	newDatabase := &Database{
 		driverName:   driver,
 		password:     password,
 		user:         user,
@@ -38,5 +42,9 @@ func New(driver, password, user, port, host, databasename string) *Connector {
 		host:         host,
 		databaseName: databasename,
 	}
-	return newConnector
+	return newDatabase
+}
+
+func GetConnector() *sql.DB {
+	return DB
 }
