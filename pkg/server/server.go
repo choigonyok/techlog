@@ -1,21 +1,23 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func New(h http.Handler) *Server {
-	s := newHTTPServer(h)
+func New(h http.Handler, address string) *Server {
+	s := newHTTPServer(h, address)
 	return &Server{
 		httpServer: s,
 	}
 }
 
-func newHTTPServer(h http.Handler) *http.Server {
+func newHTTPServer(h http.Handler, address string) *http.Server {
 	return &http.Server{
-		Addr:    "localhost:8000",
+		Addr:    address,
 		Handler: h,
 	}
 }
