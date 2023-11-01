@@ -1,0 +1,44 @@
+version: '3'
+services:
+  frontend:
+    build:
+      dockerfile: build/Dockerfile.frontend-dev
+      context: .
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    stdin_open: true
+    ports:
+      - "3000:3000"
+
+  nginx:
+    restart: no
+    build:
+      dockerfile: build/Dockerfile.nginx
+      context: .
+    ports:
+    - "80:80"
+      
+  mysql:
+    build:
+      dockerfile: build/Dockerfile.mysql
+      context: .
+    restart: no
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./build:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: blogdb
+      TZ: Asia/Seoul
+
+  backend:
+    build:
+      dockerfile: build/Dockerfile.dev
+      context: .
+    volumes:
+      - ./cmd/:/app/cmd
+      - ./pkg/:/app/pkg
+    ports:
+      - "8080:8080"
