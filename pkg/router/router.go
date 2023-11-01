@@ -10,9 +10,10 @@ import (
 type Router struct {
 	engine      *gin.Engine
 	middlewares *middleware.Middleware
+	routes      []Route
 }
 
-func New(m *middleware.Middleware) *Router {
+func NewRouter(m *middleware.Middleware) *Router {
 	engine := gin.Default()
 	engine.Use(m.Get()...)
 
@@ -22,6 +23,21 @@ func New(m *middleware.Middleware) *Router {
 	}
 }
 
-func (r *Router) GetHandler() http.Handler {
+func (r *Router) GetHTTPHandler() http.Handler {
 	return r.engine.Handler()
+}
+
+func (r *Router) SetRoutes(routes []Route) {
+	for _, v := range routes {
+		switch v.Method {
+		case "post":
+			r.engine.POST(v.Path, v.Handler)
+		case "get":
+			r.engine.GET(v.Path, v.Handler)
+		case "delete":
+			r.engine.DELETE(v.Path, v.Handler)
+		case "put":
+			r.engine.PUT(v.Path, v.Handler)
+		}
+	}
 }
