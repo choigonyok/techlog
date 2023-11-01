@@ -1,8 +1,11 @@
-package handler
+package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/choigonyok/techlog/pkg/handler"
+	"github.com/gin-gonic/gin"
+)
 
-type Handler struct {
+type Route struct {
 	Path    string
 	Method  string
 	Handler gin.HandlerFunc
@@ -15,102 +18,102 @@ const (
 	DELETE = "delete"
 )
 
-func NewHandlers(prefix string) []Handler {
-	h := []Handler{
+func (r *Router) NewRoutes(prefix string) []Route {
+	h := []Route{
 		{
 			Path:    prefix + "post/image",
 			Method:  POST,
-			Handler: WritePostImageHandler,
+			Handler: handler.WritePostImageHandler,
 		},
 		{
 			Path:    prefix + "post",
 			Method:  POST,
-			Handler: WritePostHandler,
+			Handler: handler.WritePostHandler,
 		},
 		{
 			Path:    prefix + "post/:postid",
 			Method:  DELETE,
-			Handler: DeletePostHandler,
+			Handler: handler.DeletePostHandler,
 		},
 		{
 			Path:    prefix + "post/:postid",
 			Method:  GET,
-			Handler: GetPostHandler,
+			Handler: handler.GetPostHandler,
 		},
 		{
 			Path:    prefix + "post/:postid",
 			Method:  PUT,
-			Handler: ModifyPostHandler,
+			Handler: handler.ModifyPostHandler,
 		},
 		{
 			Path:    prefix + "comment",
 			Method:  DELETE,
-			Handler: DeleteCommentHandler,
+			Handler: handler.DeleteCommentHandler,
 		},
 		{
 			Path:    prefix + "comment/:postid",
 			Method:  GET,
-			Handler: GetCommentHandler,
+			Handler: handler.GetCommentHandler,
 		},
 		{
 			Path:    prefix + "comment",
 			Method:  POST,
-			Handler: AddCommentHandler,
+			Handler: handler.AddCommentHandler,
 		},
 		{
 			Path:    prefix + "comment/pw/:commentid",
 			Method:  GET,
-			Handler: GetCommentPWHandler,
+			Handler: handler.GetCommentPWHandler,
 		},
 		{
 			Path:    prefix + "comment/:postid",
 			Method:  DELETE,
-			Handler: DeleteCommentByAdminHandler,
+			Handler: handler.DeleteCommentByAdminHandler,
 		},
 		{
 			Path:    prefix + "reply/:commentid",
 			Method:  GET,
-			Handler: GetReplyHandler,
+			Handler: handler.GetReplyHandler,
 		},
 		{
 			Path:    prefix + "reply/:commentid",
 			Method:  POST,
-			Handler: AddReplyHandler,
+			Handler: handler.AddReplyHandler,
 		},
 		{
 			Path:    prefix + "reply",
 			Method:  DELETE,
-			Handler: DeleteReplyHandler,
+			Handler: handler.DeleteReplyHandler,
 		},
 		{
 			Path:    prefix + "visitor",
 			Method:  GET,
-			Handler: GetTodayAndTotalVisitorNumHandler,
+			Handler: handler.GetVisitorCounts,
 		},
 		{
 			Path:    prefix + "login",
 			Method:  POST,
-			Handler: CheckAdminIDAndPWHandler,
+			Handler: handler.CheckAdminIDAndPWHandler,
 		},
 		{
 			Path:    prefix + "login",
 			Method:  GET,
-			Handler: CheckCookieHandelr,
+			Handler: handler.CheckCookieHandelr,
 		},
 		{
 			Path:    prefix + "tag",
 			Method:  POST,
-			Handler: GetPostsByTagHandler,
+			Handler: handler.GetPostsByTagHandler,
 		},
 		{
 			Path:    prefix + "tag",
 			Method:  GET,
-			Handler: GetEveryTagHandler,
+			Handler: handler.GetEveryTagHandler,
 		},
 		{
 			Path:    prefix + "assets/:name",
 			Method:  GET,
-			Handler: GetThumbnailHandler,
+			Handler: handler.GetThumbnailHandler,
 		},
 	}
 	return h

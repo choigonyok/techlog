@@ -3,7 +3,6 @@ package router
 import (
 	"net/http"
 
-	"github.com/choigonyok/techlog/pkg/handler"
 	"github.com/choigonyok/techlog/pkg/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -11,9 +10,10 @@ import (
 type Router struct {
 	engine      *gin.Engine
 	middlewares *middleware.Middleware
+	routes      []Route
 }
 
-func New(m *middleware.Middleware) *Router {
+func NewRouter(m *middleware.Middleware) *Router {
 	engine := gin.Default()
 	engine.Use(m.Get()...)
 
@@ -23,12 +23,12 @@ func New(m *middleware.Middleware) *Router {
 	}
 }
 
-func (r *Router) GetHTTPHandlers() http.Handler {
+func (r *Router) GetHTTPHandler() http.Handler {
 	return r.engine.Handler()
 }
 
-func (r *Router) SetHandlers(h []handler.Handler) {
-	for _, v := range h {
+func (r *Router) SetRoutes(routes []Route) {
+	for _, v := range routes {
 		switch v.Method {
 		case "post":
 			r.engine.POST(v.Path, v.Handler)
