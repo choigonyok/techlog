@@ -5,7 +5,6 @@ import Postpage from "./Postpage/Postpage";
 import Writepage from "./Adminpage/Writepage";
 import Deletepage from "./Adminpage/Deletepage";
 import Loginpage from "./Adminpage/Loginpage";
-import axios from "axios";
 
 const App = () => {
   

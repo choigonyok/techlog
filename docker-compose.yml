@@ -10,6 +10,8 @@ services:
     stdin_open: true
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
 
   nginx:
     restart: no
@@ -18,6 +20,9 @@ services:
       context: .
     ports:
     - "80:80"
+    depends_on:
+      - backend
+      - frontend
       
   mysql:
     build:
@@ -42,3 +47,5 @@ services:
       - ./pkg/:/app/pkg
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/choigonyok/blog-project/backend/internal/model"
+	"github.com/choigonyok/techlog/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -306,7 +306,7 @@ func GetPostsByTagHandler(c *gin.Context) {
 		if _, value := allKeys[v.ID]; !value {
 			realdata = append(realdata, v)
 			allKeys[v.ID] = true
-		} 
+		}
 	}
 
 	for i := range realdata {

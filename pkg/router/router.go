@@ -10,13 +10,11 @@ import (
 type Router struct {
 	engine      *gin.Engine
 	middlewares *middleware.Middleware
-	routes      []Route
 }
 
 func NewRouter(m *middleware.Middleware) *Router {
 	engine := gin.Default()
 	engine.Use(m.Get()...)
-
 	return &Router{
 		engine:      engine,
 		middlewares: m,

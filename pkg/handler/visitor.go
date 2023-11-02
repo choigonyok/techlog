@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
-	resp "github.com/choigonyok/techlog/pkg/http"
+	resp "github.com/choigonyok/techlog/pkg/response"
 	"github.com/choigonyok/techlog/pkg/service"
 	"github.com/choigonyok/techlog/pkg/time"
 	"github.com/gin-gonic/gin"
@@ -19,18 +19,19 @@ var (
 	cookieDomain   = os.Getenv("HOST")
 	cookieSecure   = false
 	cookieHttpOnly = true
-	pvr            = database.NewMysqlProvider(database.GetConnector())
-	svc            = service.NewService(pvr)
 )
 
 // GetVisitorCounts returns today/total visitor counts
 func GetVisitorCounts(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 	today := time.GetCurrentTimeByFormat("2006-01-02")
 
 	if !verifyCookieValue(c, today) {
-		err := addVisitorCounts()
+		err := svc.AddTodayAndTotal()
 		if err != nil {
 			resp.Response500(c)
+			fmt.Println(err.Error())
 			return
 		}
 		setCookie(c, today, cookieSecure, cookieHttpOnly)
@@ -39,13 +40,14 @@ func GetVisitorCounts(c *gin.Context) {
 	date, err := svc.GetDate()
 	if err != nil {
 		resp.Response500(c)
+		fmt.Println(err.Error())
 		return
 	}
-
 	if today != date {
 		err := svc.ResetToday(today)
 		if err != nil {
 			resp.Response500(c)
+			fmt.Println(err.Error())
 			return
 		}
 	}
@@ -53,33 +55,25 @@ func GetVisitorCounts(c *gin.Context) {
 	todayCount, totalCount, err := svc.GetCounts()
 	if err != nil {
 		resp.Response500(c)
+		fmt.Println(err.Error())
 		return
 	}
 
-	visitorData, err := json.Marshal(
-		struct {
-			Today int `json:"today"`
-			Total int `json:"total"`
-		}{
-			Today: todayCount,
-			Total: totalCount,
-		},
-	)
+	err = resp.ResponseDataWith200(c, struct {
+		Today int `json:"today"`
+		Total int `json:"total"`
+	}{
+		Today: todayCount,
+		Total: totalCount,
+	})
 	if err != nil {
 		resp.Response500(c)
-		return
 	}
-	c.Writer.Write(visitorData)
 }
 
 // setCookie sets cookie to verify day's first time visit of visitor
 func setCookie(c *gin.Context, today string, secure, httpOnly bool) {
 	c.SetCookie(cookieKey, today, 0, "/", cookieDomain, secure, httpOnly)
-}
-
-// updateVisitorCounts updates counts of today/total visitors
-func addVisitorCounts() error {
-	return svc.AddToday()
 }
 
 // verifyCookieValue verify cookie is exist & cookie has correct value

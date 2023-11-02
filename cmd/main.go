@@ -14,14 +14,9 @@ import (
 
 var (
 	databaseDriver   = "mysql"
-	databasePassword = os.Getenv("DB_PASSWORD")
-	databaseUser     = os.Getenv("DB_USER")
-	databasePort     = os.Getenv("DB_PORT")
-	databaseHost     = os.Getenv("DB_HOST")
-	databaseName     = os.Getenv("DB_NAME")
 	handlerPrefix    = "/api/"
 	listenAddress    = "0.0.0.0:8080" // should be 0.0.0.0, not localhost
-	allowOrigin      = []string{"*"}
+	allowOrigin      = []string{"http://localhost", "http://localhost:3000", "http://frontend", "http://fronend:3000"}
 	allowMethods     = []string{"GET", "POST", "DELETE", "PUT"}
 	allowHeaders     = []string{"Content-type"}
 	allowCredentials = true
@@ -30,8 +25,13 @@ var (
 func main() {
 	godotenv.Load(".env")
 
-	database := database.NewDatabase(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
+	var databasePassword = os.Getenv("DB_PASSWORD")
+	var databaseUser = os.Getenv("DB_USER")
+	var databasePort = os.Getenv("DB_PORT")
+	var databaseHost = os.Getenv("DB_HOST")
+	var databaseName = os.Getenv("DB_NAME")
 
+	database := database.NewDatabase(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
 	db, _ := database.Open()
 	defer database.Close(db)
 

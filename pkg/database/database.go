@@ -15,18 +15,18 @@ type Database struct {
 }
 
 var (
-	DB *sql.DB
+	db *sql.DB
 )
 
 func (c *Database) Open() (*sql.DB, error) {
 	var err error
-	DB, err = sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
+	db, err = sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
 	if err != nil {
 		return nil, err
 	}
 
 	fmt.Println(c.user + ":" + c.password + "@tcp(" + c.host + ")/" + c.databaseName)
-	return DB, nil
+	return db, nil
 }
 
 func (c *Database) Close(db *sql.DB) {
@@ -46,5 +46,5 @@ func NewDatabase(driver, password, user, port, host, databasename string) *Datab
 }
 
 func GetConnector() *sql.DB {
-	return DB
+	return db
 }
