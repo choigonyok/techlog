@@ -9,5 +9,6 @@ RUN npm install
 EXPOSE 3000
 
 COPY ./frontend/ .
+COPY .env .
 
 CMD ["npm", "run", "start"]

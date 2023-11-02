@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -20,4 +21,12 @@ func CreateRandomString() string {
 func EncodeBase64(target string) string {
 	t := []byte(target)
 	return base64.RawStdEncoding.EncodeToString(t)
+}
+
+func MarshalDatabaseFormat(tag, text string) (string, string) {
+	return strings.ToUpper(tag), strings.ReplaceAll(text, `'`, `\'`)
+}
+
+func UnMarshalDatabaseFormat(tag, text string) string {
+	return strings.ReplaceAll(text, `\'`, `'`)
 }
