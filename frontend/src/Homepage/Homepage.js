@@ -63,7 +63,6 @@ const Homepage = () => {
         </div>
       </div>
       <Button onSeeTaggedPost={seeTaggedPostHandler} />
-      {/* <p>Today : 1 &nbsp; / &nbsp; Total : 10</p> */}
       {postData && <Card postdata={postData} />}
       <Footer />
     </div>

@@ -103,12 +103,12 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		{
 			Path:    prefix + "tag",
 			Method:  POST,
-			Handler: handler.GetPostsByTagHandler,
+			Handler: handler.GetEveryCardByTag,
 		},
 		{
 			Path:    prefix + "tag",
 			Method:  GET,
-			Handler: handler.GetEveryTagHandler,
+			Handler: handler.GetTags,
 		},
 		{
 			Path:    prefix + "assets/:name",

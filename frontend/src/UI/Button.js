@@ -28,8 +28,7 @@ const Button = (props) => {
     axios
      .get(process.env.REACT_APP_HOST+ "/api/tag")
       .then((response) => {
-        setTagsData(response.data);
-
+        setTagsData([...response.data]);
         // props.onSeeTaggedPost(jsonArray);
       })
       .catch((error) => {
@@ -38,7 +37,7 @@ const Button = (props) => {
   }, []);
 
   const ClickHandler = (value) => {
-    setPostData({ Tag: value });
+    setPostData({ tags: value });
     setTitle(`" ` + value + ` "`);
     setAnimate(!animate);
   };
@@ -71,8 +70,8 @@ const Button = (props) => {
                 ? "tags-button__clicked"
                 : "tags-button"
             }
-            value={item.tag}
-            onClick={() => ClickHandler(item.tag)}
+            value={item}
+            onClick={() => ClickHandler(item)}
           />
         ))}
       </div>
