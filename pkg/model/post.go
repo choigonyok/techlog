@@ -5,11 +5,12 @@ import (
 )
 
 type Post struct {
-	ID        int
-	Tags      string
-	Title     string
-	Text      string
-	WriteTime time.Time
+	ID            int       `json:"id"`
+	Tags          string    `json:"tags"`
+	Title         string    `json:"title"`
+	WriteTime     time.Time `json:"writeTime"`
+	ThumbnailPath string    `json:"thumbnailPath"`
+	Text          string    `json:"text"`
 }
 
 type PostTags struct {
@@ -17,8 +18,9 @@ type PostTags struct {
 }
 
 type PostCard struct {
-	ID        int       `json:"id"`
-	Tags      string    `json:"tags"`
-	Title     string    `json:"title"`
-	WriteTime time.Time `json:"writeTime"`
+	ID            int       `json:"id"`
+	Tags          string    `json:"tags"`
+	Title         string    `json:"title"`
+	WriteTime     time.Time `json:"writeTime"`
+	ThumbnailPath string    `json:"thumbnailPath"`
 }
