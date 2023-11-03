@@ -1,0 +1,21 @@
+pipeline {
+  agent {
+    // this image provides everything needed to run Cypress
+    docker {
+      image 'cypress/base:18.14.1'
+    }
+  }
+
+  stages {
+    stage('build') {
+        steps {
+            
+        }
+    }
+    stage('e2e test') {
+      steps {
+        sh './frontend/node_modules/.bin/cypress run'
+      }
+    }
+  }
+}
