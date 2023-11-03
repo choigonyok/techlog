@@ -18,9 +18,9 @@ type PostTags struct {
 }
 
 type PostCard struct {
-	ID            int       `json:"id"`
-	Tags          string    `json:"tags"`
-	Title         string    `json:"title"`
-	WriteTime     time.Time `json:"writeTime"`
-	ThumbnailPath string    `json:"thumbnailPath"`
+	ID            int    `json:"id"`
+	Tags          string `json:"tags"`
+	Title         string `json:"title"`
+	WriteTime     string `json:"writeTime"`
+	ThumbnailPath string `json:"thumbnailPath"`
 }

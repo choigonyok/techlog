@@ -37,3 +37,30 @@ func (svc *Service) GetPostByID(postID string) ([]model.Post, error) {
 	m, _ := svc.provider.GetPostByID(postID)
 	return m, nil
 }
+
+// func (svc *Service) GetImageNameByPostID(postID string) ([]model.PostImageResponse, error) {
+// 	images := []model.PostImageResponse{}
+// 	providedImages, err := svc.provider.GetImageNameByPostID(postID)
+// 	for _, v := range providedImages {
+// 		if v.Thumbnail == 1 {
+// 			images = append(images, model.PostImageResponse{
+// 				ID:        v.ID,
+// 				PostID:    v.PostID,
+// 				ImageName: v.ImageName,
+// 				Thumbnail: true,
+// 			})
+// 		} else {
+// 			images = append(images, model.PostImageResponse{
+// 				ID:        v.ID,
+// 				PostID:    v.PostID,
+// 				ImageName: v.ImageName,
+// 				Thumbnail: false,
+// 			})
+// 		}
+// 	}
+// 	return images, err
+// }
+
+func (svc *Service) GetThumbnailNameByPostID(postID string) (string, error) {
+	return svc.provider.GetThumbnailNameByPostID(postID)
+}

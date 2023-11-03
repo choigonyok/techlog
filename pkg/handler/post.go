@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"io"
 	"os"
 
@@ -43,11 +42,12 @@ func DeletePostHandler(c *gin.Context) {
 
 }
 
-// 게시글 내용 불러오기
-func GetPostHandler(c *gin.Context) {
+// GetPost returns post data including post body
+func GetPost(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
+
 	posts, err := svc.GetPostByID(postID)
 	if err != nil {
 		resp.Response500(c)
@@ -65,7 +65,7 @@ func ModifyPostHandler(c *gin.Context) {
 
 }
 
-// 태그 클릭 시 게시글 출력
+// GetEveryCardByTag returns posts data by tag without post body
 func GetEveryCardByTag(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
@@ -89,7 +89,7 @@ func GetEveryCardByTag(c *gin.Context) {
 	}
 }
 
-// 현재 존재하는 모든 카드 게시글 불러오기
+// GetTags returns every post data without post body
 func GetTags(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
@@ -104,18 +104,26 @@ func GetTags(c *gin.Context) {
 	}
 }
 
-func GetImageByID(c *gin.Context) {
-	imageName := c.Param("imageName")
+// GetThumbnailByPostID returns post thumbnail image file
+func GetThumbnailByPostID(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	postID := c.Param("postid")
 
-	file, err := os.Open("assets/" + imageName)
+	thumbnailName, err := svc.GetThumbnailNameByPostID(postID)
 	if err != nil {
-		fmt.Println(err.Error())
 		resp.Response500(c)
 		return
 	}
-	defer file.Close()
 
-	_, err = io.Copy(c.Writer, file)
+	image, err := os.Open("assets/" + thumbnailName)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+	defer image.Close()
+
+	_, err = io.Copy(c.Writer, image)
 	if err != nil {
 		resp.Response500(c)
 		return
