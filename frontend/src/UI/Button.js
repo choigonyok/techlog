@@ -53,7 +53,7 @@ const Button = (props) => {
       >
         {title}
       </h1>
-      <div className="container">
+      <div cypress="tag" className="container">
         <input
           type="button"
           className={

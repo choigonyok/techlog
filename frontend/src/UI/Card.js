@@ -20,17 +20,17 @@ const Card = (props) => {
                   <img
                     className="postcard-image"
                     alt="my"
-                    src={process.env.REACT_APP_HOST+ "/api/assets/"+item.imagepath}
+                    src={process.env.REACT_APP_HOST+item.thumbnailPath}
                   />
                 </div>
                 <div className="postcard-text">
                   <p>{item.title}</p>
                 </div>
                 <div className="postcard-tag">
-                  <p>{item.tag}</p>
+                  <p>{item.tags}</p>
                 </div>
                 <div className="postcard-date">
-                  <p className="postcard-date__box">{item.writetime}</p>
+                  <p className="postcard-date__box">{item.writeTime}</p>
                 </div>
               </h2>
             </div>

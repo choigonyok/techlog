@@ -18,11 +18,13 @@ const Postpage = () => {
   const mounted = useRef(false);
   const [postData, setPostData] = useState({});
   const [relatedPostData, setRelatedPostData] = useState([]);
+  const [postImages, setPostImages] = useState([]);
+  const [thumbnail, setThumbnail] = useState([""]);
 
   useEffect(() => {
     axios
       .get(process.env.REACT_APP_HOST + "/api/visitor")
-      .then((response) => {})
+      .then((response) => { })
       .catch((error) => {
         console.log(error);
       });
@@ -75,16 +77,16 @@ const Postpage = () => {
             className="image"
             alt="my"
             src={
-              process.env.REACT_APP_HOST + "/api/assets/" + postData.imagepath
+              process.env.REACT_APP_HOST + "/api/post/" + postid + "/thumbnail"
             }
           />
         </div>
         <div className="post-title">
           <div className="post-tagsbox">
-            <button className="post-tags__button">{postData.tag}</button>
+            <button className="post-tags__button">{postData.tags}</button>
           </div>
           <p className="post-title__item">{postData.title}</p>
-          <p className="written-date">{postData.writetime}</p>
+          <p className="written-date">{postData.writeTime}</p>
         </div>
         <div>
           <MDEditor.Markdown className="post-body" source={postData.text} />

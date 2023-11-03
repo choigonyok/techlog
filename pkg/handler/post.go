@@ -1,8 +1,13 @@
 package handler
 
 import (
-	"fmt"
+	"io"
+	"os"
 
+	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/model"
+	resp "github.com/choigonyok/techlog/pkg/response"
+	"github.com/choigonyok/techlog/pkg/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +15,7 @@ import (
 func WritePostImageHandler(c *gin.Context) {
 }
 
-// 게시글 작성 // DB에 저장할 때 tags Upper + 양사이드 whitespace 제거해야함
+// 게시글 작성 // DB에 저장할 때 tags Upper + 양사이드 whitespace 제거해야함 // ImagePath는 /assets/{filename} 형식으로 저장
 func WritePostHandler(c *gin.Context) {
 
 	// if !isCookieAdmin(c) {
@@ -37,13 +42,22 @@ func DeletePostHandler(c *gin.Context) {
 
 }
 
-// 게시글 내용 불러오기
-func GetPostHandler(c *gin.Context) {
-	fmt.Println("CALLED")
-	fmt.Println("CALLED")
-	fmt.Println("CALLED")
-	fmt.Println("CALLED")
-	fmt.Println("CALLED")
+// GetPost returns post data including post body
+func GetPost(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	postID := c.Param("postid")
+
+	posts, err := svc.GetPostByID(postID)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+	err = resp.ResponseDataWith200(c, posts)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
 }
 
 // 게시글 수정
@@ -51,7 +65,67 @@ func ModifyPostHandler(c *gin.Context) {
 
 }
 
-// 게시글 썸네일 불러오기
-func GetThumbnailHandler(c *gin.Context) {
+// GetEveryCardByTag returns posts data by tag without post body
+func GetEveryCardByTag(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 
+	m := model.PostTags{}
+	if err := c.ShouldBindJSON(&m); err != nil {
+		resp.Response500(c)
+		return
+	}
+
+	cards, err := svc.GetEveryCardByTag(m.Tags)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+
+	err = resp.ResponseDataWith200(c, cards)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+}
+
+// GetTags returns every post data without post body
+func GetTags(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	tags, err := svc.GetEveryTags()
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+
+	if resp.ResponseDataWith200(c, tags) != nil {
+		resp.Response500(c)
+	}
+}
+
+// GetThumbnailByPostID returns post thumbnail image file
+func GetThumbnailByPostID(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	postID := c.Param("postid")
+
+	thumbnailName, err := svc.GetThumbnailNameByPostID(postID)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+
+	image, err := os.Open("assets/" + thumbnailName)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
+	defer image.Close()
+
+	_, err = io.Copy(c.Writer, image)
+	if err != nil {
+		resp.Response500(c)
+		return
+	}
 }

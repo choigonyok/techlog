@@ -14,6 +14,8 @@ type Provider interface {
 	GetEveryTag() ([]model.PostTags, error)
 	GetEveryCardByTag(string) ([]model.PostCard, error)
 	GetEveryCard() ([]model.PostCard, error)
+	GetPostByID(postID string) ([]model.Post, error)
+	GetThumbnailNameByPostID(postID string) (string, error)
 }
 
 type MysqlProvider struct {
@@ -58,23 +60,45 @@ func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
 }
 
 func (p *MysqlProvider) GetEveryCardByTag(tag string) ([]model.PostCard, error) {
-	post := model.PostCard{}
-	posts := []model.PostCard{}
+	card := model.PostCard{}
+	cards := []model.PostCard{}
 	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY writeTime desc`)
 	for r.Next() {
-		r.Scan(&post.ID, &post.Tags, &post.Title, &post.WriteTime)
-		posts = append(posts, post)
+		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
+		cards = append(cards, card)
 	}
-	return posts, err
+	return cards, err
 }
 
 func (p *MysqlProvider) GetEveryCard() ([]model.PostCard, error) {
-	post := model.PostCard{}
-	posts := []model.PostCard{}
+	card := model.PostCard{}
+	cards := []model.PostCard{}
 	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags ORDER BY writeTime desc`)
 	for r.Next() {
-		r.Scan(&post.ID, &post.Tags, &post.Title, &post.WriteTime)
+		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
+		cards = append(cards, card)
+	}
+	return cards, err
+}
+
+func (p *MysqlProvider) GetPostByID(postID string) ([]model.Post, error) {
+	post := model.Post{}
+	posts := []model.Post{}
+
+	r, err := p.connector.Query(`SELECT id, tags, title, text, writeTime FROM post WHERE id = ` + postID)
+	for r.Next() {
+		r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime)
 		posts = append(posts, post)
 	}
+
 	return posts, err
+}
+
+func (p *MysqlProvider) GetThumbnailNameByPostID(postID string) (string, error) {
+	var thumbnailName string
+	r, err := p.connector.Query(`SELECT imageName FROM image WHERE thumbnail = 1 AND postID = ` + postID)
+	r.Next()
+	r.Scan(&thumbnailName)
+
+	return thumbnailName, err
 }

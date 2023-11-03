@@ -26,6 +26,11 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.WritePostImageHandler,
 		},
 		{
+			Path:    prefix + "/post/:postid/thumbnail",
+			Method:  GET,
+			Handler: handler.GetThumbnailByPostID,
+		},
+		{
 			Path:    prefix + "post",
 			Method:  POST,
 			Handler: handler.WritePostHandler,
@@ -38,7 +43,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		{
 			Path:    prefix + "post/:postid",
 			Method:  GET,
-			Handler: handler.GetPostHandler,
+			Handler: handler.GetPost,
 		},
 		{
 			Path:    prefix + "post/:postid",
@@ -109,11 +114,6 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Path:    prefix + "tag",
 			Method:  GET,
 			Handler: handler.GetTags,
-		},
-		{
-			Path:    prefix + "assets/:name",
-			Method:  GET,
-			Handler: handler.GetThumbnailHandler,
 		},
 	}
 	return h
