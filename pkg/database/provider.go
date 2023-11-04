@@ -16,6 +16,8 @@ type Provider interface {
 	GetEveryCard() ([]model.PostCard, error)
 	GetPostByID(postID string) ([]model.Post, error)
 	GetThumbnailNameByPostID(postID string) (string, error)
+	SetNewCookieValueByUniqueID(uniqueID string) error
+	GetCookieValue() (string, error)
 }
 
 type MysqlProvider struct {
@@ -56,6 +58,7 @@ func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
 		r.Scan(&tag.Tags)
 		tags = append(tags, tag)
 	}
+	defer r.Close()
 	return tags, err
 }
 
@@ -67,6 +70,7 @@ func (p *MysqlProvider) GetEveryCardByTag(tag string) ([]model.PostCard, error) 
 		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
 		cards = append(cards, card)
 	}
+	defer r.Close()
 	return cards, err
 }
 
@@ -78,6 +82,7 @@ func (p *MysqlProvider) GetEveryCard() ([]model.PostCard, error) {
 		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
 		cards = append(cards, card)
 	}
+	defer r.Close()
 	return cards, err
 }
 
@@ -90,7 +95,7 @@ func (p *MysqlProvider) GetPostByID(postID string) ([]model.Post, error) {
 		r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime)
 		posts = append(posts, post)
 	}
-
+	defer r.Close()
 	return posts, err
 }
 
@@ -99,6 +104,29 @@ func (p *MysqlProvider) GetThumbnailNameByPostID(postID string) (string, error) 
 	r, err := p.connector.Query(`SELECT imageName FROM image WHERE thumbnail = 1 AND postID = ` + postID)
 	r.Next()
 	r.Scan(&thumbnailName)
-
+	defer r.Close()
 	return thumbnailName, err
+}
+
+func (p *MysqlProvider) SetNewCookieValueByUniqueID(uniqueID string) error {
+	value, err := p.GetCookieValue()
+	if err != nil {
+		return err
+	}
+	if value == "" {
+		_, err = p.connector.Exec(`INSERT INTO cookie (value) VALUES ("` + uniqueID + `")`)
+	} else {
+		_, err = p.connector.Exec(`UPDATE cookie SET value = "` + uniqueID + `"`)
+	}
+
+	return err
+}
+
+func (p *MysqlProvider) GetCookieValue() (string, error) {
+	var value string
+	r, err := p.connector.Query(`SELECT value FROM cookie`)
+	r.Next()
+	r.Scan(&value)
+	defer r.Close()
+	return value, err
 }

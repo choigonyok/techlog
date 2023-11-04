@@ -41,7 +41,7 @@ CREATE TABLE `image` (
     FOREIGN KEY (`postID`) REFERENCES `post` (`id`) ON DELETE CASCADE
 );
 INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (1, 'image1.JPEG', 1);
-INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (1, 'image2.JPG', 0);
+INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (2, 'image2.jpg', 1);
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (

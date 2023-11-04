@@ -72,7 +72,7 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/post/all")
+      .get(process.env.REACT_APP_HOST + "/api/tag")
       .then((response) => {
         setAllPost(response.data);
       })

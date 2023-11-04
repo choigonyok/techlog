@@ -98,12 +98,12 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		{
 			Path:    prefix + "login",
 			Method:  POST,
-			Handler: handler.CheckAdminIDAndPWHandler,
+			Handler: handler.VerifyAdminIDAndPW,
 		},
 		{
 			Path:    prefix + "login",
 			Method:  GET,
-			Handler: handler.CheckCookieHandelr,
+			Handler: handler.VerifyAdminUser,
 		},
 		{
 			Path:    prefix + "tag",

@@ -25,3 +25,7 @@ func Response500(c *gin.Context) {
 func Response401(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusUnauthorized)
 }
+
+func Response400(c *gin.Context) {
+	c.Writer.WriteHeader(http.StatusBadRequest)
+}
