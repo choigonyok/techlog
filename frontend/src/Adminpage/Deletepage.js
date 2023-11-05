@@ -46,8 +46,8 @@ const Deletepage = () => {
   const postHandler = () => {
     const postdata = {
       title: titleText,
-      tag: tagText,
-      datetime: dateText,
+      tags: tagText,
+      writeTime: dateText,
       text: bodyText,
     };
     axios
@@ -72,9 +72,10 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/tag")
+      .get(process.env.REACT_APP_HOST + "/api/posts")
       .then((response) => {
         setAllPost(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -243,9 +244,9 @@ const Deletepage = () => {
                   {allPost.map((item, index) => (
                     <div className="delete-inlist">
                       <div className="delete-post">
-                        <h2 className="delete-date">{item.writetime}</h2>
+                        <h2 className="delete-date">{item.writeTime}</h2>
                         <h2 className="delete-title">{item.title}</h2>
-                        <h2 className="delete-tag">{item.tag}</h2>
+                        <h2 className="delete-tag">{item.tags}</h2>
                       </div>
                       <div className="delete-button__container">
                         <input

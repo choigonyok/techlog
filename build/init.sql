@@ -35,7 +35,7 @@ DROP TABLE IF EXISTS `image`;
 CREATE TABLE `image` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `postID` INT NOT NULL DEFAULT 0,
-    `imageName` VARCHAR(20) NOT NULL DEFAULT '',
+    `imageName` VARCHAR(45) NOT NULL DEFAULT '',
     `thumbnail` TINYINT(1),
     PRIMARY KEY (`id`),
     FOREIGN KEY (`postID`) REFERENCES `post` (`id`) ON DELETE CASCADE

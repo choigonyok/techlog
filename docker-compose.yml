@@ -45,6 +45,7 @@ services:
     volumes:
       - ./cmd/:/app/cmd
       - ./pkg/:/app/pkg
+      - ./assets/:/app/assets
     ports:
       - "8080:8080"
     depends_on:

@@ -31,4 +31,11 @@ cy.get('[cypress="tag"]').should("not.have.value", 'disabled').then(($btn2)=>{
   cy.wrap($btn2).click({multiple: true})
 })
 이런식으로 적용할 수 있음
+
+cypress/support/commands.js에 커맨드를 정의하면 cy.COMMAND로 사용자 정의 커맨드를 사용할 수 있음
+
+Cypress는
+./node_modules/.bin/cypress run
+커맨드를 통해서 터미널에서 정의된 cy.js파일대로 테스트를 수행할 수 있음
+CI/CD 파이프라인에 E2E 테스트를 포함시킬 때 이 명령어를 사용하면 유용할 듯
 */

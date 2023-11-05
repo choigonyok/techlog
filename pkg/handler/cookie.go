@@ -7,7 +7,7 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
-	"github.com/choigonyok/techlog/pkg/response"
+	resp "github.com/choigonyok/techlog/pkg/response"
 	"github.com/choigonyok/techlog/pkg/service"
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +34,7 @@ func (ck *AdminCookie) setCookie(c *gin.Context, secure, httpOnly bool) {
 
 	uniqueID := data.CreateRandomString()
 	if err := svc.SetNewCookieValueByUniqueID(uniqueID); err != nil {
-		response.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 

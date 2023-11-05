@@ -21,7 +21,7 @@ func GetVisitorCounts(c *gin.Context) {
 	if !cookie.verifyCookieValue(c, today) {
 		err := svc.AddTodayAndTotal()
 		if err != nil {
-			resp.Response500(c)
+			resp.Response500(c, err)
 			fmt.Println(err.Error())
 			return
 		}
@@ -30,14 +30,14 @@ func GetVisitorCounts(c *gin.Context) {
 
 	date, err := svc.GetDate()
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		fmt.Println(err.Error())
 		return
 	}
 	if today != date {
 		err := svc.ResetToday(today)
 		if err != nil {
-			resp.Response500(c)
+			resp.Response500(c, err)
 			fmt.Println(err.Error())
 			return
 		}
@@ -45,7 +45,7 @@ func GetVisitorCounts(c *gin.Context) {
 
 	todayCount, totalCount, err := svc.GetCounts()
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		fmt.Println(err.Error())
 		return
 	}
@@ -58,6 +58,6 @@ func GetVisitorCounts(c *gin.Context) {
 		Total: totalCount,
 	})
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 	}
 }

@@ -26,6 +26,11 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.WritePostImageHandler,
 		},
 		{
+			Path:    prefix + "posts",
+			Method:  GET,
+			Handler: handler.GetEveryCard,
+		},
+		{
 			Path:    prefix + "/post/:postid/thumbnail",
 			Method:  GET,
 			Handler: handler.GetThumbnailByPostID,
@@ -33,12 +38,12 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		{
 			Path:    prefix + "post",
 			Method:  POST,
-			Handler: handler.WritePostHandler,
+			Handler: handler.CreatePost,
 		},
 		{
 			Path:    prefix + "post/:postid",
 			Method:  DELETE,
-			Handler: handler.DeletePostHandler,
+			Handler: handler.DeletePostByPostID,
 		},
 		{
 			Path:    prefix + "post/:postid",
@@ -48,7 +53,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		{
 			Path:    prefix + "post/:postid",
 			Method:  PUT,
-			Handler: handler.ModifyPostHandler,
+			Handler: handler.UpdatePostByPostID,
 		},
 		{
 			Path:    prefix + "comment",
