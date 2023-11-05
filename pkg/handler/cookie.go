@@ -33,27 +33,22 @@ func (ck *AdminCookie) setCookie(c *gin.Context, secure, httpOnly bool) {
 	svc := service.NewService(pvr)
 
 	uniqueID := data.CreateRandomString()
-	if err := svc.SetNewCookieValueByUniqueID(uniqueID); err != nil {
-		resp.Response500(c, err)
-		return
+	_, err := svc.GetCookieValue()
+	if err != nil {
+		err := svc.SetCookieValueByUniqueID(uniqueID)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
+	} else {
+		err := svc.UpdateCookieValueByUniqueID(uniqueID)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
 
 	c.SetCookie(adminCookieKey, uniqueID, defaultCookieAliveTime, defaultCookeiPath, defaultCookieDomain, secure, httpOnly)
-}
-
-// verifyCookieValue verify cookie is exist & cookie has correct value
-func (ck *AdminCookie) verifyCookieValue(c *gin.Context, value string) bool {
-	var cookieValue string
-	var err error
-	cookieValue, err = c.Cookie(adminCookieKey)
-	if err == http.ErrNoCookie {
-		return false
-	} else {
-		if result := strings.Compare(cookieValue, value); result != 0 {
-			return false
-		}
-	}
-	return true
 }
 
 // setCookie sets cookie to verify day's first time visit of visitor
