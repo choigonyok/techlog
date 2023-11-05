@@ -20,61 +20,87 @@ const (
 
 func (r *Router) NewRoutes(prefix string) []Route {
 	h := []Route{
+		// Post
 		{
-			Path:    prefix + "post/image",
+			Path:    prefix + "post",
 			Method:  POST,
-			Handler: handler.WritePostImageHandler,
+			Handler: handler.CreatePost,
 		},
 		{
-			Path:    prefix + "/post/:postid/thumbnail",
+			Path:    prefix + "posts",
+			Method:  GET,
+			Handler: handler.GetPosts,
+		},
+		{
+			Path:    prefix + "/posts/:postid/thumbnail",
 			Method:  GET,
 			Handler: handler.GetThumbnailByPostID,
 		},
 		{
-			Path:    prefix + "post",
-			Method:  POST,
-			Handler: handler.WritePostHandler,
-		},
-		{
-			Path:    prefix + "post/:postid",
-			Method:  DELETE,
-			Handler: handler.DeletePostHandler,
-		},
-		{
-			Path:    prefix + "post/:postid",
+			Path:    prefix + "posts/:postid",
 			Method:  GET,
 			Handler: handler.GetPost,
 		},
 		{
-			Path:    prefix + "post/:postid",
+			Path:    prefix + "posts/:postid",
 			Method:  PUT,
-			Handler: handler.ModifyPostHandler,
+			Handler: handler.UpdatePostByPostID,
 		},
 		{
-			Path:    prefix + "comment",
+			Path:    prefix + "posts/:postid",
 			Method:  DELETE,
-			Handler: handler.DeleteCommentHandler,
+			Handler: handler.DeletePostByPostID,
+		},
+
+		// Visitor
+		{
+			Path:    prefix + "visitor",
+			Method:  GET,
+			Handler: handler.GetVisitorCounts,
+		},
+
+		// Login
+		{
+			Path:    prefix + "login",
+			Method:  POST,
+			Handler: handler.VerifyAdminIDAndPW,
 		},
 		{
-			Path:    prefix + "comment/:postid",
+			Path:    prefix + "login",
 			Method:  GET,
-			Handler: handler.GetCommentHandler,
+			Handler: handler.VerifyAdminUser,
 		},
+
+		// Tag
+		{
+			Path:    prefix + "tags",
+			Method:  GET,
+			Handler: handler.GetTags,
+		},
+
+		// Comment
 		{
 			Path:    prefix + "comment",
 			Method:  POST,
-			Handler: handler.AddCommentHandler,
+			Handler: handler.CreateComment,
 		},
 		{
-			Path:    prefix + "comment/pw/:commentid",
+			Path:    prefix + "comments",
 			Method:  GET,
-			Handler: handler.GetCommentPWHandler,
+			Handler: handler.GetComments,
 		},
 		{
-			Path:    prefix + "comment/:postid",
-			Method:  DELETE,
-			Handler: handler.DeleteCommentByAdminHandler,
+			Path:    prefix + "posts/:postid/comments",
+			Method:  GET,
+			Handler: handler.GetCommentsByPostID,
 		},
+		{
+			Path:    prefix + "comments/:commentid",
+			Method:  DELETE,
+			Handler: handler.DeleteCommentByCommentID,
+		},
+
+		// Reply
 		{
 			Path:    prefix + "reply/:commentid",
 			Method:  GET,
@@ -89,31 +115,6 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Path:    prefix + "reply",
 			Method:  DELETE,
 			Handler: handler.DeleteReplyHandler,
-		},
-		{
-			Path:    prefix + "visitor",
-			Method:  GET,
-			Handler: handler.GetVisitorCounts,
-		},
-		{
-			Path:    prefix + "login",
-			Method:  POST,
-			Handler: handler.CheckAdminIDAndPWHandler,
-		},
-		{
-			Path:    prefix + "login",
-			Method:  GET,
-			Handler: handler.CheckCookieHandelr,
-		},
-		{
-			Path:    prefix + "tag",
-			Method:  POST,
-			Handler: handler.GetEveryCardByTag,
-		},
-		{
-			Path:    prefix + "tag",
-			Method:  GET,
-			Handler: handler.GetTags,
 		},
 	}
 	return h

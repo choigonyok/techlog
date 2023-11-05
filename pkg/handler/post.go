@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
@@ -11,35 +15,85 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 작성된 게시글에 썸네일 추가
-func WritePostImageHandler(c *gin.Context) {
+// CreatePost creates new post with client input data
+func CreatePost(c *gin.Context) {
+	VerifyAdminUser(c)
+
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	post := model.Post{}
+	image := model.PostImage{}
+
+	formData, err := c.MultipartForm()
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	// handle post data
+	postDatas := formData.Value["data"]
+	postData := []byte(postDatas[0])
+	err = json.Unmarshal(postData, &post)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	postID, err := svc.CreatePost(post)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	// handle image data
+	imageDatas := formData.File["file"]
+
+	for i, v := range imageDatas {
+		image.ImageName = data.CreateRandomString() + v.Filename[strings.LastIndex(v.Filename, "."):]
+		if i == 0 {
+			image.Thumbnail = "true"
+		} else {
+			image.Thumbnail = "false"
+		}
+
+		image.PostID = postID
+
+		err = c.SaveUploadedFile(v, "assets/"+image.ImageName)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
+		err = svc.StoreImage(image)
+		if err != nil {
+			err := rollBackSavedImageByImageName(image.ImageName)
+			resp.Response500(c, err)
+			return
+		}
+	}
 }
 
-// 게시글 작성 // DB에 저장할 때 tags Upper + 양사이드 whitespace 제거해야함 // ImagePath는 /assets/{filename} 형식으로 저장
-func WritePostHandler(c *gin.Context) {
-
-	// if !isCookieAdmin(c) {
-	// 	http.Response500(c)
-	// 	return
-	// }
-	// var data model.Post
-	// if err := c.ShouldBindJSON(&data); err != nil {
-	// 	http.Response500(c)
-	// 	return
-	// }
-	// data.Text = strings.ReplaceAll(data.Text, `'`, `\'`)
-	// err := model.AddPost(data.Tag, data.Title, data.Text, time.GetCurrentTimeByFormat("2006-01-02"))
-	// if err != nil {
-	// 	fmt.Println("ERROR #3 : ", err.Error())
-	// 	http.Response500(c)
-	// 	return
-	// }
-	// http.Response200(c)
+// rollBackSavedImageByImageName deletes saved image by file name
+func rollBackSavedImageByImageName(imageName string) error {
+	return os.Remove("assets/" + imageName)
 }
 
-// 게시글 삭제
-func DeletePostHandler(c *gin.Context) {
+// DeletePostByPostID deletes post and images by post id
+func DeletePostByPostID(c *gin.Context) {
+	VerifyAdminUser(c)
 
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	postID := c.Param("postid")
+
+	imageNames, err := svc.DeletePostByPostID(postID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	for _, v := range imageNames {
+		os.Remove("assets/" + v)
+	}
 }
 
 // GetPost returns post data including post body
@@ -48,59 +102,96 @@ func GetPost(c *gin.Context) {
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	posts, err := svc.GetPostByID(postID)
+	post, err := svc.GetPostByID(postID)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
-	err = resp.ResponseDataWith200(c, posts)
+
+	err = resp.ResponseDataWith200(c, post)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 }
 
-// 게시글 수정
-func ModifyPostHandler(c *gin.Context) {
+// UpdatePost updates title, tags, body of post
+func UpdatePostByPostID(c *gin.Context) {
+	VerifyAdminUser(c)
 
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+	postID := c.Param("postid")
+
+	post := model.Post{}
+	err := c.ShouldBindJSON(&post)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+	post = data.MarshalPostToDatabaseFmt(post)
+
+	if post.ID, err = strconv.Atoi(postID); err != nil {
+		resp.Response500(c, err)
+		return
+	} else {
+		err = svc.UpdatePost(post)
+	}
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
 }
 
-// GetEveryCardByTag returns posts data by tag without post body
-func GetEveryCardByTag(c *gin.Context) {
+// GetPostCards returns every posts data without post body
+func GetPosts(c *gin.Context) {
+	tag := c.Query("tag")
+	if tag != "ALL" {
+		cards, err := getPostsByTag(tag)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		} else {
+			resp.ResponseDataWith200(c, cards)
+			return
+		}
+	}
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 
-	m := model.PostTags{}
-	if err := c.ShouldBindJSON(&m); err != nil {
-		resp.Response500(c)
-		return
-	}
-
-	cards, err := svc.GetEveryCardByTag(m.Tags)
+	cards, err := svc.GetPosts()
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
-
 	err = resp.ResponseDataWith200(c, cards)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 }
 
-// GetTags returns every post data without post body
+// getEveryCardByTag returns posts data by tag without post body
+func getPostsByTag(tag string) ([]model.PostCard, error) {
+
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+
+	return svc.GetPostsByTag(tag)
+}
+
+// GetTags returns every stored tags
 func GetTags(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
-	tags, err := svc.GetEveryTags()
+
+	tags, err := svc.GetTags()
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
-
 	if resp.ResponseDataWith200(c, tags) != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 	}
 }
 
@@ -112,20 +203,19 @@ func GetThumbnailByPostID(c *gin.Context) {
 
 	thumbnailName, err := svc.GetThumbnailNameByPostID(postID)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 
 	image, err := os.Open("assets/" + thumbnailName)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 	defer image.Close()
-
 	_, err = io.Copy(c.Writer, image)
 	if err != nil {
-		resp.Response500(c)
+		resp.Response500(c, err)
 		return
 	}
 }

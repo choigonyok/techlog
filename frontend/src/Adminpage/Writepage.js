@@ -22,32 +22,38 @@ const Writepage = () => {
   const mounted = useRef(false);
 
   const postHandler = () => {
-    const postdata = {
+    const post = {
       title: titleText,
-      tag: tagText,
+      tags: tagText,
       text: bodyText,
     };
+    const formData = new FormData();
+    for (let i = 0; i < img.length; i++) {
+      formData.append("file", img[i]);
+    }
+    formData.append('data', JSON.stringify(post));
+
     axios
-      .post(process.env.REACT_APP_HOST+"/api/post", postdata, {
+      .post(process.env.REACT_APP_HOST + "/api/post", formData, {
+        "Content-type": "multipart/form-data",
         withCredentials: true,
       })
       .then((response) => {
-        setUnLock(!unlock);
+        navigate("/");
+        // setUnLock(!unlock);
       })
       .catch((error) => {
-        if (error.response.status === 400) {
-          alert(`특수문자 ' 가 입력된 곳이 존재하거나 빈 칸이 존재합니다. 수정해주세요.`)
+        if (error.response.status === 401) {
+          alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
+        } else {
           console.error(error);
-        } else if (error.response.status === 401) {
-            console.error(error);
-            alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
-          }
-        });
+        }
+      });
   };
 
   const deleteWronglyWrittenPost = () => {
     axios
-      .delete(process.env.REACT_APP_HOST+"/api/post/0", {
+      .delete(process.env.REACT_APP_HOST + "/api/post/0", {
         withCredentials: true,
       })
       .catch((error) => {
@@ -67,9 +73,9 @@ const Writepage = () => {
     setDateText(e.target.value);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     setBodyText(md);
-  },[md])
+  }, [md])
 
   const imgHandler = (e) => {
     setIMG((img) => [...img, ...e.target.files]);
@@ -92,33 +98,34 @@ const Writepage = () => {
     );
   };
 
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      const formData = new FormData();
-      for (let i = 0; i < img.length; i++) {
-        formData.append("file", img[i]);
-      }
-      axios
-        .post(process.env.REACT_APP_HOST+"/api/post/image", formData, {
-          "Content-type": "multipart/form-data",
-          withCredentials: true,
-        })
-        .then((response) => {
-          // 응답 데이터 수신
-          navigate("/");
-        })
-        .catch((error) => {
-          if (error.response.status === 500) {
-            deleteWronglyWrittenPost();
-              alert("이미지가 등록되지 않을 채로 글이 작성되었습니다!");
-          } else {
-            console.error(error);
-          }
-        });
-    }
-  }, [unlock]);  
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     const formData = new FormData();
+  //     for (let i = 0; i < img.length; i++) {
+  //       formData.append("file", img[i]);
+  //       formData.append('data', JSON.stringify({ textData }));
+  //     }
+  //     axios
+  //       .post(process.env.REACT_APP_HOST + "/api/post/image", formData, {
+  //         "Content-type": "multipart/form-data",
+  //         withCredentials: true,
+  //       })
+  //       .then((response) => {
+  //         // 응답 데이터 수신
+  //         navigate("/");
+  //       })
+  //       .catch((error) => {
+  //         if (error.response.status === 500) {
+  //           deleteWronglyWrittenPost();
+  //           alert("이미지가 등록되지 않을 채로 글이 작성되었습니다!");
+  //         } else {
+  //           console.error(error);
+  //         }
+  //       });
+  //   }
+  // }, [unlock]);
 
   return (
     <div>

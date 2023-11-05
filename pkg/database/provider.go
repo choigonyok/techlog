@@ -2,6 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/choigonyok/techlog/pkg/model"
@@ -11,11 +13,23 @@ type Provider interface {
 	ResetVisitorTodayAndDate(today string) error
 	GetVisitor() (model.Visitor, error)
 	UpdateVisitorToday(newToday, newTotal int) error
-	GetEveryTag() ([]model.PostTags, error)
-	GetEveryCardByTag(string) ([]model.PostCard, error)
-	GetEveryCard() ([]model.PostCard, error)
-	GetPostByID(postID string) ([]model.Post, error)
+	GetTags() ([]model.PostTags, error)
+	GetPostsByTag(string) ([]model.PostCard, error)
+	GetPosts() ([]model.PostCard, error)
+	GetPostByID(postID string) (model.Post, error)
 	GetThumbnailNameByPostID(postID string) (string, error)
+	SetCookieValueByUniqueID(uniqueID string) error
+	UpdateCookieValueByUniqueID(uniqueID string) error
+	GetCookieValue() (string, error)
+	UpdatePost(post model.Post) error
+	DeletePostByPostID(postID string) ([]string, error)
+	CreatePost(post model.Post) (int, error)
+	StoreImage(image model.PostImage) error
+	GetComments() ([]model.Comment, error)
+	GetCommentsByPostID(postID string) ([]model.Comment, error)
+	GetCommentPasswordByCommentID(commentID string) (string, error)
+	DeleteCommentByCommentID(commentID string) error
+	CreateComment(comment model.Comment, admin string) error
 }
 
 type MysqlProvider struct {
@@ -35,10 +49,8 @@ func (p *MysqlProvider) ResetVisitorTodayAndDate(today string) error {
 
 func (p *MysqlProvider) GetVisitor() (model.Visitor, error) {
 	result := model.Visitor{}
-	r, err := p.connector.Query(`SELECT today, total, date FROM visitor`)
-	r.Next()
-	r.Scan(&result.Today, &result.Total, &result.Date)
-	defer r.Close()
+	r := p.connector.QueryRow(`SELECT today, total, date FROM visitor`)
+	err := r.Scan(&result.Today, &result.Total, &result.Date)
 	return result, err
 }
 
@@ -47,7 +59,7 @@ func (p *MysqlProvider) UpdateVisitorToday(newToday, newTotal int) error {
 	return err
 }
 
-func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
+func (p *MysqlProvider) GetTags() ([]model.PostTags, error) {
 	tag := model.PostTags{}
 	tags := []model.PostTags{}
 
@@ -56,49 +68,175 @@ func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
 		r.Scan(&tag.Tags)
 		tags = append(tags, tag)
 	}
+	defer r.Close()
 	return tags, err
 }
 
-func (p *MysqlProvider) GetEveryCardByTag(tag string) ([]model.PostCard, error) {
+func (p *MysqlProvider) GetPostsByTag(tag string) ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
-	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY writeTime desc`)
+	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY id desc`)
 	for r.Next() {
 		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
 		cards = append(cards, card)
 	}
+	defer r.Close()
 	return cards, err
 }
 
-func (p *MysqlProvider) GetEveryCard() ([]model.PostCard, error) {
+func (p *MysqlProvider) GetPosts() ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
-	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags ORDER BY writeTime desc`)
+	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post ORDER BY id desc`)
 	for r.Next() {
 		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
 		cards = append(cards, card)
 	}
+	defer r.Close()
 	return cards, err
 }
 
-func (p *MysqlProvider) GetPostByID(postID string) ([]model.Post, error) {
+func (p *MysqlProvider) GetPostByID(postID string) (model.Post, error) {
 	post := model.Post{}
-	posts := []model.Post{}
 
-	r, err := p.connector.Query(`SELECT id, tags, title, text, writeTime FROM post WHERE id = ` + postID)
-	for r.Next() {
-		r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime)
-		posts = append(posts, post)
-	}
+	r := p.connector.QueryRow(`SELECT id, tags, title, text, writeTime FROM post WHERE id = ` + postID)
+	err := r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime)
 
-	return posts, err
+	return post, err
 }
 
 func (p *MysqlProvider) GetThumbnailNameByPostID(postID string) (string, error) {
 	var thumbnailName string
-	r, err := p.connector.Query(`SELECT imageName FROM image WHERE thumbnail = 1 AND postID = ` + postID)
-	r.Next()
-	r.Scan(&thumbnailName)
-
+	r := p.connector.QueryRow(`SELECT imageName FROM image WHERE thumbnail = 1 AND postID = ` + postID)
+	err := r.Scan(&thumbnailName)
 	return thumbnailName, err
+}
+
+func (p *MysqlProvider) SetCookieValueByUniqueID(uniqueID string) error {
+	_, err := p.connector.Exec(`INSERT INTO cookie (value) VALUES ("` + uniqueID + `")`)
+	return err
+}
+
+func (p *MysqlProvider) UpdateCookieValueByUniqueID(uniqueID string) error {
+	_, err := p.connector.Exec(`UPDATE cookie SET value = "` + uniqueID + `"`)
+	return err
+}
+
+func (p *MysqlProvider) GetCookieValue() (string, error) {
+	var value string
+	r := p.connector.QueryRow(`SELECT value FROM cookie`)
+	err := r.Scan(&value)
+	return value, err
+}
+
+func (p *MysqlProvider) UpdatePost(post model.Post) error {
+	_, err := p.connector.Exec(`UPDATE post SET title = '` + post.Title + `', text = '` + post.Text + `', tags = '` + post.Tags + `' WHERE id = ` + strconv.Itoa(post.ID))
+
+	return err
+}
+
+func (p *MysqlProvider) DeletePostByPostID(postID string) ([]string, error) {
+	imageNames := []string{}
+	var imageName string
+
+	tx, err := p.connector.Begin()
+	if err != nil {
+		return nil, errors.New("FAILED TO CREATE TX")
+	}
+	r, err := tx.Query(`SELECT imageName FROM image WHERE postID = ` + postID)
+	if err != nil {
+		tx.Rollback()
+	}
+	for r.Next() {
+		r.Scan(&imageName)
+		imageNames = append(imageNames, imageName)
+	}
+	defer r.Close()
+
+	_, err = tx.Exec(`DELETE FROM post WHERE id = ` + postID)
+	if err != nil {
+		tx.Rollback()
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, errors.New("FAILED TO COMMIT TX")
+	}
+
+	return imageNames, err
+}
+
+func (p *MysqlProvider) CreatePost(post model.Post) (int, error) {
+	var postID int
+
+	tx, err := p.connector.Begin()
+	if err != nil {
+		fmt.Println("TX CREATE ERROR", err.Error())
+	}
+	_, err = tx.Exec(`INSERT INTO post (tags, title, text, writeTime) VALUES ('` + post.Tags + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `')`)
+	if err != nil {
+		tx.Rollback()
+	}
+	r := tx.QueryRow(`SELECT id FROM post ORDER BY id DESC LIMIT 1`)
+	if err != nil {
+		tx.Rollback()
+	}
+	err = r.Scan(&postID)
+	if err != nil {
+		tx.Rollback()
+	}
+	err = tx.Commit()
+	return postID, err
+}
+
+func (p *MysqlProvider) StoreImage(image model.PostImage) error {
+	_, err := p.connector.Exec(`INSERT INTO image (postID, imageName, thumbnail) VALUES (` + strconv.Itoa(image.PostID) + `, '` + image.ImageName + `', '` + image.Thumbnail + `')`)
+
+	return err
+}
+
+func (p *MysqlProvider) GetComments() ([]model.Comment, error) {
+	comment := model.Comment{}
+	comments := []model.Comment{}
+
+	r, err := p.connector.Query(`SELECT id, text, writerID, admin, postID FROM comment`)
+
+	for r.Next() {
+		r.Scan(&comment.ID, &comment.Text, &comment.WriterID, &comment.Admin, &comment.PostID)
+		comments = append(comments, comment)
+	}
+	r.Close()
+
+	return comments, err
+}
+
+func (p *MysqlProvider) GetCommentsByPostID(postID string) ([]model.Comment, error) {
+	comment := model.Comment{}
+	comments := []model.Comment{}
+
+	r, err := p.connector.Query(`SELECT id, text, writerID, admin, postID FROM comment WHERE postID = ` + postID)
+
+	for r.Next() {
+		r.Scan(&comment.ID, &comment.Text, &comment.WriterID, &comment.Admin, &comment.PostID)
+		comments = append(comments, comment)
+	}
+	r.Close()
+
+	return comments, err
+}
+
+func (p *MysqlProvider) GetCommentPasswordByCommentID(commentID string) (string, error) {
+	commentPW := ""
+	r := p.connector.QueryRow(`SELECT writerPW FROM comment WHERE id = ` + commentID)
+	err := r.Scan(&commentPW)
+	return commentPW, err
+}
+
+func (p *MysqlProvider) DeleteCommentByCommentID(commentID string) error {
+	_, err := p.connector.Exec(`DELETE FROM comment WHERE id =` + commentID)
+	return err
+}
+
+func (p *MysqlProvider) CreateComment(comment model.Comment, admin string) error {
+	_, err := p.connector.Exec(`INSERT INTO comment (text, writerID, writerPW, admin, postID) VALUES ('` + comment.Text + `', '` + comment.WriterID + `', '` + comment.WriterPW + `', ` + admin + `, ` + strconv.Itoa(comment.PostID) + `)`)
+	return err
 }

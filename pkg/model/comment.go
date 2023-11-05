@@ -1,10 +1,14 @@
 package model
 
 type Comment struct {
-	ID       int
-	Text     string
-	WriterID string
-	WriterPW string
-	Admin    bool
-	PostID   int
+	ID       int    `json:"id"`
+	Text     string `json:"text"`
+	WriterID string `json:"writerID"`
+	WriterPW string `json:"writerPW"`
+	Admin    bool   `json:"admin"`
+	PostID   int    `json:"postID"`
+}
+
+type CommentPassword struct {
+	Password string `json:"password"`
 }

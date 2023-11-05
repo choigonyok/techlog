@@ -35,13 +35,13 @@ DROP TABLE IF EXISTS `image`;
 CREATE TABLE `image` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `postID` INT NOT NULL DEFAULT 0,
-    `imagePath` VARCHAR(40) NOT NULL DEFAULT '',
-    `mainImage` TINYINT(1),
+    `imageName` VARCHAR(45) NOT NULL DEFAULT '',
+    `thumbnail` TINYINT(1),
     PRIMARY KEY (`id`),
     FOREIGN KEY (`postID`) REFERENCES `post` (`id`) ON DELETE CASCADE
 );
-INSERT INTO `image` (`postID`, `imagePath`, `mainImage`) VALUES (1, './path1', 1);
-INSERT INTO `image` (`postID`, `imagePath`, `mainImage`) VALUES (1, './path2', 0);
+INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (1, 'image1.JPEG', 1);
+INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (2, 'image2.jpg', 1);
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (

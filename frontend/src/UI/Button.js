@@ -6,14 +6,14 @@ const Button = (props) => {
   const [responseData, setResponseData] = useState(null);
   const [title, setTitle] = useState(`" CHOIGONYOK "`);
   const [animate, setAnimate] = useState(true);
-  const [PostData, setPostData] = useState({ Tag: "ALL" });
+  const [PostData, setPostData] = useState({ tags: "ALL" });
   const [tagsdata, setTagsData] = useState([]);
   const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     // POST 요청 보내기
     axios
-      .post(process.env.REACT_APP_HOST+ "/api/tag", PostData)
+      .get(process.env.REACT_APP_HOST+ "/api/posts?tag="+PostData.tags)
       .then((response) => {
         // 응답 데이터 수신
         const jsonArray = Object.values(response.data);
@@ -26,10 +26,9 @@ const Button = (props) => {
 
   useEffect(() => {
     axios
-     .get(process.env.REACT_APP_HOST+ "/api/tag")
+     .get(process.env.REACT_APP_HOST+ "/api/tags")
       .then((response) => {
         setTagsData([...response.data]);
-        // props.onSeeTaggedPost(jsonArray);
       })
       .catch((error) => {
         console.error(error);
@@ -57,7 +56,7 @@ const Button = (props) => {
         <input
           type="button"
           className={
-            "ALL" === PostData.Tag ? "tags-button__clicked" : "tags-button"
+            "ALL" === PostData.tags ? "tags-button__clicked" : "tags-button"
           }
           value="ALL"
           onClick={() => ClickHandler("ALL")}
@@ -66,7 +65,7 @@ const Button = (props) => {
           <input
             type="button"
             className={
-              item.tag === PostData.Tag
+              item === PostData.tags
                 ? "tags-button__clicked"
                 : "tags-button"
             }

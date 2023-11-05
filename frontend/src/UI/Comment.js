@@ -78,7 +78,7 @@ const Comment = (props) => {
   // post id로 해당 post의 comments get
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/comment/" + props.id)
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + props.id + "/comments")
       .then((response) => {
         setComInfo([...response.data]);
       })
@@ -102,10 +102,7 @@ const Comment = (props) => {
     axios
       .delete(
         process.env.REACT_APP_HOST +
-          "/api/comment?commentid=" +
-          value.id +
-          "&inputpw=" +
-          deletePW
+          "/api/comments/"+value+"?password="+deletePW
       )
       .then((response) => {
         alert("댓글이 삭제되었습니다.");
@@ -188,7 +185,7 @@ const Comment = (props) => {
                   }
                   onClick={() => ReplyHandler(item)}
                 >
-                  {item.writerid}
+                  {item.writerID}
                 </div>
                 <div className="comment-box">
                   <div className="comment-delete">
@@ -210,7 +207,7 @@ const Comment = (props) => {
                       type="button"
                       value="DELETE"
                       className="comment-button__submit"
-                      onClick={() => CheckPasswordHandler(item)}
+                      onClick={() => CheckPasswordHandler(item.id)}
                     />
                   </div>
                 ) : (

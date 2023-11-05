@@ -56,10 +56,15 @@ const Homepage = () => {
           </a>
         </div>
         <div className="introduce-text__text">
-          꾸준함이란 도구로 성장하기를 즐기는 데브옵스 엔지니어 최윤석입니다
+          꾸준함이란 도구로 성장하기를 즐기는 DevSecOps 엔지니어 최윤석입니다.
         </div>
         <div className="introduce-text__year">
-          2017.03~ &nbsp;&nbsp;&nbsp; KYUNGHEE UNIV. COMPUTER ENGINEERING
+          <div>
+            2017.03~ &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
+          </div>
+          <div>
+            2023.12~ &nbsp;&nbsp;&nbsp; (주)이지컴아이앤씨 Internship
+          </div>
         </div>
       </div>
       <Button onSeeTaggedPost={seeTaggedPostHandler} />

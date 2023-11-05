@@ -1,13 +1,53 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"os"
 
-// login
-func CheckAdminIDAndPWHandler(c *gin.Context) {
+	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/model"
+	resp "github.com/choigonyok/techlog/pkg/response"
+	"github.com/choigonyok/techlog/pkg/service"
+	"github.com/gin-gonic/gin"
+)
 
+// VerifyAdminIDAndPW chekcs the input id/password of client is correct
+func VerifyAdminIDAndPW(c *gin.Context) {
+	user := model.User{}
+	cookie := &AdminCookie{}
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	if user.ID != os.Getenv("BLOG_ID") || user.Password != os.Getenv("BLOG_PW") {
+		resp.Response500(c, err)
+		return
+	}
+	cookie.setCookie(c, true, false)
+	resp.Response200(c)
 }
 
-// login
-func CheckCookieHandelr(c *gin.Context) {
+// VerifyAdminUser checks the client has already logged in
+func VerifyAdminUser(c *gin.Context) {
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 
+	adminCookieValue, err := c.Cookie(adminCookieKey)
+	if err != nil {
+		resp.Response401(c)
+		return
+	}
+	value, err := svc.GetCookieValue()
+	if err != nil {
+		resp.Response401(c)
+		return
+	}
+	if value != adminCookieValue {
+		resp.Response401(c)
+		return
+	} else {
+		resp.Response200(c)
+		return
+	}
 }
