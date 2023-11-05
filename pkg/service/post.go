@@ -39,9 +39,9 @@ func (svc *Service) GetPosts() ([]model.PostCard, error) {
 	return svc.provider.GetPosts()
 }
 
-func (svc *Service) GetPostByID(postID string) ([]model.Post, error) {
-	m, _ := svc.provider.GetPostByID(postID)
-	return m, nil
+func (svc *Service) GetPostByID(postID string) (model.Post, error) {
+	post, err := svc.provider.GetPostByID(postID)
+	return data.UnMarshalPostDatabaseFmt(post), err
 }
 
 func (svc *Service) GetThumbnailNameByPostID(postID string) (string, error) {
