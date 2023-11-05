@@ -24,12 +24,10 @@ func Response500(c *gin.Context, err error) {
 	c.Writer.WriteHeader(http.StatusInternalServerError)
 }
 
-func Response401(c *gin.Context, err error) {
-	fmt.Println(err.Error())
+func Response401(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusUnauthorized)
 }
 
-func Response400(c *gin.Context, err error) {
-	fmt.Println(err.Error())
+func Response400(c *gin.Context) {
 	c.Writer.WriteHeader(http.StatusBadRequest)
 }

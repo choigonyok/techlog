@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -51,7 +50,6 @@ func CreatePost(c *gin.Context) {
 
 	for i, v := range imageDatas {
 		image.ImageName = data.CreateRandomString() + v.Filename[strings.LastIndex(v.Filename, "."):]
-		fmt.Println(image.ImageName)
 		if i == 0 {
 			image.Thumbnail = "true"
 		} else {
@@ -67,7 +65,6 @@ func CreatePost(c *gin.Context) {
 		}
 		err = svc.StoreImage(image)
 		if err != nil {
-			fmt.Println(err.Error())
 			err := rollBackSavedImageByImageName(image.ImageName)
 			resp.Response500(c, err)
 			return
@@ -105,12 +102,13 @@ func GetPost(c *gin.Context) {
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	posts, err := svc.GetPostByID(postID)
+	post, err := svc.GetPostByID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
-	err = resp.ResponseDataWith200(c, posts)
+
+	err = resp.ResponseDataWith200(c, post)
 	if err != nil {
 		resp.Response500(c, err)
 		return

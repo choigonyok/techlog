@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/choigonyok/techlog/pkg/database"
 	resp "github.com/choigonyok/techlog/pkg/response"
 	"github.com/choigonyok/techlog/pkg/service"
@@ -22,7 +20,6 @@ func GetVisitorCounts(c *gin.Context) {
 		err := svc.AddTodayAndTotal()
 		if err != nil {
 			resp.Response500(c, err)
-			fmt.Println(err.Error())
 			return
 		}
 		cookie.setCookie(c, today, false, true)
@@ -31,14 +28,12 @@ func GetVisitorCounts(c *gin.Context) {
 	date, err := svc.GetDate()
 	if err != nil {
 		resp.Response500(c, err)
-		fmt.Println(err.Error())
 		return
 	}
 	if today != date {
 		err := svc.ResetToday(today)
 		if err != nil {
 			resp.Response500(c, err)
-			fmt.Println(err.Error())
 			return
 		}
 	}
@@ -46,7 +41,6 @@ func GetVisitorCounts(c *gin.Context) {
 	todayCount, totalCount, err := svc.GetCounts()
 	if err != nil {
 		resp.Response500(c, err)
-		fmt.Println(err.Error())
 		return
 	}
 

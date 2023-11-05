@@ -35,16 +35,19 @@ func VerifyAdminUser(c *gin.Context) {
 
 	adminCookieValue, err := c.Cookie(adminCookieKey)
 	if err != nil {
-		resp.Response401(c, err)
+		resp.Response401(c)
 		return
 	}
-
-	isAdmin, err := svc.VerifyAdminByCookieValue(adminCookieValue)
+	value, err := svc.GetCookieValue()
 	if err != nil {
-		resp.Response500(c, err)
+		resp.Response401(c)
 		return
-	} else if !isAdmin {
-		resp.Response500(c, err)
+	}
+	if value != adminCookieValue {
+		resp.Response401(c)
+		return
+	} else {
+		resp.Response200(c)
 		return
 	}
 }
