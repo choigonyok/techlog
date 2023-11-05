@@ -38,7 +38,7 @@ const Postpage = () => {
     axios
       .get(process.env.REACT_APP_HOST + "/api/posts/" + postid)
       .then((response) => {
-        setPostData(response.data[0]);
+        setPostData(response.data);
         setChangeEvent(!changeEvent);
       })
       .catch((error) => {

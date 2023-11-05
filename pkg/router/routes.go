@@ -81,29 +81,26 @@ func (r *Router) NewRoutes(prefix string) []Route {
 		// Comment
 		{
 			Path:    prefix + "comment",
-			Method:  DELETE,
-			Handler: handler.DeleteCommentHandler,
-		},
-		{
-			Path:    prefix + "comment/:postid",
-			Method:  GET,
-			Handler: handler.GetCommentHandler,
-		},
-		{
-			Path:    prefix + "comment",
 			Method:  POST,
-			Handler: handler.AddCommentHandler,
+			Handler: handler.CreateComment,
 		},
 		{
-			Path:    prefix + "comment/pw/:commentid",
+			Path:    prefix + "comments",
 			Method:  GET,
-			Handler: handler.GetCommentPWHandler,
+			Handler: handler.GetComments,
 		},
 		{
-			Path:    prefix + "comment/:postid",
-			Method:  DELETE,
-			Handler: handler.DeleteCommentByAdminHandler,
+			Path:    prefix + "posts/:postid/comments",
+			Method:  GET,
+			Handler: handler.GetCommentsByPostID,
 		},
+		{
+			Path:    prefix + "comments/:commentid",
+			Method:  DELETE,
+			Handler: handler.DeleteCommentByCommentID,
+		},
+
+		// Reply
 		{
 			Path:    prefix + "reply/:commentid",
 			Method:  GET,

@@ -13,13 +13,12 @@ const Deletepage = () => {
   useEffect(() => {
     axios
       .get(process.env.REACT_APP_HOST + "/api/login")
-      .then((response) => {
-      })
       .catch((error) => {
         if (error.response.status === 401) {
           navigator("/login");
+        } else {
+          console.error(error);
         }
-        console.error(error);
       });
   }, []);
 
@@ -142,7 +141,8 @@ const Deletepage = () => {
 
   const CommentDeleteHandler = (value) => {
     axios
-      .delete(process.env.REACT_APP_HOST + "/api/comment/" + value)
+      .delete(process.env.REACT_APP_HOST + "/api/comments/" + value +
+        "?type=admin")
       .then((response) => {
         setPostRequest(!postRequest);
       })
@@ -171,7 +171,7 @@ const Deletepage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/comment/0")
+      .get(process.env.REACT_APP_HOST + "/api/comments")
       .then((response) => {
         setComInfo([...response.data]);
       })
@@ -206,8 +206,8 @@ const Deletepage = () => {
           />
         </div>
         {isWrite && <div>
-          <Writepage/>
-          </div>}
+          <Writepage />
+        </div>}
         {isPosts && (
           <div>
             {toModify && (
@@ -279,7 +279,7 @@ const Deletepage = () => {
                 <div className="delete-inlist">
                   <div className="delete-post">
                     <h2 className="delete-comment">{item.text}</h2>
-                    <h2 className="delete-tag">{item.writerid}</h2>
+                    <h2 className="delete-tag">{item.writerID}</h2>
                   </div>
                   <div className="delete-button__container">
                     <input
