@@ -20,41 +20,65 @@ const (
 
 func (r *Router) NewRoutes(prefix string) []Route {
 	h := []Route{
-		{
-			Path:    prefix + "post/image",
-			Method:  POST,
-			Handler: handler.WritePostImageHandler,
-		},
-		{
-			Path:    prefix + "posts",
-			Method:  GET,
-			Handler: handler.GetEveryCard,
-		},
-		{
-			Path:    prefix + "/post/:postid/thumbnail",
-			Method:  GET,
-			Handler: handler.GetThumbnailByPostID,
-		},
+		// Post
 		{
 			Path:    prefix + "post",
 			Method:  POST,
 			Handler: handler.CreatePost,
 		},
 		{
-			Path:    prefix + "post/:postid",
-			Method:  DELETE,
-			Handler: handler.DeletePostByPostID,
+			Path:    prefix + "posts",
+			Method:  GET,
+			Handler: handler.GetPosts,
 		},
 		{
-			Path:    prefix + "post/:postid",
+			Path:    prefix + "/posts/:postid/thumbnail",
+			Method:  GET,
+			Handler: handler.GetThumbnailByPostID,
+		},
+		{
+			Path:    prefix + "posts/:postid",
 			Method:  GET,
 			Handler: handler.GetPost,
 		},
 		{
-			Path:    prefix + "post/:postid",
+			Path:    prefix + "posts/:postid",
 			Method:  PUT,
 			Handler: handler.UpdatePostByPostID,
 		},
+		{
+			Path:    prefix + "posts/:postid",
+			Method:  DELETE,
+			Handler: handler.DeletePostByPostID,
+		},
+
+		// Visitor
+		{
+			Path:    prefix + "visitor",
+			Method:  GET,
+			Handler: handler.GetVisitorCounts,
+		},
+
+		// Login
+		{
+			Path:    prefix + "login",
+			Method:  POST,
+			Handler: handler.VerifyAdminIDAndPW,
+		},
+		{
+			Path:    prefix + "login",
+			Method:  GET,
+			Handler: handler.VerifyAdminUser,
+		},
+
+		// Tag
+		{
+			Path:    prefix + "tags",
+			Method:  GET,
+			Handler: handler.GetTags,
+		},
+
+		// Comment
 		{
 			Path:    prefix + "comment",
 			Method:  DELETE,
@@ -94,31 +118,6 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Path:    prefix + "reply",
 			Method:  DELETE,
 			Handler: handler.DeleteReplyHandler,
-		},
-		{
-			Path:    prefix + "visitor",
-			Method:  GET,
-			Handler: handler.GetVisitorCounts,
-		},
-		{
-			Path:    prefix + "login",
-			Method:  POST,
-			Handler: handler.VerifyAdminIDAndPW,
-		},
-		{
-			Path:    prefix + "login",
-			Method:  GET,
-			Handler: handler.VerifyAdminUser,
-		},
-		{
-			Path:    prefix + "tag",
-			Method:  POST,
-			Handler: handler.GetEveryCardByTag,
-		},
-		{
-			Path:    prefix + "tag",
-			Method:  GET,
-			Handler: handler.GetTags,
 		},
 	}
 	return h

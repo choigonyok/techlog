@@ -36,7 +36,7 @@ const Postpage = () => {
 
   useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/post/" + postid)
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + postid)
       .then((response) => {
         setPostData(response.data[0]);
         setChangeEvent(!changeEvent);
@@ -51,7 +51,7 @@ const Postpage = () => {
       mounted.current = true;
     } else {
       axios
-        .post(process.env.REACT_APP_HOST + "/api/tag", postData)
+        .get(process.env.REACT_APP_HOST + "/api/posts/?tag="+postData.tags)
         .then((response) => {
           const jsonArray = Object.values(response.data);
           setRelatedPostData(
@@ -77,7 +77,7 @@ const Postpage = () => {
             className="image"
             alt="my"
             src={
-              process.env.REACT_APP_HOST + "/api/post/" + postid + "/thumbnail"
+              process.env.REACT_APP_HOST + "/api/posts/" + postid + "/thumbnail"
             }
           />
         </div>

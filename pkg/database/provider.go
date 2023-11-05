@@ -12,9 +12,9 @@ type Provider interface {
 	ResetVisitorTodayAndDate(today string) error
 	GetVisitor() (model.Visitor, error)
 	UpdateVisitorToday(newToday, newTotal int) error
-	GetEveryTag() ([]model.PostTags, error)
-	GetEveryCardByTag(string) ([]model.PostCard, error)
-	GetEveryCard() ([]model.PostCard, error)
+	GetTags() ([]model.PostTags, error)
+	GetPostsByTag(string) ([]model.PostCard, error)
+	GetPosts() ([]model.PostCard, error)
 	GetPostByID(postID string) ([]model.Post, error)
 	GetThumbnailNameByPostID(postID string) (string, error)
 	SetNewCookieValueByUniqueID(uniqueID string) error
@@ -54,7 +54,7 @@ func (p *MysqlProvider) UpdateVisitorToday(newToday, newTotal int) error {
 	return err
 }
 
-func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
+func (p *MysqlProvider) GetTags() ([]model.PostTags, error) {
 	tag := model.PostTags{}
 	tags := []model.PostTags{}
 
@@ -67,7 +67,7 @@ func (p *MysqlProvider) GetEveryTag() ([]model.PostTags, error) {
 	return tags, err
 }
 
-func (p *MysqlProvider) GetEveryCardByTag(tag string) ([]model.PostCard, error) {
+func (p *MysqlProvider) GetPostsByTag(tag string) ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
 	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY id desc`)
@@ -79,7 +79,7 @@ func (p *MysqlProvider) GetEveryCardByTag(tag string) ([]model.PostCard, error) 
 	return cards, err
 }
 
-func (p *MysqlProvider) GetEveryCard() ([]model.PostCard, error) {
+func (p *MysqlProvider) GetPosts() ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
 	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post ORDER BY id desc`)

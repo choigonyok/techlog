@@ -16,48 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 작성된 게시글에 썸네일 추가
-func WritePostImageHandler(c *gin.Context) {
-	// VerifyAdminUser(c)
-
-	// pvr := database.NewMysqlProvider(database.GetConnector())
-	// svc := service.NewService(pvr)
-	// image, err := c.MultipartForm()
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// 	return
-	// }
-
-	// recentID, err := model.GetRecentPostID()
-	// if err != nil {
-	// 	fmt.Println("ERROR #4 : ", err.Error())
-	// 	c.Writer.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
-	// var thumbnailName string
-	// everyIMG := imgFile.File["file"]
-	// for i, v := range everyIMG {
-	// 	dotIndex := strings.LastIndex(v.Filename, ".")
-	// 	exetension := v.Filename[dotIndex:]
-	// 	if i == 0 {
-	// 		thumbnailName = exetension
-	// 	}
-	// 	err = c.SaveUploadedFile(v, "assets/"+strconv.Itoa(recentID)+"-"+strconv.Itoa(i)+exetension)
-	// 	if err != nil {
-	// 		c.Writer.WriteHeader(http.StatusInternalServerError)
-	// 		fmt.Println("ERROR #34 : ", err.Error())
-	// 		return
-	// 	}
-	// }
-	// err = model.UpdatePostImagePath(recentID, strconv.Itoa(recentID)+"-0"+thumbnailName)
-	// if err != nil {
-	// 	c.Writer.WriteHeader(http.StatusInternalServerError)
-	// 	fmt.Println("ERROR #36 : ", err.Error())
-	// 	return
-	// }
-
-}
-
 // CreatePost creates new post with client input data
 func CreatePost(c *gin.Context) {
 	VerifyAdminUser(c)
@@ -187,12 +145,23 @@ func UpdatePostByPostID(c *gin.Context) {
 	}
 }
 
-// GetEveryCard returns every posts data without post body
-func GetEveryCard(c *gin.Context) {
+// GetPostCards returns every posts data without post body
+func GetPosts(c *gin.Context) {
+	tag := c.Query("tag")
+	if tag != "ALL" {
+		cards, err := getPostsByTag(tag)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		} else {
+			resp.ResponseDataWith200(c, cards)
+			return
+		}
+	}
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 
-	cards, err := svc.GetEveryCard()
+	cards, err := svc.GetPosts()
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -204,26 +173,13 @@ func GetEveryCard(c *gin.Context) {
 	}
 }
 
-// GetEveryCardByTag returns posts data by tag without post body
-func GetEveryCardByTag(c *gin.Context) {
+// getEveryCardByTag returns posts data by tag without post body
+func getPostsByTag(tag string) ([]model.PostCard, error) {
+
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 
-	m := model.PostTags{}
-	if err := c.ShouldBindJSON(&m); err != nil {
-		resp.Response500(c, err)
-		return
-	}
-	cards, err := svc.GetEveryCardByTag(m.Tags)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
-	err = resp.ResponseDataWith200(c, cards)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
+	return svc.GetPostsByTag(tag)
 }
 
 // GetTags returns every stored tags
@@ -231,7 +187,7 @@ func GetTags(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 
-	tags, err := svc.GetEveryTags()
+	tags, err := svc.GetTags()
 	if err != nil {
 		resp.Response500(c, err)
 		return

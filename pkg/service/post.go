@@ -8,9 +8,9 @@ import (
 	"github.com/choigonyok/techlog/pkg/time"
 )
 
-func (svc *Service) GetEveryTags() ([]string, error) {
+func (svc *Service) GetTags() ([]string, error) {
 	result := []string{}
-	tags, err := svc.provider.GetEveryTag()
+	tags, err := svc.provider.GetTags()
 	m := make(map[string]bool)
 
 	for _, v := range tags {
@@ -26,17 +26,17 @@ func (svc *Service) GetEveryTags() ([]string, error) {
 	return result, err
 }
 
-func (svc *Service) GetEveryCardByTag(tag string) ([]model.PostCard, error) {
+func (svc *Service) GetPostsByTag(tag string) ([]model.PostCard, error) {
 	switch tag {
 	case "ALL":
-		return svc.provider.GetEveryCard()
+		return svc.provider.GetPosts()
 	default:
-		return svc.provider.GetEveryCardByTag(tag)
+		return svc.provider.GetPostsByTag(tag)
 	}
 }
 
-func (svc *Service) GetEveryCard() ([]model.PostCard, error) {
-	return svc.provider.GetEveryCard()
+func (svc *Service) GetPosts() ([]model.PostCard, error) {
+	return svc.provider.GetPosts()
 }
 
 func (svc *Service) GetPostByID(postID string) ([]model.Post, error) {

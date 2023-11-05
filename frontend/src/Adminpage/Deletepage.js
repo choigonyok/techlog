@@ -18,7 +18,6 @@ const Deletepage = () => {
       .catch((error) => {
         if (error.response.status === 401) {
           navigator("/login");
-          console.log("1111");
         }
         console.error(error);
       });
@@ -51,7 +50,7 @@ const Deletepage = () => {
       text: bodyText,
     };
     axios
-      .put(process.env.REACT_APP_HOST + "/api/post/" + id, postdata, {
+      .put(process.env.REACT_APP_HOST + "/api/posts/" + id, postdata, {
         withCredentials: true,
       })
       .then((response) => {
@@ -92,7 +91,7 @@ const Deletepage = () => {
 
   const deleteHandler = (value) => {
     axios
-      .delete(process.env.REACT_APP_HOST + "/api/post/" + value, {
+      .delete(process.env.REACT_APP_HOST + "/api/posts/" + value, {
         withCredentials: true,
       })
       .then((response) => {
@@ -107,7 +106,7 @@ const Deletepage = () => {
 
   const modifyHandler = (value) => {
     axios
-      .get(process.env.REACT_APP_HOST + "/api/post/" + value)
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + value)
       .then((response) => {
         setToModify(true);
         setID(value);

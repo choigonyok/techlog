@@ -35,6 +35,7 @@
   width: auto;
   text-align: center;
   gap: 1.5rem;
+  align-items: center;
 }
 
 .visitnum {
@@ -60,10 +61,12 @@
 .introduce-text__year {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 5%;
+  width: max-content;
   font-style: italic;
   font-weight: 100;
+  /* border: 3px solid blue; */
   font-size: 1.3rem;
 }
 
