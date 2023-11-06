@@ -4,7 +4,7 @@
 
 ## ⭐ Release & Dependencies
 
-<img src="https://img.shields.io/badge/1.0-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
+<img src="https://img.shields.io/badge/1.1-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
 
 </br>
 
@@ -53,7 +53,19 @@ Refactoring
 v1.0
 </td>
 <td align=center>
-23.10.05
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.0)
+
+</td>
+</tr>
+  <tr>
+<td align=center>
+v1.1
+</td>
+<td align=center>
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.1)
+
 </td>
 </tr>
 </table>
@@ -92,14 +104,14 @@ v1.0
 
 </br>
 
-## ⭐ Related Posts
+## ~~⭐ Related Posts~~  [cannot access now due to refactoring]
 
-<a href="http://www.choigonyok.com/post/29">#1. 나만의 테크블로그 개발하기</a> </br>
-<a href="http://www.choigonyok.com/post/30">#2. 리액트에서 이미지 업로드하기</a> </br>
-<a href="http://www.choigonyok.com/post/31">#3. 관련 / 전체 게시글 구현하기</a> </br>
-<a href="http://www.choigonyok.com/post/32">#4. 여러 파일 한 번에 업로드하기</a> </br>
-<a href="http://www.choigonyok.com/post/33">#5. 댓글 / 답글 기능 구현하기</a> </br>
-<a href="http://www.choigonyok.com/post/34">#6. AWS에 프론트엔드 배포하기</a>
+~~<a href="http://www.choigonyok.com/post/29">#1. 나만의 테크블로그 개발하기</a> </br>~~
+~~<a href="http://www.choigonyok.com/post/30">#2. 리액트에서 이미지 업로드하기</a> </br>~~
+~~<a href="http://www.choigonyok.com/post/31">#3. 관련 / 전체 게시글 구현하기</a> </br>~~
+~~<a href="http://www.choigonyok.com/post/32">#4. 여러 파일 한 번에 업로드하기</a> </br>~~
+~~<a href="http://www.choigonyok.com/post/33">#5. 댓글 / 답글 기능 구현하기</a> </br>~~
+~~<a href="http://www.choigonyok.com/post/34">#6. AWS에 프론트엔드 배포하기</a>~~
 
 </br>
 
