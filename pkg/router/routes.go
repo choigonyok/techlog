@@ -71,7 +71,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.VerifyAdminUser,
 		},
 
-		// Tag
+		// Tagee
 		{
 			Path:    prefix + "tags",
 			Method:  GET,
@@ -80,7 +80,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 
 		// Comment
 		{
-			Path:    prefix + "comment",
+			Path:    prefix + "posts/:postid/comment",
 			Method:  POST,
 			Handler: handler.CreateComment,
 		},
@@ -95,26 +95,26 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.GetCommentsByPostID,
 		},
 		{
-			Path:    prefix + "comments/:commentid",
+			Path:    prefix + "posts/:postid/comments/:commentid",
 			Method:  DELETE,
 			Handler: handler.DeleteCommentByCommentID,
 		},
 
 		// Reply
 		{
-			Path:    prefix + "reply/:commentid",
+			Path:    prefix + "posts/:postid/replies",
 			Method:  GET,
-			Handler: handler.GetReplyHandler,
+			Handler: handler.GetRepliesByPostID,
 		},
 		{
-			Path:    prefix + "reply/:commentid",
+			Path:    prefix + "posts/:postid/comments/:commentid/reply",
 			Method:  POST,
-			Handler: handler.AddReplyHandler,
+			Handler: handler.CreateReply,
 		},
 		{
-			Path:    prefix + "reply",
+			Path:    prefix + "posts/:postid/comments/:commentid/replies/:replyid",
 			Method:  DELETE,
-			Handler: handler.DeleteReplyHandler,
+			Handler: handler.DeleteReplyByReplyID,
 		},
 	}
 	return h

@@ -32,7 +32,7 @@ func (svc *Service) DeleteCommentByCommentID(commentID string) error {
 func (svc *Service) CreateComment(comment model.Comment) error {
 	var admin string
 	comment = data.MarshalCommentToDatabaseFmt(comment)
-
+	comment.WriterPW = data.EncodeBase64(comment.WriterPW)
 	if comment.Admin {
 		admin = "1"
 	} else {

@@ -29,7 +29,6 @@ func DecodeBase64(target string) string {
 // MarshalCommentToDatabaseFmt manipulates model.Comment not to get error by letter like ', ", \, `
 func MarshalCommentToDatabaseFmt(comment model.Comment) model.Comment {
 	comment.Text = strings.ReplaceAll(strings.ReplaceAll(comment.Text, `\`, `\\`), `'`, `\'`)
-	comment.WriterPW = strings.ReplaceAll(strings.ReplaceAll(comment.WriterPW, `\`, `\\`), `'`, `\'`)
 	comment.WriterID = strings.ReplaceAll(strings.ReplaceAll(comment.WriterID, `\`, `\\`), `'`, `\'`)
 	return comment
 }
@@ -39,9 +38,24 @@ func UnmarshalCommentToDatabaseFmt(comments []model.Comment) []model.Comment {
 	for _, comment := range comments {
 		comment.Text = strings.ReplaceAll(strings.ReplaceAll(comment.Text, `\'`, `'`), `\`, `\\`)
 		comment.WriterID = strings.ReplaceAll(strings.ReplaceAll(comment.WriterID, `\'`, `'`), `\`, `\\`)
-		comment.WriterPW = strings.ReplaceAll(strings.ReplaceAll(comment.WriterPW, `\'`, `'`), `\`, `\\`)
 	}
 	return comments
+}
+
+// MarshalCommentToDatabaseFmt manipulates model.Comment not to get error by letter like ', ", \, `
+func MarshalReplyToDatabaseFmt(reply model.Reply) model.Reply {
+	reply.Text = strings.ReplaceAll(strings.ReplaceAll(reply.Text, `\`, `\\`), `'`, `\'`)
+	reply.WriterID = strings.ReplaceAll(strings.ReplaceAll(reply.WriterID, `\`, `\\`), `'`, `\'`)
+	return reply
+}
+
+// UnmarshalCommentToDatabaseFmt changes stored manipulated model.Comment to original
+func UnmarshalReplyToDatabaseFmt(replies []model.Reply) []model.Reply {
+	for _, reply := range replies {
+		reply.Text = strings.ReplaceAll(strings.ReplaceAll(reply.Text, `\'`, `'`), `\`, `\\`)
+		reply.WriterID = strings.ReplaceAll(strings.ReplaceAll(reply.WriterID, `\'`, `'`), `\`, `\\`)
+	}
+	return replies
 }
 
 // MarshalPostToDatabaseFmt manipulates model.Post not to get error by letter like ', ", \, `

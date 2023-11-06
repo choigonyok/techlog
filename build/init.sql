@@ -48,7 +48,7 @@ CREATE TABLE `comment` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `text` TEXT,
     `writerID` VARCHAR(13) NOT NULL DEFAULT '',
-    `writerPW` VARCHAR(8) NOT NULL DEFAULT '',
+    `writerPW` VARCHAR(12) NOT NULL DEFAULT '',
     `admin` TINYINT(1) NOT NULL DEFAULT 0,
     `postID`INT NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
@@ -63,11 +63,12 @@ CREATE TABLE `reply` (
         `id` INT NOT NULL AUTO_INCREMENT,
         `admin` TINYINT(1) NOT NULL DEFAULT 0,
         `writerID` VARCHAR(13) NOT NULL DEFAULT '',
-        `writerPW` VARCHAR(8) NOT NULL DEFAULT '',
+        `writerPW` VARCHAR(12) NOT NULL DEFAULT '',
         `text` TEXT,
         `commentID` INT NOT NULL DEFAULT 0,
+        `postID` INT NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`commentID`) REFERENCES `comment` (`id`) ON DELETE CASCADE
 );
-INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`) VALUES (1, 'id1', '1234', 'reply1', 1);
-INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`) VALUES (2, 'id2', '2345', 'reply2', 2);
+INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`, `postID`) VALUES (1, 'id1', '1234', 'reply1', 1, 1);
+INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`, `postID`) VALUES (0, 'id2', '2345', 'reply2', 2, 1);
