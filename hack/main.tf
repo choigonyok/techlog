@@ -55,7 +55,7 @@ resource "aws_security_group" "blog_sg" {
 }
 
 resource "aws_lb" "blog_nlb" {
-  name               = "blog_nlb"
+  name               = "blog-nlb"
   internal           = false
   load_balancer_type = "network"
 
@@ -71,7 +71,7 @@ resource "aws_lb" "blog_nlb" {
 }
 
 resource "aws_lb_target_group" "blog_target_group" {
-  name        = "blog_target_group"
+  name        = "blog-target-group"
   port        = 80
   protocol    = "TCP"
   target_type = "ip"
@@ -110,7 +110,7 @@ resource "aws_instance" "blog_master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../pemkey/blog.pem")
+    private_key = file("../../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -184,7 +184,7 @@ resource "aws_instance" "blog_worker2" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../pemkey/blog.pem")
+    private_key = file("../../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -248,7 +248,7 @@ resource "aws_instance" "blog_worker1" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../pemkey/blog.pem")
+    private_key = file("../../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -302,7 +302,7 @@ resource "aws_s3_bucket" "blog_bucket" {
   bucket = "blog_bucket"
 
   tags = {
-    Name        = "blog_bucket_20231106"
+    Name        = "blog-bucket-te20231106"
     Environment = "Production"
   }
 }
@@ -320,5 +320,5 @@ output "worker2-ip" {
 }
 
 output "lb-dns-hostname" {
-  value = aws_lb.nlb.dns_name
+  value = aws_lb.blog_nlb.dns_name
 }
