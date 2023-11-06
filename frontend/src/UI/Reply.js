@@ -22,9 +22,9 @@ const Reply = (props) => {
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     axios
-      .get(process.env.REACT_APP_HOST+ "/api/reply/" + props.id)
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + props.postid + "/replies")
       .then((response) => {
         //   console.log(response.data);
         setReplyList([...response.data]);
@@ -34,13 +34,15 @@ const Reply = (props) => {
       });
   }, [props.rerender, isFinished]);
 
+
+  // /api/posts/1/commments/2/replies/5
+  // /api/posts/3/replies/2
+  // /api/replies/2
   const CheckPasswordHandler = (value) => {
     axios
       .delete(
-        process.env.REACT_APP_HOST+ "/api/reply?replyid=" +
-          value.id +          
-          "&inputpw=" +
-          deletePW
+        process.env.REACT_APP_HOST + "/api/posts/" + props.postid + "/comments/" + props.id + "/replies/" + value.id + "?password=" +
+        deletePW
       )
       .then((response) => {
         alert("댓글이 삭제되었습니다.");
@@ -65,52 +67,58 @@ const Reply = (props) => {
     }
   };
 
+  // console.log(replyList);
+  // console.log(replyList);
+  // console.log(replyList);
+
+
   return (
     <div className="reply-box">
       {replyList &&
         replyList.map((item, index) => {
           return (
-            <div>
-              <div
-                className={
-                  item.admin === 1
-                    ? "reply-box__adminwriter"
-                    : "reply-box__writer"
-                }
+            (item.commentID === props.id ?
+              <div>
+                <div
+                  className={
+                    item.admin === 1
+                      ? "reply-box__adminwriter"
+                      : "reply-box__writer"
+                  }
                 // onClick={() => ReplyHandler(item)}
-              >
-                {item.writerid}
-              </div>
-              <div className="reply-box__text">
-                <div className="reply-delete">
-                  <div>{item.text}</div>
+                >
+                  {item.writerID}
                 </div>
-                <div className="comment-delete__button">
-                  <h2 onClick={() => showPasswordInput(item.id)}>
-                    X
-                  </h2>
+                <div className="reply-box__text">
+                  <div className="reply-delete">
+                    <div>{item.text}</div>
+                  </div>
+                  <div className="comment-delete__button">
+                    <h2 onClick={() => showPasswordInput(item.id)}>
+                      X
+                    </h2>
+                  </div>
                 </div>
-              </div>
-              {replyID === item.id ? (
-                <div className="password-container__reply">
-                  <input
-                    type="password"
-                    placeholder="PASSWORD"
-                    className="password-text"
-                    onChange={DeletePasswordHandler}
-                  />
-                  <input
-                    type="button"
-                    value="DELETE"
-                    className="comment-button__submit"
-                    onClick={() => CheckPasswordHandler(item)}
-                  />
-                </div>
-              ) : (
-                ""
-              )}
+                {replyID === item.id ? (
+                  <div className="password-container__reply">
+                    <input
+                      type="password"
+                      placeholder="PASSWORD"
+                      className="password-text"
+                      onChange={DeletePasswordHandler}
+                    />
+                    <input
+                      type="button"
+                      value="DELETE"
+                      className="comment-button__submit"
+                      onClick={() => CheckPasswordHandler(item)}
+                    />
+                  </div>
+                ) : (
+                  ""
+                )}
 
-              {/* {reply === item.uniqueid && passwordComment === 0 && (
+                {/* {reply === item.uniqueid && passwordComment === 0 && (
                 <div className="reply-container__write">
                   <textarea
                     className="comment"
@@ -140,7 +148,10 @@ const Reply = (props) => {
                   </div>
                 </div>
               )} */}
-            </div>
+              </div>
+              :
+              ""
+              )
           );
         })}
     </div>

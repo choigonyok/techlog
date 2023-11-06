@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/choigonyok/techlog/pkg/database"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
@@ -32,7 +34,6 @@ func DeleteCommentByCommentID(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	}
-
 	if password == inputPassword {
 		err := svc.DeleteCommentByCommentID(commentID)
 		if err != nil {
@@ -67,6 +68,8 @@ func GetCommentsByPostID(c *gin.Context) {
 func CreateComment(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
+	postID := c.Param("postid")
+	adminCookie := AdminCookie{}
 	comment := model.Comment{}
 
 	err := c.ShouldBindJSON(&comment)
@@ -74,6 +77,16 @@ func CreateComment(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	}
+	comment.PostID, _ = strconv.Atoi(postID)
+
+	clientCookieValue, _ := c.Cookie(adminCookieKey)
+	isAdmin := adminCookie.verifyCookieValue(c, clientCookieValue)
+	if isAdmin {
+		comment.Admin = true
+	} else {
+		comment.Admin = false
+	}
+
 	err = svc.CreateComment(comment)
 	if err != nil {
 		resp.Response500(c, err)

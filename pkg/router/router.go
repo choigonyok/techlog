@@ -12,6 +12,7 @@ type Router struct {
 	middlewares *middleware.Middleware
 }
 
+// NewRouter returns middlewares applied new gin engine
 func NewRouter(m *middleware.Middleware) *Router {
 	engine := gin.Default()
 	engine.Use(m.Get()...)
@@ -21,10 +22,12 @@ func NewRouter(m *middleware.Middleware) *Router {
 	}
 }
 
+// GetHTTPHandler converts gin.Engine to http.Handler type
 func (r *Router) GetHTTPHandler() http.Handler {
 	return r.engine.Handler()
 }
 
+// SetRoutes set gin handler with specific methods and paths
 func (r *Router) SetRoutes(routes []Route) {
 	for _, v := range routes {
 		switch v.Method {

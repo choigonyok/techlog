@@ -8,6 +8,7 @@ const Comment = (props) => {
   const [nowID, setNowID] = useState("");
   const [nowPW, setNowPW] = useState("");
   const [comData, setComData] = useState([]);
+  const [replyData, setReplyData] = useState([]);
   const [isFinished, setIsFinished] = useState(false);
   const [comInfo, setComInfo] = useState([]);
   const [passwordComment, setPasswordComment] = useState(0);
@@ -24,10 +25,9 @@ const Comment = (props) => {
   // 댓글용
   useEffect(() => {
     setComData({
-      postid: parseInt(props.id, 10),
       text: nowComment,
-      writerid: nowID,
-      writerpw: nowPW,
+      writerID: nowID,
+      writerPW: nowPW,
     });
   }, [nowComment, nowID, nowPW]);
 
@@ -56,7 +56,7 @@ const Comment = (props) => {
   };
   const commentSendHandler = () => {
     axios
-      .post(process.env.REACT_APP_HOST + "/api/comment", comData)
+      .post(process.env.REACT_APP_HOST + "/api/posts/"+props.id+"/comment", comData)
       .then((response) => {
         if (response.status === 204) {
           alert("빈 칸이나 유효하지 않은 입력이 있습니다. 비밀번호는 최대 8자리의 숫자만 입력 가능합니다.")
@@ -102,7 +102,7 @@ const Comment = (props) => {
     axios
       .delete(
         process.env.REACT_APP_HOST +
-          "/api/comments/"+value+"?password="+deletePW
+        "/api/posts/"+props.id+"/comments/" + value + "?password=" + deletePW
       )
       .then((response) => {
         alert("댓글이 삭제되었습니다.");
@@ -147,8 +147,11 @@ const Comment = (props) => {
     // ) {
     //   alert("작성되지 않은 항목이 존재합니다.");
     // } else {
+      console.log(comData);
+      console.log(comData);
+      console.log(comData);
     axios
-      .post(process.env.REACT_APP_HOST + "/api/reply/" + value, comData)
+      .post(process.env.REACT_APP_HOST + "/api/posts/" + props.id + "/comments/" + value + "/reply", comData)
       .then((response) => {
         if (response.status === 204) {
           alert("빈 칸이 존재합니다.");
@@ -244,7 +247,7 @@ const Comment = (props) => {
                     </div>
                   </div>
                 )}
-                <Reply id={item.id} rerender={isFinished} />
+                <Reply id={item.id} rerender={isFinished} postid={props.id} />
               </div>
             );
           })}

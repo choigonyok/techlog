@@ -18,6 +18,7 @@ var (
 	db *sql.DB
 )
 
+// Open opens database connector with specific use, password, host, db, driver
 func (c *Database) Open() (*sql.DB, error) {
 	var err error
 	db, err = sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
@@ -29,10 +30,12 @@ func (c *Database) Open() (*sql.DB, error) {
 	return db, nil
 }
 
+// Close closed opened database connector
 func (c *Database) Close(db *sql.DB) {
 	db.Close()
 }
 
+// NewDatabase returns new database object
 func NewDatabase(driver, password, user, port, host, databasename string) *Database {
 	newDatabase := &Database{
 		driverName:   driver,
@@ -45,6 +48,7 @@ func NewDatabase(driver, password, user, port, host, databasename string) *Datab
 	return newDatabase
 }
 
+// GetConnector returns connector of opened database
 func GetConnector() *sql.DB {
 	return db
 }

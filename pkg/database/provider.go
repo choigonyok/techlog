@@ -30,6 +30,10 @@ type Provider interface {
 	GetCommentPasswordByCommentID(commentID string) (string, error)
 	DeleteCommentByCommentID(commentID string) error
 	CreateComment(comment model.Comment, admin string) error
+	GetRepliesByPostID(postID string) ([]model.Reply, error)
+	GetReplyPasswordByReplyID(replyID string) (string, error)
+	DeleteReplyByReplyID(replyID string) error
+	CreateReply(reply model.Reply) error
 }
 
 type MysqlProvider struct {
@@ -237,6 +241,38 @@ func (p *MysqlProvider) DeleteCommentByCommentID(commentID string) error {
 }
 
 func (p *MysqlProvider) CreateComment(comment model.Comment, admin string) error {
+	fmt.Println(comment)
 	_, err := p.connector.Exec(`INSERT INTO comment (text, writerID, writerPW, admin, postID) VALUES ('` + comment.Text + `', '` + comment.WriterID + `', '` + comment.WriterPW + `', ` + admin + `, ` + strconv.Itoa(comment.PostID) + `)`)
+	return err
+}
+
+func (p *MysqlProvider) GetRepliesByPostID(postID string) ([]model.Reply, error) {
+	reply := model.Reply{}
+	replies := []model.Reply{}
+
+	r, err := p.connector.Query(`SELECT id, admin, writerID, text, commentID FROM reply WHERE postID = ` + postID)
+	for r.Next() {
+		r.Scan(&reply.ID, &reply.Admin, &reply.WriterID, &reply.Text, &reply.CommentID)
+		replies = append(replies, reply)
+	}
+
+	return replies, err
+}
+
+func (p *MysqlProvider) DeleteReplyByReplyID(replyID string) error {
+	_, err := p.connector.Exec(`DELETE FROM reply WHERE id =` + replyID)
+	return err
+}
+
+func (p *MysqlProvider) GetReplyPasswordByReplyID(replyID string) (string, error) {
+	password := ""
+	r := p.connector.QueryRow(`SELECT writerPW FROM reply WHERE id = ` + replyID)
+	err := r.Scan(&password)
+	return password, err
+}
+
+func (p *MysqlProvider) CreateReply(reply model.Reply) error {
+	_, err := p.connector.Exec(`INSERT INTO reply (admin, writerID, writerPW, text, commentID, postID) VALUES (` + reply.Admin + `, '` + reply.WriterID + `', '` + reply.WriterPW + `', '` + reply.Text + `', ` + strconv.Itoa(reply.CommentID) + `, ` + strconv.Itoa(reply.PostID) + `)`)
+
 	return err
 }
