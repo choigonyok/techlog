@@ -2,48 +2,47 @@ provider "aws" {
   region = "ap-northeast-2"
 }
 
-resource "aws_vpc" "mainvpc" {
+resource "aws_vpc" "blog_vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    Name : "ccs-vpc"
+    Name : "blog-vpc"
   }
 }
 
-// vpc 안에서 서브넷 집단 하나를 만듦
-resource "aws_subnet" "public_subnet" {
-  vpc_id     = aws_vpc.mainvpc.id
+resource "aws_subnet" "blog_subnet" {
+  vpc_id = aws_vpc.blog_vpc.id
   tags = {
-    Name : "ccs_subnet"
+    Name : "blog_subnet"
   }
   map_public_ip_on_launch = true
-  cidr_block = "10.0.1.0/24"
+  cidr_block              = "10.0.1.0/24"
 }
 
-resource "aws_internet_gateway" "IGW" {
-    vpc_id =  aws_vpc.mainvpc.id
+resource "aws_internet_gateway" "blog_ingernet_gateway" {
+  vpc_id = aws_vpc.blog_vpc.id
 }
 
-resource "aws_route_table" "PublicRT" {
-    vpc_id =  aws_vpc.mainvpc.id
-    route {
-    cidr_block = "0.0.0.0/0" 
-    gateway_id = aws_internet_gateway.IGW.id
-    }
+resource "aws_route_table" "blog_route_table" {
+  vpc_id = aws_vpc.blog_vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.blog_ingernet_gateway.id
+  }
 }
 
-resource "aws_route_table_association" "PublicRTassociation" {
-    subnet_id = aws_subnet.public_subnet.id
-    route_table_id = aws_route_table.PublicRT.id
+resource "aws_route_table_association" "blog_association" {
+  subnet_id      = aws_subnet.blog_subnet.id
+  route_table_id = aws_route_table.blog_route_table.id
 }
 
-resource "aws_security_group" "cluster_sg" {
-  vpc_id = aws_vpc.mainvpc.id
-  name = "ccs_sg"
+resource "aws_security_group" "blog_sg" {
+  vpc_id = aws_vpc.blog_vpc.id
+  name   = "blog_sg"
 
   ingress {
     from_port   = 0
     to_port     = 0
-    protocol  = "-1"
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -55,78 +54,69 @@ resource "aws_security_group" "cluster_sg" {
   }
 }
 
-resource "aws_lb" "nlb" {
-  name               = "blog-nlb"
-  internal           = false // # 체계 설정 내부로 할지 인터넷경계로 할지
-  load_balancer_type = "network" # for NLB or "application" for ALB
-  
+resource "aws_lb" "blog_nlb" {
+  name               = "blog_nlb"
+  internal           = false
+  load_balancer_type = "network"
+
   subnet_mapping {
-    subnet_id = aws_subnet.public_subnet.id  # VPC1의 서브넷 ID
+    subnet_id = aws_subnet.blog_subnet.id
   }
 
-  enable_deletion_protection = false # true이면 terraform이 LB 삭제하는 걸 막아줌, 디폴트가 false라 false면 굳이 안써도 되긴 함
-  
+  enable_deletion_protection = false
+
   tags = {
     Environment = "production"
   }
 }
 
-resource "aws_lb_target_group" "tg" {
-  name     = "blog-tg"
-  port     = 80
-  protocol = "TCP"
-  target_type = "ip" # 인스턴스면 타켓타입 미표시. 람다, alb면 각각 "lambda", "alb"로 타겟 타입을 선언해줘야함
-  vpc_id   = aws_vpc.mainvpc.id  
+resource "aws_lb_target_group" "blog_target_group" {
+  name        = "blog_target_group"
+  port        = 80
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.blog_vpc.id
 }
 
-resource "aws_lb_target_group_attachment" "tg_ip" {
-  target_group_arn = aws_lb_target_group.tg.arn
-  target_id        = aws_instance.ccs-worker.private_ip
+resource "aws_lb_target_group_attachment" "blog_target_group_ip" {
+  target_group_arn = aws_lb_target_group.blog_target_group.arn
+  target_id        = aws_instance.blog_worker1.private_ip
   port             = 32665
 }
 
 
-resource "aws_lb_listener" "nlb_listner" {
-  load_balancer_arn = aws_lb.nlb.arn
+resource "aws_lb_listener" "blog_nlb_listner" {
+  load_balancer_arn = aws_lb.blog_nlb.arn
   port              = "80"
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
+    target_group_arn = aws_lb_target_group.blog_target_group.arn
   }
 }
-# resource "aws_lb_listener_rule" "rule" {
-#   listener_arn = aws_lb_listener.nlb_listner.arn
- 
-#   action {
-#     type = "forward"
-#     target_group_arn = aws_lb_target_group.tg.arn
-#   }
-# }
-# 여러 클러스터(vpc)에 분산해야할 때
 
-resource "aws_instance" "ccs-master" {
-  ami           = "ami-0c9c942bd7bf113a2"
-  instance_type = "t3.small"
-  vpc_security_group_ids = [aws_security_group.cluster_sg.id]
-  subnet_id = aws_subnet.public_subnet.id
-  key_name = "Choigonyok"
+resource "aws_instance" "blog_master" {
+  ami                    = "ami-0c9c942bd7bf113a2"
+  instance_type          = "t3.small"
+  vpc_security_group_ids = [aws_security_group.blog_sg.id]
+  subnet_id              = aws_subnet.blog_subnet.id
+  key_name               = "blog"
 
   tags = {
     Name = "master_node"
   }
 
   connection {
-    type = "ssh"
-    user = "ubuntu"
-    private_key = file("../../../PEMKEY/Choigonyok.pem")    
-    host = self.public_ip
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("../pemkey/blog.pem")
+    host        = self.public_ip
   }
 
   root_block_device {
-    volume_size    = 8
-    volume_type    = "gp2"
+    volume_size = 8
+    volume_type = "gp2"
   }
 
   provisioner "remote-exec" {
@@ -180,30 +170,30 @@ resource "aws_instance" "ccs-master" {
   }
 }
 
-resource "aws_instance" "ccs-worker" {
-  ami           = "ami-0c9c942bd7bf113a2"
-  instance_type = "t3.micro"
-  vpc_security_group_ids = [aws_security_group.cluster_sg.id]
-  subnet_id = aws_subnet.public_subnet.id
-  key_name = "Choigonyok"
+resource "aws_instance" "blog_worker2" {
+  ami                    = "ami-0c9c942bd7bf113a2"
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [aws_security_group.blog_sg.id]
+  subnet_id              = aws_subnet.blog_subnet.id
+  key_name               = "blog"
 
   tags = {
-    Name = "worker_node"
-  }  
+    Name = "worker_node2"
+  }
 
   connection {
-    type = "ssh"
-    user = "ubuntu"
-    private_key = file("../../../PEMKEY/Choigonyok.pem")    
-    host = self.public_ip
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("../pemkey/blog.pem")
+    host        = self.public_ip
   }
 
   root_block_device {
-    volume_size    = 16
-    volume_type    = "gp2"
+    volume_size = 16
+    volume_type = "gp2"
   }
-   
-provisioner "remote-exec" {
+
+  provisioner "remote-exec" {
 
     inline = [
       "cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf",
@@ -244,30 +234,30 @@ provisioner "remote-exec" {
   }
 }
 
-resource "aws_instance" "ccs-worker-database" {
-  ami           = "ami-0c9c942bd7bf113a2"
-  instance_type = "t3.small"
-  vpc_security_group_ids = [aws_security_group.cluster_sg.id]
-  subnet_id = aws_subnet.public_subnet.id
-  key_name = "Choigonyok"
+resource "aws_instance" "blog_worker1" {
+  ami                    = "ami-0c9c942bd7bf113a2"
+  instance_type          = "t3.small"
+  vpc_security_group_ids = [aws_security_group.blog_sg.id]
+  subnet_id              = aws_subnet.blog_subnet.id
+  key_name               = "blog"
 
   tags = {
-    Name = "worker_node_database"
-  }  
+    Name = "worker-node1"
+  }
 
   connection {
-    type = "ssh"
-    user = "ubuntu"
-    private_key = file("../../../PEMKEY/Choigonyok.pem")    
-    host = self.public_ip
+    type        = "ssh"
+    user        = "ubuntu"
+    private_key = file("../pemkey/blog.pem")
+    host        = self.public_ip
   }
 
   root_block_device {
-    volume_size    = 8
-    volume_type    = "gp2"
+    volume_size = 8
+    volume_type = "gp2"
   }
-   
-provisioner "remote-exec" {
+
+  provisioner "remote-exec" {
 
     inline = [
       "cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf",
@@ -305,24 +295,30 @@ provisioner "remote-exec" {
       "sudo apt-get install -y kubelet kubeadm kubectl",
       "sudo apt-mark hold kubelet kubeadm kubectl containerd",
     ]
+  }
+}
+
+resource "aws_s3_bucket" "blog_bucket" {
+  bucket = "blog_bucket"
+
+  tags = {
+    Name        = "blog_bucket_20231106"
+    Environment = "Production"
   }
 }
 
 output "master-ip" {
-  value = "${aws_instance.ccs-master.public_ip}"
+  value = aws_instance.blog_master.public_ip
 }
 
-output "worker-database-ip" {
-  value = "${aws_instance.ccs-worker-database.public_ip}"
+output "worker1-ip" {
+  value = aws_instance.blog_worker1.public_ip
 }
 
-output "worker-ip" {
-  value = "${aws_instance.ccs-worker.public_ip}"
+output "worker2-ip" {
+  value = aws_instance.blog_worker2.public_ip
 }
 
-output "lb-dnsname" {
-  value = "${aws_lb.nlb.dns_name}"
+output "lb-dns-hostname" {
+  value = aws_lb.nlb.dns_name
 }
-
-// EBS 생성
-// S3 버킷 생성
