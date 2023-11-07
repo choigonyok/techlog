@@ -1,25 +1,57 @@
 package middleware
 
 import (
-	"github.com/gin-contrib/cors"
+	"errors"
+
+	"github.com/choigonyok/techlog/pkg/middleware/cors"
 	"github.com/gin-gonic/gin"
 )
 
+type MiddlewareInterface interface {
+	AllowCORS(middlewares []string) error
+	Get() gin.HandlerFunc
+}
+
 type Middleware struct {
-	middlewares []gin.HandlerFunc
+	cors cors.CorsInterface
 }
 
-// Get returns middleware pool
-func (m *Middleware) Get() []gin.HandlerFunc {
-	return m.middlewares
+var (
+	allowOrigin      = []string{"http://localhost", "http://localhost:3000", "http://frontend", "http://fronend:3000"}
+	allowMethods     = []string{"GET", "POST", "DELETE", "PUT"}
+	allowHeaders     = []string{"Content-type"}
+	allowCredentials = true
+	allowWildCard    = true
+)
+
+func New() *Middleware {
+	middleware := &Middleware{
+		cors: cors.NewCORS(),
+	}
+	return middleware
 }
 
-// AllowConfig returns settings server allows as gin.Handlefunc() type
-func (m *Middleware) AllowConfig(allowAddress, allowMethods, allowHeaders []string, allowCredentials bool) {
-	cfg := cors.DefaultConfig()
-	cfg.AllowOrigins = allowAddress
-	cfg.AllowMethods = allowMethods
-	cfg.AllowHeaders = allowHeaders
-	cfg.AllowCredentials = allowCredentials
-	m.middlewares = append(m.middlewares, cors.New(cfg))
+func (m *Middleware) AllowCORS(middlewares []string) error {
+	for _, v := range middlewares {
+		switch v {
+		case "origin":
+			m.cors.AllowOrigins(allowOrigin)
+		case "method":
+			m.cors.AllowMethods(allowMethods)
+		case "header":
+			m.cors.AllowHeaders(allowHeaders)
+		case "credential":
+			m.cors.AllowCredentials(allowCredentials)
+		case "wildcard":
+			m.cors.AllowWildcard(allowWildCard)
+		default:
+			return errors.New("invalid string input")
+		}
+	}
+	return nil
+}
+
+func (m *Middleware) Get() gin.HandlerFunc {
+	cors := m.cors.Get()
+	return cors
 }

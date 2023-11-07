@@ -15,7 +15,6 @@ func DeleteCommentByCommentID(c *gin.Context) {
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 	commentID := c.Param("commentid")
-
 	// admin user delete
 	userType := c.Query("type")
 	if userType == "admin" {
