@@ -1,11 +1,11 @@
-package router
+package route
 
 import (
 	"github.com/choigonyok/techlog/pkg/handler"
 	"github.com/gin-gonic/gin"
 )
 
-type Route struct {
+type Routes []struct {
 	Path    string
 	Method  string
 	Handler gin.HandlerFunc
@@ -18,8 +18,8 @@ const (
 	DELETE = "delete"
 )
 
-func (r *Router) NewRoutes(prefix string) []Route {
-	h := []Route{
+func New(prefix string) *Routes {
+	h := &Routes{
 		// Post
 		{
 			Path:    prefix + "post",
@@ -32,7 +32,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.GetPosts,
 		},
 		{
-			Path:    prefix + "/posts/:postid/thumbnail",
+			Path:    prefix + "posts/:postid/thumbnail",
 			Method:  GET,
 			Handler: handler.GetThumbnailByPostID,
 		},
@@ -95,7 +95,7 @@ func (r *Router) NewRoutes(prefix string) []Route {
 			Handler: handler.GetCommentsByPostID,
 		},
 		{
-			Path:    prefix + "posts/:postid/comments/:commentid",
+			Path:    prefix + "comments/:commentid",
 			Method:  DELETE,
 			Handler: handler.DeleteCommentByCommentID,
 		},

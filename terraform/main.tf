@@ -96,6 +96,15 @@ resource "aws_lb_listener" "blog_nlb_listner" {
   }
 }
 
+resource "aws_ebs_volume" "jenkins_volume" {
+  availability_zone = "ap-northeast-2b"
+  size              = 10
+
+  tags = {
+    Name = "jenkins-volume"
+  }
+}
+
 resource "aws_instance" "blog_master" {
   ami                    = "ami-0c9c942bd7bf113a2"
   instance_type          = "t3.small"
@@ -110,7 +119,7 @@ resource "aws_instance" "blog_master" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../../../pemkey/blog.pem")
+    private_key = file("../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -184,7 +193,7 @@ resource "aws_instance" "blog_worker2" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../../../pemkey/blog.pem")
+    private_key = file("../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -248,7 +257,7 @@ resource "aws_instance" "blog_worker1" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = file("../../../pemkey/blog.pem")
+    private_key = file("../../pemkey/blog.pem")
     host        = self.public_ip
   }
 
@@ -299,10 +308,10 @@ resource "aws_instance" "blog_worker1" {
 }
 
 resource "aws_s3_bucket" "blog_bucket" {
-  bucket = "blog_bucket"
+  bucket = "blog-bucket-20231106"
 
   tags = {
-    Name        = "blog-bucket-te20231106"
+    Name        = "blog-bucket-20231106"
     Environment = "Production"
   }
 }
@@ -321,4 +330,8 @@ output "worker2-ip" {
 
 output "lb-dns-hostname" {
   value = aws_lb.blog_nlb.dns_name
+}
+
+output "jenkins-ebs-id" {
+  value = aws_ebs_volume.jenkins_volume.id
 }

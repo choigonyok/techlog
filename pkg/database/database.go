@@ -36,7 +36,7 @@ func (c *Database) Close(db *sql.DB) {
 }
 
 // NewDatabase returns new database object
-func NewDatabase(driver, password, user, port, host, databasename string) *Database {
+func New(driver, password, user, port, host, databasename string) *Database {
 	newDatabase := &Database{
 		driverName:   driver,
 		password:     password,
