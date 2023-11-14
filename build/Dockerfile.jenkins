@@ -1,6 +1,13 @@
-FROM jenkins/jenkins:lts
+FROM --platform=linux/amd64 jenkins/jenkins:lts-jdk17
+
+USER root
 
 RUN apt-get update && apt-get install -y docker.io git
+
+RUN jenkins-plugin-cli --plugins kubernetes
+
+EXPOSE 8080
+EXPOSE 50000
 
 RUN chown -R jenkins:jenkins /var/jenkins_home
 
