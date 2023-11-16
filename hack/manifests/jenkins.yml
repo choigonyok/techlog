@@ -8,27 +8,61 @@ spec:
     requests:
       storage: 8Gi
   accessModes:
-    - ReadWriteOnce
-  storageClassName: ebs-sc
+    - ReadWriteMany
+  storageClassName: efs-sc
 ---
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: ebs-sc
-provisioner: ebs.csi.aws.com
-volumeBindingMode: Immediate
-reclaimPolicy: Delete
+  name: nginx
+  namespace: 
+spec:
+  resources:
+    requests:
+      storage: 8Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-sc
+provisioner: efs.csi.aws.com
 parameters:
-  csi.storage.k8s.io/fstype: ext4
-  type: gp2
-allowedTopologies:
-  - matchLabelExpressions:
-    - key: topology.ebs.csi.aws.com/zone
-      values:
-      - ap-northeast-2a
-      # - ap-northeast-2c
-      # - ap-northeast-2b
-      # - ap-northeast-2d
+  provisioningMode: efs-ap
+  fileSystemId: fs-0685bcddb38e521a6 # change everytime when I create new eks cluster by terraform provisioning
+  directoryPerms: "700"
+  basePath: "/dynamic_provisioning"
+  subPathPattern: ""
+  ensureUniqueDirectory: "false" # For sharing data between ASG jenkins pods
+  reuseAccessPoint: "false" # optional
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx
+  template: 
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx
+      name: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        volumeMounts:
+          - name: nginx
+            mountPath: /var/jenkins_home
+      volumes:
+        - name: nginx
+          persistentVolumeClaim:
+            claimName: nginx
 ---      
 apiVersion: apps/v1
 kind: Deployment
