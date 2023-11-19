@@ -58,7 +58,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-      name = "asg-for-ebs"
+      name = "asg-1"
       ami_type = "AL2_x86_64"
       instance_types = ["t3.small"]
 
@@ -68,9 +68,9 @@ module "eks" {
     }
 
     two = {
-      name = "asg-1"
+      name = "asg-2"
       ami_type = "AL2_x86_64"
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.small"]
 
       min_size     = 1
       max_size     = 1
