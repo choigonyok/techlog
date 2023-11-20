@@ -1,21 +1,45 @@
 pipeline {
-  agent {
-    // this image provides everything needed to run Cypress
-    docker {
-      image 'cypress/base:18.14.1'
-    }
-  }
-
-  stages {
-    stage('build') {
-        steps {
+    agent {
+        kubernetes {
+            defaultContainer 'jnlp'
+            yaml """
+            kind: Pod
+            spec:
+              containers:
+              - name: kaniko
+                image: gcr.io/kaniko-project/executor:debug
+                imagePullPolicy: Always
+                command:     
+                - sleep
+                args:
+                - 9999999
+                volumeMounts:
+                - name: cfg
+                  mountPath: /kaniko/.docker
+              volumes:
+              - name: cfg
+                configMap:
+                  name: config.json
             
+            """
         }
     }
-    stage('e2e test') {
-      steps {
-        sh './frontend/node_modules/.bin/cypress run'
-      }
+    stages {
+        stage('checkout') {
+            steps {
+                git credentialsId: 'github', url: 'https://github.com/choigonyok/techlog'
+            }
+        }
+        stage('build') {
+            steps {
+                script {
+                    sh 'ls -a'
+                    echo 'DOCKER IMAGE BUILD...'
+                    container('kaniko') {
+                        sh '/kaniko/executor -f ./build/Dockerfile.blog -c . --destination=achoistic98/jenkins:testtesttest'
+                    }
+                }
+            }
+        }
     }
-  }
 }
