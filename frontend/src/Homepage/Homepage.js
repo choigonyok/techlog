@@ -63,7 +63,7 @@ const Homepage = () => {
             2017.03~ &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
           </div>
           <div>
-            2023.12~ &nbsp;&nbsp;&nbsp; (주)이지컴아이앤씨 Internship
+            2023.12~ 2024.08&nbsp;&nbsp;&nbsp; 여기어때컴퍼니 인프라개발팀 Internship
           </div>
         </div>
       </div>

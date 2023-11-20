@@ -4,8 +4,9 @@
 # Terraform
 terraform.tfstate
 terraform.tfstate.backup
-.terraform/
+.terraform*
 .terraform.lock.hcl
+terraform.plan
 
 # MySQL
 /mysql_data
@@ -21,3 +22,4 @@ node_modules/
 
 # CI
 jenkins_home
+hack/config.json

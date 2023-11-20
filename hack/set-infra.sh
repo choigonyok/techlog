@@ -2,7 +2,7 @@
 
 echo "Creating terraform plan file..."
 cd ../eks 
-terraform plan -var region=ap-northeast-2 -out terraform.plan
+terraform plan -out terraform.plan
 EXIST= $(ls | grep 'terraform.plan')
 echo "$EXIST"
 if [ ${EXIST} -eq ${""} ] ; then
@@ -34,3 +34,9 @@ kubectl apply -f ../hack/manifests/jenkins.yml
 
 echo "Issueing ServiceAccount token..."
 kubectl create token jenkins -n devops-system
+
+echo "Deploying K8S metric server..."
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
+
+echo "Deploying ConfigMap for Kaniko..."
+kubectl create configmap config.json --from-file=../hack/config.json -n devops-system
