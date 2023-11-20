@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-wkind: Deployment
+kind: Deployment
 metadata:
   name: frontend-deployment
 spec:
@@ -12,16 +12,6 @@ spec:
       labels:
         app: frontend-deployment
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: "app"
-                operator: In
-                values:
-                - database-deployment
-            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: frontend-deployment
         image: achoistic98/blog_frontend:latest

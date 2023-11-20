@@ -4,11 +4,16 @@
 kind create cluster
 
 kubectl create namespace devops-system
-kubectl create ebs-csi-controller
+
+
+# terraform으로 생성한 iam policy/role에 대한 arn 확인
+aws iam list-instance-profiles | jq -r '.InstanceProfiles[].Roles[].Arn'
+
+# kube2iam DaemonSet 배포
 
 # EBS CSI Driver installation
 echo "Install EBS CSI Driver..."
-kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/ecr/?ref=release-1.3"
+kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.24"
 
 # 테라폼 output의 jenkins ebs volume id를 json 형식으로 출력
 echo "Enter to terraform dir..."
