@@ -5,6 +5,7 @@ USER root
 RUN apt-get update && apt-get install -y docker.io git
 
 RUN jenkins-plugin-cli --plugins kubernetes
+RUN jenkins-plugin-cli --plugins go slack notification
 
 EXPOSE 8080
 EXPOSE 50000
