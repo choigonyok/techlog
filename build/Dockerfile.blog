@@ -10,4 +10,4 @@ RUN go build ./cmd/blog.go
 
 EXPOSE 8080
 
-CMD [ "./main" ]
+CMD [ "./blog" ]
