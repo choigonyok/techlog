@@ -1,43 +1,85 @@
 pipeline {
     agent {
-        kubernetes {
-            defaultContainer 'jnlp'
+        kubernetes { // should install kubernetes plugin and configure k8s url, jenkins url, cluster secret
+            defaultContainer 'kaniko'
             yaml """
-            kind: Pod
-            spec:
-              containers:
-              - name: kaniko
-                image: gcr.io/kaniko-project/executor:debug
-                imagePullPolicy: Always
-                command:     
-                - sleep
-                args:
-                - 9999999
-                volumeMounts:
-                - name: cfg
-                  mountPath: /kaniko/.docker
-              volumes:
-              - name: cfg
-                configMap:
-                  name: config.json
-            
-            """
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:     
+    - sleep
+    args:
+    - 9999999
+    tty: true
+    volumeMounts:
+    - name: cfg
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: cfg
+    configMap:
+      name: config.json
+"""
         }
     }
+    tools {
+        go 'go1.21' // should install GO plugin and configure global tool setting
+    }
+    environment {
+        GO114MODULE = 'on'
+        CGO_ENABLED = 0 
+        // GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+    }
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
-                git credentialsId: 'github', url: 'https://github.com/choigonyok/techlog'
+                git credentialsId: 'github', url: 'https://github.com/choigonyok/techlog' // should configure github token in global configuration
+            }
+            post {
+                failure {
+                    slackSend(color: '#F7A200', message: "Checkout FAILED")
+                }
+                success {
+                    slackSend(message: "Checkout Success")
+                }
             }
         }
-        stage('build') {
+        stage('Test') {
             steps {
-                script {
-                    sh 'ls -a'
-                    echo 'DOCKER IMAGE BUILD...'
-                    container('kaniko') {
-                        sh '/kaniko/executor -f ./build/Dockerfile.blog -c . --destination=achoistic98/jenkins:testtesttest'
-                    }
+                container(name: 'jnlp') {
+                    sh 'go test ./... -cover'
+                }
+            }
+            post {
+                failure {
+                    slackSend(color: '#F7A200', message: "Test FAILED")
+                }
+                success {
+                    slackSend(message: "Test Success")
+                }
+            }
+        }
+        stage('Build') {
+            environment {
+                PATH = "/busybox:$PATH"
+            }
+            steps {
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    sh '''#!/busybox/sh
+                    /kaniko/executor -f `pwd`/build/Dockerfile.dev -c `pwd` --cache=true --destination=achoistic98/test333:latest
+                    '''
+                }
+            }
+            post {
+                failure {
+                    slackSend(color: '#F7A200', message: "Container Image Build and Push FAIL")
+                }
+                success {
+                    slackSend(message: "Container Image Build and Push Success")
                 }
             }
         }
