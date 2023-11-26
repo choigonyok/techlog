@@ -50,3 +50,15 @@ output "target_group_http_arn" {
 output "target_group_https_arn" {
   value = aws_lb_target_group.https.arn
 }
+
+output "host_zone_name_servers" {
+  value = aws_route53_zone.main.name_servers
+}
+
+output "test1" {
+  value = aws_lb.blog.ip_address_type
+}
+
+output "test2" {
+  value = aws_lb.blog.dns_name
+}

@@ -63,18 +63,18 @@ module "eks" {
       instance_types = ["t3.small"]
 
       min_size     = 3
-      max_size     = 3
+      max_size     = 6
       desired_size = 3
     }
 
-    two = {
-      name = "asg-2"
-      ami_type = "AL2_x86_64"
-      instance_types = ["t3.small"]
+    # two = {
+    #   name = "asg-2"
+    #   ami_type = "AL2_x86_64"
+    #   instance_types = ["t3.small"]
 
-      min_size     = 3
-      max_size     = 3
-      desired_size = 3
-    }
+    #   min_size     = 2
+    #   max_size     = 6
+    #   desired_size = 2
+    # }
   }
 }
