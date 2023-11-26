@@ -36,26 +36,28 @@ kubectl apply -f ../hack/manifests/nginx-test.yml
 echo "Deploy K8S metric server..."
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 
-# echo "Deploy jenkins as Loadbalancer type service object..."
-# FILE_SYSTEM_ID=$(terraform output efs_id | sed s/\"//g )
-# sed -i '' "s/fileSystemId: FILE_SYSTEM_ID/fileSystemId: $FILE_SYSTEM_ID/" ../hack/manifests/jenkins.yml
-# kubectl apply -f ../hack/manifests/jenkins.yml
-# sed -i '' "s/fileSystemId: .*/fileSystemId: FILE_SYSTEM_ID/" ../hack/manifests/jenkins.yml
+echo "Deploy jenkins as Loadbalancer type service object..."
+FILE_SYSTEM_ID=$(terraform output efs_id | sed s/\"//g )
+sed -i '' "s/fileSystemId: FILE_SYSTEM_ID/fileSystemId: $FILE_SYSTEM_ID/" ../hack/manifests/jenkins.yml
+kubectl apply -f ../hack/manifests/jenkins.yml
+kubectl patch svc jenkins -n devops-system -p '{"spec": {"type": "ClusterIP"}}'
+sed -i '' "s/fileSystemId: .*/fileSystemId: FILE_SYSTEM_ID/" ../hack/manifests/jenkins.yml
 
-# echo "Issueing ServiceAccount token..."
-# kubectl create token jenkins -n devops-system
+echo "Issueing ServiceAccount token..."
+kubectl create token jenkins -n devops-system
 
-# echo "Deploying ConfigMap for Kaniko..."
-# kubectl create configmap config.json --from-file=../hack/config.json -n devops-system
+echo "Deploying ConfigMap for Kaniko..."
+kubectl create configmap config.json --from-file=../hack/config.json -n devops-system
 
-# echo "Deploying ArgoCD..."
-# kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-# # kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-# kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
-# kubectl patch svc argocd-server -n argocd -p '{"spec": {"ports": [{"name": "https", "nodePort": 30000, "port": 443, "targetPort": 8080}]}}'
-# PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o json | jq -r '.data.password' | base64 -d)
-# echo "PASSWORD: $PASSWORD"
-# PASSWORD=""
+echo "Deploying ArgoCD..."
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"ports": [{"name": "https", "nodePort": 30000, "port": 443, "targetPort": 8080}]}}'
+
+PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o json | jq -r '.data.password' | base64 -d)
+echo "PASSWORD: $PASSWORD"
+PASSWORD=""
 
 # kubectl patch deployment argocd-redis -n argocd -p \
 #   '{"spec":{"template":{"spec":{"volumes":[{"name":"argocd-redis","persistentVolumeClaim":{"claimName":"argocd"}}]}}}}'
