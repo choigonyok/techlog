@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend-deployment
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend-deployment
+        app: frontend
     spec:
       containers:
-      - name: frontend-deployment
+      - name: frontend
         image: achoistic98/blog_frontend:latest
         imagePullPolicy: Always
         ports:
@@ -22,10 +22,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: frontend
 spec:
   selector:
-    app: frontend-deployment
+    app: frontend
   ports:
     - protocol: TCP
       port: 3000

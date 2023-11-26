@@ -18,10 +18,10 @@ metadata:
 provisioner: efs.csi.aws.com
 parameters:
   provisioningMode: efs-ap
-  fileSystemId: fs-08ba08d6fc2e5da4b # change everytime when I create new eks cluster by terraform provisioning
+  fileSystemId: FILE_SYSTEM_ID
   directoryPerms: "777"
   basePath: "/dynamic_provisioning"
-  subPathPattern: ""
+  subPathPattern: "/${.PVC.namespace}"
   ensureUniqueDirectory: "false" # For sharing data between ASG jenkins pods
   reuseAccessPoint: "false" # optional
 ---
@@ -31,7 +31,7 @@ metadata:
   name: jenkins
   namespace: devops-system
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: jenkins
@@ -42,6 +42,16 @@ spec:
       name: jenkins
       namespace: devops-system
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app.kubernetes.io/name"
+                operator: In
+                values:
+                - jenkins
+            topologyKey: "kubernetes.io/hostname"
       serviceAccountName: jenkins
       securityContext: # .spec level securityContext
         fsGroup: 1000
@@ -74,23 +84,24 @@ kind: Service
 metadata:
   name: jenkins
   namespace: devops-system
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+  # annotations:
+  #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+  #   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 spec:
   selector:
     app.kubernetes.io/name: jenkins
   ports:
     - name: ui
       protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
     - name: controller
       protocol: TCP
       port: 50000
       targetPort: 50000
-  type: LoadBalancer
+  type: ClusterIP
+  # type: Loadbalancer
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -120,3 +131,16 @@ subjects:
 - kind: ServiceAccount
   name: jenkins
   namespace: devops-system
+---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: argocd
+#   namespace: argocd
+# spec:
+#   resources:
+#     requests:
+#       storage: 8Gi
+#   accessModes:
+#     - ReadWriteMany
+#   storageClassName: efs-sc
