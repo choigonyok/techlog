@@ -23,7 +23,7 @@ output "vpc_id" {
   value       = module.vpc.default_vpc_id
 }  
 
-output "efs_example_fsid" {
+output "efs_id" {
   value = aws_efs_file_system.jenkins_volume.id
 }
 
@@ -37,4 +37,28 @@ output "cluster_oidc_provider_arn" {
 
 output "cluster_oidc_provider" {
   value = module.eks.oidc_provider
+}
+
+output "load_balancer_dns" {
+  value = aws_lb.blog.dns_name
+}
+
+output "target_group_http_arn" {
+  value = aws_lb_target_group.http.arn
+}
+
+output "target_group_https_arn" {
+  value = aws_lb_target_group.https.arn
+}
+
+output "host_zone_name_servers" {
+  value = aws_route53_zone.main.name_servers
+}
+
+output "test1" {
+  value = aws_lb.blog.ip_address_type
+}
+
+output "test2" {
+  value = aws_lb.blog.dns_name
 }
