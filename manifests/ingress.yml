@@ -24,9 +24,9 @@ spec:
           service:
             name: jenkins-external-name
             port:
-              number: 8080
+              number: 80
   - host: cd.choigonyok.com
-    https:
+    http:
       paths:
       - path: /
         pathType: Prefix
@@ -34,7 +34,7 @@ spec:
           service:
             name: argocd-external-name
             port:
-              number: 443
+              number: 80
 ---
 apiVersion: v1
 kind: Service

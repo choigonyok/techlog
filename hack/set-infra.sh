@@ -1,7 +1,7 @@
 #!bin/bash
 
 echo "Create terraform plan file..."
-cd ../terraform
+cd ../tf
 terraform plan -out terraform.plan
 
 echo "Apply terraform..."
@@ -29,8 +29,7 @@ kubectl apply -f ../manifests/target-group-binding.yml
 sed -i '' 's/targetGroupARN: .*/targetGroupARN: HTTP_ARN/g' ../manifests/target-group-binding.yml
 # sed -i '' "1,/---/s/targetGroupARN: .*/targetGroupARN: HTTP_ARN/" ../manifests/target-group-binding.yml
 
-echo "Deploy test ingress and nginx..."
-kubectl apply -f ../manifests/ingress.yml
+echo "Deploy test nginx..."
 kubectl apply -f ../manifests/nginx-test.yml
 
 echo "Deploy K8S metric server..."
@@ -49,18 +48,14 @@ kubectl create token jenkins -n devops-system
 echo "Deploying ConfigMap for Kaniko..."
 kubectl create configmap config.json --from-file=../hack/config.json -n devops-system
 
-echo "Deploying ArgoCD..."
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-# kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
-kubectl patch svc argocd-server -n argocd -p '{"spec": {"ports": [{"name": "https", "nodePort": 30000, "port": 443, "targetPort": 8080}]}}'
+echo "Deploying HA ArgoCD..."
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.9.2/manifests/ha/install.yaml
+kubectl patch cm argocd-cmd-params-cm -n argocd -p '{"data": {"server.insecure" : "true"}}'
+kubectl rollout restart deployment/argocd-server -n argocd
 
 PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o json | jq -r '.data.password' | base64 -d)
 echo "PASSWORD: $PASSWORD"
 PASSWORD=""
 
-# kubectl patch deployment argocd-redis -n argocd -p \
-#   '{"spec":{"template":{"spec":{"volumes":[{"name":"argocd-redis","persistentVolumeClaim":{"claimName":"argocd"}}]}}}}'
-
-# # kubectl patch deployment argocd-redis -n argocd -p \
-# #   '{"spec":{"template":{"spec":{"containers": {"volumeMounts": {"name":"argocd-redis","mountPath":"/datas"}}}}}}'
+echo "Deploy ingress..."
+kubectl apply -f ../manifests/ingress.yml
