@@ -49,18 +49,17 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
 
-  cluster_name    = local.cluster_name
-  cluster_version = "1.27"
-  
+  cluster_name                   = local.cluster_name
+  cluster_version                = "1.27"
   vpc_id                         = module.vpc.vpc_id
   subnet_ids                     = module.vpc.private_subnets
   cluster_endpoint_public_access = true
 
   eks_managed_node_groups = {
     one = {
-      name = "asg-1"
-      ami_type = "AL2_x86_64"
-      instance_types = ["t3.small"]
+      name           = "asg-1"
+      ami_type       = "AL2_x86_64"
+      instance_types = ["t3.medium"]
 
       min_size     = 3
       max_size     = 6
@@ -78,3 +77,22 @@ module "eks" {
     # }
   }
 }
+
+resource "aws_security_group_rule" "ingress_controller_https" {
+  type              = "ingress"
+  from_port         = 32665
+  to_port           = 32665
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = module.eks.node_security_group_id
+}
+
+resource "aws_security_group_rule" "ingress_controller_http" {
+  type              = "ingress"
+  from_port         = 31665
+  to_port           = 31665
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = module.eks.node_security_group_id
+}
+

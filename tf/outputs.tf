@@ -62,3 +62,7 @@ output "test1" {
 output "test2" {
   value = aws_lb.blog.dns_name
 }
+
+output "node_security_group_id"{
+  value = module.eks.node_security_group_id
+}
