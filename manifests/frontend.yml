@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: frontend
@@ -12,6 +12,16 @@ spec:
       labels:
         app: frontend
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - frontend
+            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: frontend
         image: achoistic98/blog_frontend:latest
@@ -19,6 +29,20 @@ spec:
         ports:
         - containerPort: 3000
 ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: frontend
+# spec:
+#   selector:
+#     app: frontend
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 3000
+#   type: ClusterIP
+---
+# for dev, kind cluster
 apiVersion: v1
 kind: Service
 metadata:
@@ -28,6 +52,7 @@ spec:
     app: frontend
   ports:
     - protocol: TCP
-      port: 3000
+      port: 80
       targetPort: 3000
-  type: ClusterIP
+      nodePort: 30000
+  type: NodePort

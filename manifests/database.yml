@@ -1,19 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: database-deployment
+  name: database
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: database-deployment
+      app: database
   template:
     metadata:
       labels:
-        app: database-deployment
+        app: database
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - database
+            topologyKey: "kubernetes.io/hostname"
       containers:
-        - name: database-deployment
+        - name: database
           image: achoistic98/blog_database:latest
           ports:
             - containerPort: 3306
@@ -24,24 +34,21 @@ spec:
             - name: MYSQL_ROOT_PASSWORD
               value: "password"
             - name: MYSQL_DATABASE
-              value: "blog"
+              value: "blogdb"
       volumes:
         - name: database-volume
           hostPath:
             path: /volumes # Replace with the actual path on your host machine
-      nodeSelector:
-        instance: small
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: database-service
+  name: database
 spec:
   selector:
-    app: database-deployment
+    app: database
   ports:
     - protocol: TCP
       port: 3306
       targetPort: 3306
   type: ClusterIP
----

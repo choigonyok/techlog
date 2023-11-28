@@ -4,9 +4,7 @@ USER root
 
 RUN apt-get update && apt-get install -y docker.io git
 
-RUN jenkins-plugin-cli --plugins kubernetes
-RUN jenkins-plugin-cli --plugins golang:1.4 
-RUN jenkins-plugin-cli --plugins slack:684.v833089650554
+RUN jenkins-plugin-cli --plugins kubernetes golang:1.4 slack:684.v833089650554
 
 EXPOSE 8080
 EXPOSE 50000

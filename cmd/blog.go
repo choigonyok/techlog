@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -22,10 +23,21 @@ func main() {
 	var databasePort = os.Getenv("DB_PORT")
 	var databaseHost = os.Getenv("DB_HOST")
 	var databaseName = os.Getenv("DB_NAME")
-
 	database := database.New(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
-	db, _ := database.Open()
+	db, err := database.Open()
+	if err != nil {
+		fmt.Println("Database Open Error")
+	} else {
+		fmt.Println("Database Opened")
+	}
 	defer database.Close(db)
+
+	fmt.Println("ping start")
+	err = db.Ping()
+	if err != nil {
+		fmt.Println("ping fail")
+	}
+	fmt.Println("ping end")
 
 	server, err := server.New()
 	if err != nil {

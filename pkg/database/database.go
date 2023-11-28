@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type Database struct {
@@ -20,14 +19,9 @@ var (
 
 // Open opens database connector with specific use, password, host, db, driver
 func (c *Database) Open() (*sql.DB, error) {
-	var err error
-	db, err = sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(c.user + ":" + c.password + "@tcp(" + c.host + ")/" + c.databaseName)
-	return db, nil
+	tempDB, err := sql.Open(c.driverName, c.user+":"+c.password+"@tcp("+c.host+")/"+c.databaseName)
+	db = tempDB
+	return db, err
 }
 
 // Close closed opened database connector

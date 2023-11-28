@@ -1,7 +1,7 @@
 #!bin/bash
 
 echo "Create terraform plan file..."
-cd ../tf
+cd ../terraform
 terraform plan -out terraform.plan
 
 echo "Apply terraform..."
@@ -29,8 +29,10 @@ kubectl apply -f ../manifests/target-group-binding.yml
 sed -i '' 's/targetGroupARN: .*/targetGroupARN: HTTP_ARN/g' ../manifests/target-group-binding.yml
 # sed -i '' "1,/---/s/targetGroupARN: .*/targetGroupARN: HTTP_ARN/" ../manifests/target-group-binding.yml
 
-echo "Deploy test nginx..."
-kubectl apply -f ../manifests/nginx-test.yml
+echo "Deploy applications..."
+kubectl apply -f ../manifests/frontend.yml
+kubectl apply -f ../manifests/backend.yml
+kubectl apply -f ../manifests/database.yml
 
 echo "Deploy K8S metric server..."
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml

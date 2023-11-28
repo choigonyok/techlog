@@ -1,10 +1,19 @@
-FROM golang:latest
+FROM --platform=linux/amd64 golang:latest
 
 WORKDIR /app
 
-COPY ./ ./
+COPY ./go.mod ./
+COPY ./go.sum ./
 
 RUN go mod download
+
+COPY ./cmd ./cmd
+COPY ./pkg ./pkg
+
+COPY ./assets ./assets
+# COPY ./.env ./.env
+
+ENV GOMAXPROCS=5
 
 RUN go build ./cmd/blog.go
 
