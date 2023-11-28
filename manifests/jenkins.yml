@@ -94,14 +94,13 @@ spec:
   ports:
     - name: ui
       protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
     - name: controller
       protocol: TCP
       port: 50000
       targetPort: 50000
   type: ClusterIP
-  # type: Loadbalancer
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -131,16 +130,3 @@ subjects:
 - kind: ServiceAccount
   name: jenkins
   namespace: devops-system
----
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: argocd
-#   namespace: argocd
-# spec:
-#   resources:
-#     requests:
-#       storage: 8Gi
-#   accessModes:
-#     - ReadWriteMany
-#   storageClassName: efs-sc

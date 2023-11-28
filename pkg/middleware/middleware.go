@@ -17,7 +17,7 @@ type Middleware struct {
 }
 
 var (
-	allowOrigin      = []string{"http://localhost", "http://localhost:3000", "http://frontend", "http://fronend:3000"}
+	allowOrigin      = []string{"http://localhost", "http://localhost:3000", "http://frontend", "http://fronend:3000", "http://www.choigonyok.com", "https://www.choigonyok.com", "http://choigonyok.com", "https://choigonyok.com"}
 	allowMethods     = []string{"GET", "POST", "DELETE", "PUT"}
 	allowHeaders     = []string{"Content-type"}
 	allowCredentials = true

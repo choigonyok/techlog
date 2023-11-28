@@ -66,7 +66,6 @@ func (p *MysqlProvider) UpdateVisitorToday(newToday, newTotal int) error {
 func (p *MysqlProvider) GetTags() ([]model.PostTags, error) {
 	tag := model.PostTags{}
 	tags := []model.PostTags{}
-
 	r, err := p.connector.Query(`SELECT tags FROM post`)
 	for r.Next() {
 		r.Scan(&tag.Tags)

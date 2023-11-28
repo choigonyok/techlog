@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: backend
@@ -20,10 +20,10 @@ spec:
               - key: "app"
                 operator: In
                 values:
-                - database-deployment
+                - backend
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: backend-deployment
+      - name: backend
         image: achoistic98/blog_backend:latest
         ports:
         - containerPort: 8080
@@ -32,19 +32,19 @@ spec:
             mountPath: /assets
         env:
         - name: DB_HOST
-          value: database-service
+          value: database
         - name: ORIGIN
-          value: "http://frontend-service"
+          value: "http://frontend"
         - name: DB_DRIVER
           value: mysql
         - name: HOST
-          value: <DOMAIN FOR COOKIE>
+          value: www.choigonyok.com
         - name: DB_USER
           value: root
         - name: DB_PASSWORD
           value: password
         - name: DB_NAME
-          value: blog
+          value: blogdb
         - name: BLOG_ID
           value: choigonyok
         - name: BLOG_PW
@@ -57,12 +57,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend-service
+  name: backend
 spec:
   selector:
-    app: backend-deployment
+    app: backend
   ports:
     - protocol: TCP
-      port: 8080
+      port: 80
       targetPort: 8080
-  type: ClusterIP            
+  type: ClusterIP
