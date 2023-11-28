@@ -58,13 +58,23 @@ v1.0
 
 </td>
 </tr>
-  <tr>
+<tr>
 <td align=center>
 v1.1
 </td>
 <td align=center>
   
 [Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.1)
+
+</td>
+</tr>
+<tr>
+<td align=center>
+v1.2
+</td>
+<td align=center>
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.2)
 
 </td>
 </tr>
