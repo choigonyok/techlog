@@ -76,6 +76,7 @@ v1.1
 * Jenkins CI Pipeline
 * ArgoCD CD Pipeline
 * AWS Multi AZ Architecture
+* AWS CloudFront(CDN) Serving Frontend
 * Package Oriented Design
 * Unit, Integration, E2E, Mocking Test
 
