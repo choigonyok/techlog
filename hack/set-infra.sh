@@ -29,11 +29,6 @@ kubectl apply -f ../manifests/target-group-binding.yml
 sed -i '' 's/targetGroupARN: .*/targetGroupARN: HTTP_ARN/g' ../manifests/target-group-binding.yml
 # sed -i '' "1,/---/s/targetGroupARN: .*/targetGroupARN: HTTP_ARN/" ../manifests/target-group-binding.yml
 
-echo "Deploy applications..."
-kubectl apply -f ../manifests/frontend.yml
-kubectl apply -f ../manifests/backend.yml
-kubectl apply -f ../manifests/database.yml
-
 echo "Deploy K8S metric server..."
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 
@@ -61,3 +56,8 @@ PASSWORD=""
 
 echo "Deploy ingress..."
 kubectl apply -f ../manifests/ingress.yml
+
+echo "Deploy applications..."
+kubectl apply -f ../manifests/application.yml -n argocd
+
+# kubectl patch secret argocd-secret -n argocd -p '{"stringData": {"webhook.github.secret": "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"}}'
