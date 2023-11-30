@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-ha-haproxy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: haproxy
+  template:
+    metadata:
+      labels:
+        app: haproxy
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - haproxy
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: haproxy
+        image: achoistic98/blog_haproxy:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+        - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-ha-haproxy
+spec:
+  selector:
+    app: haproxy
+  ports:
+    - name: forwarding
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
+    - name: ui
+      protocol: TCP
+      port: 80
+      targetPort: 9000
+  type: ClusterIP

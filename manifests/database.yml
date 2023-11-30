@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: database
+  name: mysql-ha
 spec:
+  serviceName: mysql-ha
   replicas: 3
   selector:
     matchLabels:
@@ -12,16 +13,6 @@ spec:
       labels:
         app: database
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: "app"
-                operator: In
-                values:
-                - database
-            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: database
           image: achoistic98/blog_database:latest
@@ -43,10 +34,36 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: database
+  name: mysql-ha-0
 spec:
   selector:
-    app: database
+    statefulset.kubernetes.io/pod-name: mysql-ha-0
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-ha-1
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: mysql-ha-1
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-ha-2
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: mysql-ha-2
   ports:
     - protocol: TCP
       port: 3306
