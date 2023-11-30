@@ -24,7 +24,7 @@ func VerifyAdminIDAndPW(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	}
-	cookie.setCookie(c, true, false)
+	cookie.setCookie(c, false, true)
 	resp.Response200(c)
 }
 
