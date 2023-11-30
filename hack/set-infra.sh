@@ -22,12 +22,9 @@ kubectl create ns argocd
 echo "Create nginx ingress controller..."
 kubectl apply -f ../manifests/ingress-controller.yml
 HTTP_ARN=$(terraform output target_group_http_arn | sed 's/\//\\\//g')
-# HTTPS_ARN=$(terraform output target_group_https_arn | sed 's/\//\\\//g')
 sed -i '' "s/targetGroupARN: HTTP_ARN/targetGroupARN: $HTTP_ARN/" ../manifests/target-group-binding.yml
-# sed -i '' "s/targetGroupARN: HTTPS_ARN/targetGroupARN: $HTTPS_ARN/" ../manifests/target-group-binding.yml
 kubectl apply -f ../manifests/target-group-binding.yml
 sed -i '' 's/targetGroupARN: .*/targetGroupARN: HTTP_ARN/g' ../manifests/target-group-binding.yml
-# sed -i '' "1,/---/s/targetGroupARN: .*/targetGroupARN: HTTP_ARN/" ../manifests/target-group-binding.yml
 
 echo "Deploy K8S metric server..."
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml

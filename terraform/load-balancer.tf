@@ -18,13 +18,6 @@ resource "aws_lb_target_group" "http" {
   vpc_id   = module.vpc.vpc_id
 }
 
-resource "aws_lb_target_group" "https" {
-  name     = "blog-https-tg"
-  port     = 32665
-  protocol = "TCP"
-  vpc_id   = module.vpc.vpc_id
-}
-
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.blog.arn
   port              = "80"
@@ -39,10 +32,12 @@ resource "aws_lb_listener" "http" {
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.blog.arn
   port              = "443"
-  protocol          = "TCP"
+  protocol          = "TLS"
+  certificate_arn   = data.aws_acm_certificate.techlog.arn
+  alpn_policy       = "None"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.https.arn
+    target_group_arn = aws_lb_target_group.http.arn
   }
 }
