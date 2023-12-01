@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/github"
 	"github.com/choigonyok/techlog/pkg/server"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -17,12 +18,13 @@ var (
 
 func main() {
 	godotenv.Load(".env")
-
 	var databasePassword = os.Getenv("DB_PASSWORD")
 	var databaseUser = os.Getenv("DB_USER")
 	var databasePort = os.Getenv("DB_PORT")
 	var databaseHost = os.Getenv("DB_HOST")
 	var databaseName = os.Getenv("DB_NAME")
+	var githubToken = os.Getenv("GITHUB_TOKEN")
+
 	database := database.New(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
 	db, err := database.Open()
 	if err != nil {
@@ -38,6 +40,9 @@ func main() {
 		fmt.Println("ping fail")
 	}
 	fmt.Println("ping end")
+
+	github.SyncGithubToken(githubToken)
+	github.GetPostsFromGithubRepo()
 
 	server, err := server.New()
 	if err != nil {

@@ -1,65 +1,69 @@
 version: '3'
 services:
-  # frontend:
-  #   build:
-  #     dockerfile: build/Dockerfile.frontend-dev
-  #     context: .
-  #   volumes:
-  #     - /app/node_modules
-  #     - ./frontend:/app
-  #   stdin_open: true
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      dockerfile: build/Dockerfile.frontend-dev
+      context: .
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    stdin_open: true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    env_file:
+      - ./frontend/.dev-env
 
-  # nginx:
-  #   restart: no
-  #   build:
-  #     dockerfile: build/Dockerfile.nginx
-  #     context: .
-  #   ports:
-  #   - "80:80"
-  #   depends_on:
-  #     - backend
-  #     - frontend
+  nginx:
+    restart: no
+    build:
+      dockerfile: build/Dockerfile.nginx
+      context: .
+    ports:
+    - "80:80"
+    depends_on:
+      - backend
+      - frontend
       
-  # mysql:
-  #   build:
-  #     dockerfile: build/Dockerfile.mysql
-  #     context: .
-  #   restart: no
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - ./hack:/docker-entrypoint-initdb.d/
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: password
-  #     MYSQL_DATABASE: blogdb
-  #     TZ: Asia/Seoul
+  mysql:
+    build:
+      dockerfile: build/Dockerfile.mysql
+      context: .
+    restart: no
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./hack:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: blogdb
+      TZ: Asia/Seoul
 
-  # backend:
-  #   build:
-  #     dockerfile: build/Dockerfile.dev
-  #     context: .
-  #   volumes:
-  #     - ./cmd/:/app/cmd
-  #     - ./pkg/:/app/pkg
-  #     - ./assets/:/app/assets
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - mysql
-
-  kaniko:
-    image: gcr.io/kaniko-project/executor:debug
+  backend:
+    build:
+      dockerfile: build/Dockerfile.dev
+      context: .
     volumes:
       - ./cmd/:/app/cmd
       - ./pkg/:/app/pkg
       - ./assets/:/app/assets
-    entrypoint: ["sleep", "infinity"]
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql
+    env_file:
+      - ./.env
+
+  # kaniko:
+  #   image: gcr.io/kaniko-project/executor:debug
+  #   volumes:
+  #     - ./cmd/:/app/cmd
+  #     - ./pkg/:/app/pkg
+  #     - ./assets/:/app/assets
+  #   entrypoint: ["sleep", "infinity"]
+  #   ports:
+  #     - "8080:8080"
 
   # jenkins:
   #   build:
