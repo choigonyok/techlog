@@ -28,13 +28,11 @@ services:
       
   mysql:
     build:
-      dockerfile: build/Dockerfile.mysql
+      dockerfile: build/Dockerfile.mysql-dev
       context: .
     restart: no
     ports:
       - "3306:3306"
-    volumes:
-      - ./hack:/docker-entrypoint-initdb.d/
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: blogdb
