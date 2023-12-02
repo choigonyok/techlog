@@ -81,3 +81,8 @@ func (svc *Service) StoreImage(image model.PostImage) error {
 
 	return svc.provider.StoreImage(image)
 }
+
+func (svc *Service) StoreInitialPosts(post model.Post) error {
+	post = data.MarshalPostToDatabaseFmt(post)
+	return svc.provider.StoreInitialPosts(post)
+}

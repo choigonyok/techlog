@@ -8,6 +8,7 @@ import (
 	"github.com/choigonyok/techlog/pkg/database"
 	"github.com/choigonyok/techlog/pkg/github"
 	"github.com/choigonyok/techlog/pkg/server"
+	"github.com/choigonyok/techlog/pkg/service"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
@@ -25,14 +26,14 @@ func main() {
 	var databaseName = os.Getenv("DB_NAME")
 	var githubToken = os.Getenv("GITHUB_TOKEN")
 
-	database := database.New(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
-	db, err := database.Open()
+	newDatabase := database.New(databaseDriver, databasePassword, databaseUser, databasePort, databaseHost, databaseName)
+	db, err := newDatabase.Open()
 	if err != nil {
 		fmt.Println("Database Open Error")
 	} else {
 		fmt.Println("Database Opened")
 	}
-	defer database.Close(db)
+	defer newDatabase.Close(db)
 
 	fmt.Println("ping start")
 	err = db.Ping()
@@ -41,8 +42,15 @@ func main() {
 	}
 	fmt.Println("ping end")
 
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
+
 	github.SyncGithubToken(githubToken)
 	github.GetPostsFromGithubRepo()
+	posts := github.GetPostsFromGithubRepo()
+	for _, post := range posts {
+		svc.StoreInitialPosts(post)
+	}
 
 	server, err := server.New()
 	if err != nil {

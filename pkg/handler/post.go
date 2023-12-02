@@ -9,6 +9,7 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/github"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
 	"github.com/choigonyok/techlog/pkg/service"
@@ -38,7 +39,6 @@ func CreatePost(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	}
-
 	postID, err := svc.CreatePost(post)
 	if err != nil {
 		resp.Response500(c, err)
@@ -69,6 +69,11 @@ func CreatePost(c *gin.Context) {
 			resp.Response500(c, err)
 			return
 		}
+	}
+	post.ID = postID
+	err = github.PushCreatedPost(post)
+	if err != nil {
+		resp.Response500(c, err)
 	}
 }
 
