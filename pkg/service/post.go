@@ -5,7 +5,6 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/model"
-	"github.com/choigonyok/techlog/pkg/time"
 )
 
 // GetTags returns every tag in blog without redundancy
@@ -66,7 +65,6 @@ func (svc *Service) DeletePostByPostID(postID string) ([]string, error) {
 // CreatePost stores post's text datas in to database
 func (svc *Service) CreatePost(post model.Post) (int, error) {
 	post = data.MarshalPostToDatabaseFmt(post)
-	post.WriteTime = time.GetCurrentTimeByFormat("2006-01-02")
 	return svc.provider.CreatePost(post)
 }
 
@@ -82,7 +80,32 @@ func (svc *Service) StoreImage(image model.PostImage) error {
 	return svc.provider.StoreImage(image)
 }
 
-func (svc *Service) StoreInitialPosts(post model.Post) error {
+func (svc *Service) StoreInitialPost(post model.Post) error {
 	post = data.MarshalPostToDatabaseFmt(post)
-	return svc.provider.StoreInitialPosts(post)
+	return svc.provider.StoreInitialPost(post)
+}
+
+func (svc *Service) StoreInitialPostImages(post model.Post) error {
+	if post.ThumbnailPath == "" {
+		return nil
+	}
+
+	imageNames := strings.Split(post.ThumbnailPath, " ")
+	image := model.PostImage{}
+
+	for i, imageName := range imageNames {
+		image.PostID = post.ID
+		image.ImageName = imageName
+		if i == 0 {
+			image.Thumbnail = "1"
+		} else {
+			image.Thumbnail = "0"
+		}
+
+		if err := svc.provider.StoreImage(image); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -107,7 +107,7 @@ func GetPostsFromGithubRepo() []model.Post {
 }
 
 // PushCreatedPost commits and pushes newly created post body data
-func PushCreatedPost(post model.Post, isUpdate bool) error {
+func PushCreatedPost(post model.Post, imageNames []string, isUpdate bool) error {
 	postTitleIncludeExtension := post.Title
 	postTitleIncludeExtension = strings.ReplaceAll(postTitleIncludeExtension, "%20", " ")
 	postTitleIncludeExtension = strings.ReplaceAll(postTitleIncludeExtension, "%", "%25")
@@ -128,7 +128,7 @@ func PushCreatedPost(post model.Post, isUpdate bool) error {
 [Tags: ` + post.Tags + `]` + `
 [Title: ` + post.Title + `]` + `
 [WriteTime: ` + post.WriteTime + `]` + `
-[ImageNames: ` + post.ThumbnailPath + `]` + `
+[ImageNames: ` + strings.Join(imageNames, " ") + `]` + `
 
 ` + post.Text
 	)

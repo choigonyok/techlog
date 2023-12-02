@@ -46,10 +46,10 @@ func main() {
 	svc := service.NewService(pvr)
 
 	github.SyncGithubToken(githubToken)
-	github.GetPostsFromGithubRepo()
 	posts := github.GetPostsFromGithubRepo()
 	for _, post := range posts {
-		svc.StoreInitialPosts(post)
+		svc.StoreInitialPost(post)
+		svc.StoreInitialPostImages(post)
 	}
 
 	server, err := server.New()
