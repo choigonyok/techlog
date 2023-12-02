@@ -123,7 +123,7 @@ func PushCreatedPost(post model.Post) error {
 	postTitleIncludeExtension = postTitleIncludeExtension + ".md"
 
 	var (
-		commitMessage = "New(" + strconv.Itoa(post.ID) + "): " + post.Title
+		commitMessage = "New(" + strconv.Itoa(post.ID) + "): " + postTitleIncludeExtension
 		// commitMessage = "Test: Push to this repo when new post is created"
 		fileContent = `[ID: ` + strconv.Itoa(post.ID) + `]` + `
 [Tags: ` + post.Tags + `]` + `
@@ -153,6 +153,41 @@ func PushCreatedPost(post model.Post) error {
 		return err
 	} else {
 		fmt.Printf("[New Post Commit] committer: %s, message: %s\n", *content.Commit.Committer, *content.Commit.Message)
+	}
+	return nil
+}
+
+func PushDeletedPost(postTitle string, postID int) error {
+	postTitleIncludeExtension := postTitle + ".md"
+	var (
+		commitMessage = "Update(" + strconv.Itoa(postID) + "): " + postTitleIncludeExtension
+		// commitMessage = "Test: Push to this repo when new post is deleted"
+		sha string
+	)
+
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: *githubToken},
+	)
+
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
+
+	_, files, _, _ := client.Repositories.GetContents(ctx, githubUserName, repositoryName, "", nil)
+	for _, file := range files {
+		if string(file.GetName()) == postTitleIncludeExtension {
+			sha = string(file.GetSHA())
+		}
+	}
+
+	opt := &github.RepositoryContentFileOptions{
+		Message: &commitMessage,
+		SHA:     &sha,
+	}
+
+	_, _, err := client.Repositories.DeleteFile(ctx, githubUserName, repositoryName, postTitleIncludeExtension, opt)
+	if err != nil {
+		return err
 	}
 	return nil
 }

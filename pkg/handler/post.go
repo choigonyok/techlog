@@ -90,6 +90,12 @@ func DeletePostByPostID(c *gin.Context) {
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
+	post, err := svc.GetPostByID(postID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
 	imageNames, err := svc.DeletePostByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)
@@ -98,6 +104,12 @@ func DeletePostByPostID(c *gin.Context) {
 
 	for _, v := range imageNames {
 		os.Remove("assets/" + v)
+	}
+
+	err = github.PushDeletedPost(post.Title, post.ID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
 	}
 }
 
