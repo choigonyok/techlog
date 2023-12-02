@@ -107,7 +107,7 @@ func GetPostsFromGithubRepo() []model.Post {
 }
 
 // PushCreatedPost commits and pushes newly created post body data
-func PushCreatedPost(post model.Post) error {
+func PushCreatedPost(post model.Post, isUpdate bool) error {
 	postTitleIncludeExtension := post.Title
 	postTitleIncludeExtension = strings.ReplaceAll(postTitleIncludeExtension, "%20", " ")
 	postTitleIncludeExtension = strings.ReplaceAll(postTitleIncludeExtension, "%", "%25")
@@ -123,9 +123,8 @@ func PushCreatedPost(post model.Post) error {
 	postTitleIncludeExtension = postTitleIncludeExtension + ".md"
 
 	var (
-		commitMessage = "New(" + strconv.Itoa(post.ID) + "): " + postTitleIncludeExtension
-		// commitMessage = "Test: Push to this repo when new post is created"
-		fileContent = `[ID: ` + strconv.Itoa(post.ID) + `]` + `
+		commitMessage string
+		fileContent   = `[ID: ` + strconv.Itoa(post.ID) + `]` + `
 [Tags: ` + post.Tags + `]` + `
 [Title: ` + post.Title + `]` + `
 [WriteTime: ` + post.WriteTime + `]` + `
@@ -133,6 +132,13 @@ func PushCreatedPost(post model.Post) error {
 
 ` + post.Text
 	)
+
+	switch isUpdate {
+	case false:
+		commitMessage = "New(" + strconv.Itoa(post.ID) + "): " + postTitleIncludeExtension
+	case true:
+		commitMessage = "Update(" + strconv.Itoa(post.ID) + "): Create " + postTitleIncludeExtension
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -157,13 +163,18 @@ func PushCreatedPost(post model.Post) error {
 	return nil
 }
 
-func PushDeletedPost(postTitle string, postID int) error {
+func PushDeletedPost(postTitle string, postID int, isUpdate bool) error {
 	postTitleIncludeExtension := postTitle + ".md"
 	var (
-		commitMessage = "Update(" + strconv.Itoa(postID) + "): " + postTitleIncludeExtension
-		// commitMessage = "Test: Push to this repo when new post is deleted"
-		sha string
+		commitMessage string
+		sha           string
 	)
+	switch isUpdate {
+	case false:
+		commitMessage = "Remove(" + strconv.Itoa(postID) + "): " + postTitleIncludeExtension
+	case true:
+		commitMessage = "Update(" + strconv.Itoa(postID) + "): Remove " + postTitleIncludeExtension
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -186,6 +197,45 @@ func PushDeletedPost(postTitle string, postID int) error {
 	}
 
 	_, _, err := client.Repositories.DeleteFile(ctx, githubUserName, repositoryName, postTitleIncludeExtension, opt)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PushUpdatedPost(afterPost model.Post) error {
+	var (
+		PostTitleIncludeExtension = afterPost.Title + ".md"
+		commitMessage             = "Update(" + strconv.Itoa(afterPost.ID) + "): " + PostTitleIncludeExtension
+		// commitMessage = "Test: Push to this repo when new post is updated"
+		fileContent = `[ID: ` + strconv.Itoa(afterPost.ID) + `]` + `
+		[Tags: ` + afterPost.Tags + `]` + `
+		[Title: ` + afterPost.Title + `]` + `
+		[WriteTime: ` + afterPost.WriteTime + `]` + `
+		[ImageNames: ` + afterPost.ThumbnailPath + `]` + `
+		
+		` + afterPost.Text
+	)
+
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: *githubToken},
+	)
+
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
+
+	fileContents, _, _, _ := client.Repositories.GetContents(ctx, githubUserName, repositoryName, PostTitleIncludeExtension, nil)
+
+	opt := &github.RepositoryContentFileOptions{
+		Message: &commitMessage,
+		SHA:     fileContents.SHA,
+		Content: []byte(fileContent),
+	}
+
+	fmt.Println("string SHA: ", *fileContents.SHA)
+
+	_, _, err := client.Repositories.UpdateFile(ctx, githubUserName, repositoryName, PostTitleIncludeExtension, opt)
 	if err != nil {
 		return err
 	}

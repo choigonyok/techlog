@@ -71,7 +71,7 @@ func CreatePost(c *gin.Context) {
 		}
 	}
 	post.ID = postID
-	err = github.PushCreatedPost(post)
+	err = github.PushCreatedPost(post, false)
 	if err != nil {
 		resp.Response500(c, err)
 	}
@@ -106,7 +106,7 @@ func DeletePostByPostID(c *gin.Context) {
 		os.Remove("assets/" + v)
 	}
 
-	err = github.PushDeletedPost(post.Title, post.ID)
+	err = github.PushDeletedPost(post.Title, post.ID, false)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -140,23 +140,42 @@ func UpdatePostByPostID(c *gin.Context) {
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	post := model.Post{}
-	err := c.ShouldBindJSON(&post)
+	beforePost, _ := svc.GetPostByID(postID)
+
+	afterPost := model.Post{}
+	err := c.ShouldBindJSON(&afterPost)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
-	post = data.MarshalPostToDatabaseFmt(post)
+	afterPost = data.MarshalPostToDatabaseFmt(afterPost)
 
-	if post.ID, err = strconv.Atoi(postID); err != nil {
+	if afterPost.ID, err = strconv.Atoi(postID); err != nil {
 		resp.Response500(c, err)
 		return
 	} else {
-		err = svc.UpdatePost(post)
+		err = svc.UpdatePost(afterPost)
 	}
 	if err != nil {
 		resp.Response500(c, err)
 		return
+	}
+
+	if beforePost.Title == afterPost.Title {
+		err = github.PushUpdatedPost(afterPost)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
+	} else {
+		if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
+		if err := github.PushCreatedPost(afterPost, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
 }
 
