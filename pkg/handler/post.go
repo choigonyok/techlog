@@ -107,11 +107,11 @@ func DeletePostByPostID(c *gin.Context) {
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	post, err := svc.GetPostByID(postID)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
+	// post, err := svc.GetPostByID(postID)
+	// if err != nil {
+	// 	resp.Response500(c, err)
+	// 	return
+	// }
 
 	imageNames, err := svc.DeletePostByPostID(postID)
 	if err != nil {
@@ -120,14 +120,17 @@ func DeletePostByPostID(c *gin.Context) {
 	}
 
 	for _, v := range imageNames {
-		os.Remove("assets/" + v)
+		if err := img.Remove(v); err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
 
-	err = github.PushDeletedPost(post.Title, post.ID, false)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
+	// err = github.PushDeletedPost(post.Title, post.ID, false)
+	// if err != nil {
+	// 	resp.Response500(c, err)
+	// 	return
+	// }
 }
 
 // GetPost returns post data including post body

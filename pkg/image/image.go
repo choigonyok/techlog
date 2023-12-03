@@ -83,3 +83,28 @@ func Download(imageName string) (*s3.GetObjectOutput, error) {
 	fmt.Printf("file downloaded")
 	return output, nil
 }
+
+func Remove(imageName string) error {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(region),
+		Credentials: credentials.NewStaticCredentials(
+			awsAccessKey,
+			awsSecretKey,
+			""),
+	})
+	if err != nil {
+		return err
+	}
+
+	svc := s3.New(sess)
+
+	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(s3BucketName),
+		Key:    aws.String(imageName),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
