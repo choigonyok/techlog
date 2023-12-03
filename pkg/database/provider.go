@@ -34,6 +34,7 @@ type Provider interface {
 	GetReplyPasswordByReplyID(replyID string) (string, error)
 	DeleteReplyByReplyID(replyID string) error
 	CreateReply(reply model.Reply) error
+	StoreInitialPost(post model.Post) error
 }
 
 type MysqlProvider struct {
@@ -272,6 +273,12 @@ func (p *MysqlProvider) GetReplyPasswordByReplyID(replyID string) (string, error
 
 func (p *MysqlProvider) CreateReply(reply model.Reply) error {
 	_, err := p.connector.Exec(`INSERT INTO reply (admin, writerID, writerPW, text, commentID, postID) VALUES (` + reply.Admin + `, '` + reply.WriterID + `', '` + reply.WriterPW + `', '` + reply.Text + `', ` + strconv.Itoa(reply.CommentID) + `, ` + strconv.Itoa(reply.PostID) + `)`)
+
+	return err
+}
+
+func (p *MysqlProvider) StoreInitialPost(post model.Post) error {
+	_, err := p.connector.Exec(`INSERT INTO post (id, tags, title, text, writeTime) VALUES (` + strconv.Itoa(post.ID) + `, '` + post.Tags + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `')`)
 
 	return err
 }

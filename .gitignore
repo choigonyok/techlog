@@ -1,4 +1,5 @@
 .env
+.dev-env
 *.DS_Store*
 
 # Terraform

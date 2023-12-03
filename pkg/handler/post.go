@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -9,20 +10,29 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/github"
+	img "github.com/choigonyok/techlog/pkg/image"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
 	"github.com/choigonyok/techlog/pkg/service"
+	"github.com/choigonyok/techlog/pkg/time"
 	"github.com/gin-gonic/gin"
 )
 
 // CreatePost creates new post with client input data
 func CreatePost(c *gin.Context) {
 	VerifyAdminUser(c)
+	// statusCode := VerifyAdminUser(c)
+	// if statusCode == 401 {
+	// 	resp.Response401(c)
+	// 	return
+	// }
 
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 	post := model.Post{}
 	image := model.PostImage{}
+	imageNames := []string{}
 
 	formData, err := c.MultipartForm()
 	if err != nil {
@@ -39,6 +49,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
+	post.WriteTime = time.GetCurrentTimeByFormat("2006-01-02")
 	postID, err := svc.CreatePost(post)
 	if err != nil {
 		resp.Response500(c, err)
@@ -58,18 +69,24 @@ func CreatePost(c *gin.Context) {
 
 		image.PostID = postID
 
-		err = c.SaveUploadedFile(v, "assets/"+image.ImageName)
+		err = img.Upload(v, image.ImageName)
 		if err != nil {
-			resp.Response500(c, err)
-			return
+			fmt.Println(err.Error())
 		}
+
 		err = svc.StoreImage(image)
 		if err != nil {
 			err := rollBackSavedImageByImageName(image.ImageName)
 			resp.Response500(c, err)
 			return
 		}
+		imageNames = append(imageNames, image.ImageName)
 	}
+	post.ID = postID
+	// err = github.PushCreatedPost(post, imageNames, false)
+	// if err != nil {
+	// 	resp.Response500(c, err)
+	// }
 }
 
 // rollBackSavedImageByImageName deletes saved image by file name
@@ -80,10 +97,21 @@ func rollBackSavedImageByImageName(imageName string) error {
 // DeletePostByPostID deletes post and images by post id
 func DeletePostByPostID(c *gin.Context) {
 	VerifyAdminUser(c)
+	// statusCode := VerifyAdminUser(c)
+	// if statusCode == 401 {
+	// 	resp.Response401(c)
+	// 	return
+	// }
 
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
+
+	// post, err := svc.GetPostByID(postID)
+	// if err != nil {
+	// 	resp.Response500(c, err)
+	// 	return
+	// }
 
 	imageNames, err := svc.DeletePostByPostID(postID)
 	if err != nil {
@@ -92,8 +120,17 @@ func DeletePostByPostID(c *gin.Context) {
 	}
 
 	for _, v := range imageNames {
-		os.Remove("assets/" + v)
+		if err := img.Remove(v); err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
+
+	// err = github.PushDeletedPost(post.Title, post.ID, false)
+	// if err != nil {
+	// 	resp.Response500(c, err)
+	// 	return
+	// }
 }
 
 // GetPost returns post data including post body
@@ -118,28 +155,52 @@ func GetPost(c *gin.Context) {
 // UpdatePost updates title, tags, body of post
 func UpdatePostByPostID(c *gin.Context) {
 	VerifyAdminUser(c)
+	// statusCode := VerifyAdminUser(c)
+	// if statusCode == 401 {
+	// 	resp.Response401(c)
+	// 	return
+	// }
 
 	pvr := database.NewMysqlProvider(database.GetConnector())
 	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	post := model.Post{}
-	err := c.ShouldBindJSON(&post)
+	beforePost, _ := svc.GetPostByID(postID)
+
+	afterPost := model.Post{}
+	err := c.ShouldBindJSON(&afterPost)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
-	post = data.MarshalPostToDatabaseFmt(post)
+	afterPost = data.MarshalPostToDatabaseFmt(afterPost)
 
-	if post.ID, err = strconv.Atoi(postID); err != nil {
+	if afterPost.ID, err = strconv.Atoi(postID); err != nil {
 		resp.Response500(c, err)
 		return
 	} else {
-		err = svc.UpdatePost(post)
+		err = svc.UpdatePost(afterPost)
 	}
 	if err != nil {
 		resp.Response500(c, err)
 		return
+	}
+
+	if beforePost.Title == afterPost.Title {
+		err = github.PushUpdatedPost(afterPost)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
+	} else {
+		if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
+		if err := github.PushCreatedPost(afterPost, nil, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
 }
 
@@ -207,13 +268,18 @@ func GetThumbnailByPostID(c *gin.Context) {
 		return
 	}
 
-	image, err := os.Open("assets/" + thumbnailName)
+	image, err := img.Download(thumbnailName)
+	// image, err := os.Open("assets/" + thumbnailName)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
-	defer image.Close()
-	_, err = io.Copy(c.Writer, image)
+	defer image.Body.Close()
+
+	// defer image.Close()
+
+	c.Header("Content-Type", *image.ContentType)
+	io.Copy(c.Writer, image.Body)
 	if err != nil {
 		resp.Response500(c, err)
 		return

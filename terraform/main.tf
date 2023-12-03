@@ -78,21 +78,24 @@ module "eks" {
   }
 }
 
-resource "aws_security_group_rule" "ingress_controller_https" {
-  type              = "ingress"
-  from_port         = 32665
-  to_port           = 32665
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = module.eks.node_security_group_id
-}
-
 resource "aws_security_group_rule" "ingress_controller_http" {
   type              = "ingress"
   from_port         = 31665
   to_port           = 31665
   protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks = ["0.0.0.0/0"]
   security_group_id = module.eks.node_security_group_id
 }
 
+# resource "aws_security_group_rule" "ingress_controller_http" {
+#   type              = "ingress"
+#   from_port         = 31665
+#   to_port           = 31665
+#   protocol          = "tcp"
+#   cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
+#   security_group_id = module.eks.node_security_group_id
+# }
+
+# data "http" "myip" {
+#   url = "http://ipv4.icanhazip.com"
+# }

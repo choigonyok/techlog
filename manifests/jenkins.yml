@@ -8,7 +8,7 @@ spec:
     requests:
       storage: 8Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: efs-sc
 ---
 apiVersion: storage.k8s.io/v1
@@ -24,6 +24,8 @@ parameters:
   subPathPattern: "/${.PVC.namespace}"
   ensureUniqueDirectory: "false" # For sharing data between ASG jenkins pods
   reuseAccessPoint: "false" # optional
+mountOptions:
+  - sync
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,7 +59,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: jenkins-master
-        image: achoistic98/techlog-jenkins
+        image: achoistic98/blog_jenkins:latest
         ports:
         - containerPort: 8080
         - containerPort: 50000

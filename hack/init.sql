@@ -28,8 +28,6 @@ CREATE TABLE `post` (
     `writeTime` DATE NOT NULL DEFAULT '2000-01-01',
     PRIMARY KEY (`id`)
 );
-INSERT INTO `post` (`tags`, `title`, `text`, `writeTime`) VALUES ("MSA DEV OPS","title1", "text1", '2023-10-29');
-INSERT INTO `post` (`tags`, `title`, `text`, `writeTime`) VALUES ("DEV GOLANG","title2", "text2", '2023-10-30');
 
 DROP TABLE IF EXISTS `image`;
 CREATE TABLE `image` (
@@ -40,8 +38,6 @@ CREATE TABLE `image` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (`postID`) REFERENCES `post` (`id`) ON DELETE CASCADE
 );
-INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (1, 'image1.JPEG', 1);
-INSERT INTO `image` (`postID`, `imageName`, `thumbnail`) VALUES (2, 'image2.jpg', 1);
 
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
@@ -54,9 +50,6 @@ CREATE TABLE `comment` (
     PRIMARY KEY (`id`),
     FOREIGN KEY (`postID`) REFERENCES `post` (`id`) ON DELETE CASCADE
 );
-INSERT INTO `comment` (`text`, `writerID`, `writerPW`, `admin`, `postID`) VALUES ('comment1', 'comid1', 
-'1234', 1, 1);
-INSERT INTO `comment` (`text`, `writerID`, `writerPW`, `admin`, `postID`) VALUES ('comment2', 'comid2', '2345', 0, 1);
 
 DROP TABLE IF EXISTS `reply`;
 CREATE TABLE `reply` (
@@ -70,5 +63,3 @@ CREATE TABLE `reply` (
         PRIMARY KEY (`id`),
         FOREIGN KEY (`commentID`) REFERENCES `comment` (`id`) ON DELETE CASCADE
 );
-INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`, `postID`) VALUES (1, 'id1', '1234', 'reply1', 1, 1);
-INSERT INTO `reply` (`admin`, `writerID`, `writerPW`, `text`, `commentID`, `postID`) VALUES (0, 'id2', '2345', 'reply2', 2, 1);
