@@ -86,8 +86,12 @@ v1.2
 * Jenkins CI Pipeline
 * ArgoCD CD Pipeline
 * AWS Multi AZ Architecture
-* AWS CloudFront(CDN) Serving Frontend
-* Package Oriented Design
+* Post Backup Automation in Github Repo
+* TLS Termination Using Terraform & ACM
+* AWS S3 Uploading & Downloading Images
+* Database Active/Passive Pattern for HA
+* AWS CloudFront(CDN) Hosting Frontend
+* Golang Package Oriented Design
 * Unit, Integration, E2E, Mocking Test
 
 [Refactoring #1]
