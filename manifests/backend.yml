@@ -1,3 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-job-for-backend
+spec:
+  template:
+    spec:
+      containers:
+      - name: init-container
+        image: achoistic98/blog_init:latest
+      restartPolicy: Never
+  completions: 1
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -12,33 +25,20 @@ spec:
       labels:
         app: backend
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: "app"
-                operator: In
-                values:
-                - backend
-            topologyKey: "kubernetes.io/hostname"
       containers:
       - name: backend
         image: achoistic98/blog_backend:latest
         ports:
         - containerPort: 8080
-        volumeMounts:
-          - name: backend-volume
-            mountPath: /assets
         env:
-        - name: DB_HOST
+        - name: DB_HOST_READ
           value: mysql-ha-haproxy:3306
-        - name: ORIGIN
-          value: "http://frontend"
+        - name: DB_HOST_WRITE
+          value: mysql-ha-0
         - name: DB_DRIVER
           value: mysql
         - name: HOST
-          value: httpwww.choigonyok.com
+          value: www.choigonyok.com
         - name: DB_USER
           value: root
         - name: DB_PASSWORD
@@ -49,10 +49,22 @@ spec:
           value: choigonyok
         - name: BLOG_PW
           value: devops
-      volumes:
-        - name: backend-volume        
-          hostPath:
-            path: /volumes
+        # - name: AWS_SECRET_KEY
+        #   value: 
+        # - name: AWS_ACCESS_KEY
+        #   value: 
+        # - name: GITHUB_TOKEN
+        #   value: 
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - backend
+            topologyKey: "kubernetes.io/hostname"
 ---
 apiVersion: v1
 kind: Service
