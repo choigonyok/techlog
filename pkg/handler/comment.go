@@ -12,16 +12,14 @@ import (
 
 // DeleteCommentByCommentID deletes comment by admin user or verified password
 func DeleteCommentByCommentID(c *gin.Context) {
-	pvrMaster := database.NewMysqlProvider(database.GetConnector())
-	svcMaster := service.NewService(pvrMaster)
-	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
-	svcSlave := service.NewService(pvrSlave)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 	commentID := c.Param("commentid")
 	// admin user delete
 	userType := c.Query("type")
 	if userType == "admin" {
 		VerifyAdminUser(c)
-		if err := svcMaster.DeleteCommentByCommentID(commentID); err != nil {
+		if err := svc.DeleteCommentByCommentID(commentID); err != nil {
 			resp.Response500(c, err)
 		} else {
 			resp.Response200(c)
@@ -30,13 +28,13 @@ func DeleteCommentByCommentID(c *gin.Context) {
 	}
 	// common user delete
 	inputPassword := c.Query("password")
-	password, err := svcSlave.GetCommentPasswordByCommentID(commentID)
+	password, err := svc.GetCommentPasswordByCommentID(commentID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 	if password == inputPassword {
-		err := svcMaster.DeleteCommentByCommentID(commentID)
+		err := svc.DeleteCommentByCommentID(commentID)
 		if err != nil {
 			resp.Response500(c, err)
 			return
@@ -49,11 +47,11 @@ func DeleteCommentByCommentID(c *gin.Context) {
 
 // GetCommentsByPostID returns comments in specific post
 func GetCommentsByPostID(c *gin.Context) {
-	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
-	svcSlave := service.NewService(pvrSlave)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 
-	comments, err := svcSlave.GetCommentsByPostID(postID)
+	comments, err := svc.GetCommentsByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -67,8 +65,8 @@ func GetCommentsByPostID(c *gin.Context) {
 
 // CreateComment creates new comment
 func CreateComment(c *gin.Context) {
-	pvrMaster := database.NewMysqlProvider(database.GetConnector())
-	svcMaster := service.NewService(pvrMaster)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 	postID := c.Param("postid")
 	adminCookie := AdminCookie{}
 	comment := model.Comment{}
@@ -88,7 +86,7 @@ func CreateComment(c *gin.Context) {
 		comment.Admin = false
 	}
 
-	err = svcMaster.CreateComment(comment)
+	err = svc.CreateComment(comment)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -97,10 +95,10 @@ func CreateComment(c *gin.Context) {
 
 // GetComments returns every comments
 func GetComments(c *gin.Context) {
-	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
-	svcSlave := service.NewService(pvrSlave)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 
-	comments, err := svcSlave.GetComments()
+	comments, err := svc.GetComments()
 	if err != nil {
 		resp.Response500(c, err)
 		return

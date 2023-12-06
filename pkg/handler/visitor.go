@@ -10,16 +10,14 @@ import (
 
 // GetVisitorCounts returns today/total visitor counts
 func GetVisitorCounts(c *gin.Context) {
-	pvrMaster := database.NewMysqlProvider(database.GetConnector())
-	svcMaster := service.NewService(pvrMaster)
-	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
-	svcSlave := service.NewService(pvrSlave)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 	today := time.GetCurrentTimeByFormat("2006-01-02")
 
 	cookie := &VisitTimeCookie{}
 
 	if !cookie.verifyCookieValue(c, today) {
-		err := svcMaster.AddTodayAndTotal()
+		err := svc.AddTodayAndTotal()
 		if err != nil {
 			resp.Response500(c, err)
 			return
@@ -27,20 +25,20 @@ func GetVisitorCounts(c *gin.Context) {
 		cookie.setCookie(c, today, false, true)
 	}
 
-	date, err := svcSlave.GetDate()
+	date, err := svc.GetDate()
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 	if today != date {
-		err := svcMaster.ResetToday(today)
+		err := svc.ResetToday(today)
 		if err != nil {
 			resp.Response500(c, err)
 			return
 		}
 	}
 
-	todayCount, totalCount, err := svcSlave.GetCounts()
+	todayCount, totalCount, err := svc.GetCounts()
 	if err != nil {
 		resp.Response500(c, err)
 		return

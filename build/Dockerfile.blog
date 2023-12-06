@@ -7,8 +7,11 @@ COPY ./go.sum ./
 
 RUN go mod download
 
-COPY ./cmd/blog ./cmd
+COPY ./cmd ./cmd
 COPY ./pkg ./pkg
+
+COPY ./assets ./assets
+# COPY ./.env ./.env
 
 ENV GOMAXPROCS=5
 

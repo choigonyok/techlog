@@ -29,21 +29,19 @@ type VisitTimeCookie struct{}
 
 // AdminCookie.setCookie stores cookie to database, and sets cookie to client
 func (ck *AdminCookie) setCookie(c *gin.Context, secure, httpOnly bool) {
-	pvrMaster := database.NewMysqlProvider(database.GetConnector())
-	svcMaster := service.NewService(pvrMaster)
-	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
-	svcSlave := service.NewService(pvrSlave)
+	pvr := database.NewMysqlProvider(database.GetConnector())
+	svc := service.NewService(pvr)
 
 	uniqueID := data.CreateRandomString()
-	_, err := svcSlave.GetCookieValue()
+	_, err := svc.GetCookieValue()
 	if err != nil {
-		err := svcMaster.SetCookieValueByUniqueID(uniqueID)
+		err := svc.SetCookieValueByUniqueID(uniqueID)
 		if err != nil {
 			resp.Response500(c, err)
 			return
 		}
 	} else {
-		err := svcMaster.UpdateCookieValueByUniqueID(uniqueID)
+		err := svc.UpdateCookieValueByUniqueID(uniqueID)
 		if err != nil {
 			resp.Response500(c, err)
 			return

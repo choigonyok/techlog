@@ -14,7 +14,7 @@ import (
 
 const (
 	region       = "ap-northeast-2"
-	s3BucketName = "blog-choigonyok"
+	s3BucketName = "erawgeragf"
 )
 
 var (
