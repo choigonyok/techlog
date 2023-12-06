@@ -28,8 +28,8 @@ func CreatePost(c *gin.Context) {
 	// 	return
 	// }
 
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
 	post := model.Post{}
 	image := model.PostImage{}
 	imageNames := []string{}
@@ -50,7 +50,7 @@ func CreatePost(c *gin.Context) {
 	}
 
 	post.WriteTime = time.GetCurrentTimeByFormat("2006-01-02")
-	postID, err := svc.CreatePost(post)
+	postID, err := svcMaster.CreatePost(post)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -74,7 +74,7 @@ func CreatePost(c *gin.Context) {
 			fmt.Println(err.Error())
 		}
 
-		err = svc.StoreImage(image)
+		err = svcMaster.StoreImage(image)
 		if err != nil {
 			err := rollBackSavedImageByImageName(image.ImageName)
 			resp.Response500(c, err)
@@ -103,8 +103,8 @@ func DeletePostByPostID(c *gin.Context) {
 	// 	return
 	// }
 
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
 	postID := c.Param("postid")
 
 	// post, err := svc.GetPostByID(postID)
@@ -113,7 +113,7 @@ func DeletePostByPostID(c *gin.Context) {
 	// 	return
 	// }
 
-	imageNames, err := svc.DeletePostByPostID(postID)
+	imageNames, err := svcMaster.DeletePostByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -135,11 +135,11 @@ func DeletePostByPostID(c *gin.Context) {
 
 // GetPost returns post data including post body
 func GetPost(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
 
-	post, err := svc.GetPostByID(postID)
+	post, err := svcSlave.GetPostByID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -161,11 +161,13 @@ func UpdatePostByPostID(c *gin.Context) {
 	// 	return
 	// }
 
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
 
-	beforePost, _ := svc.GetPostByID(postID)
+	beforePost, _ := svcSlave.GetPostByID(postID)
 
 	afterPost := model.Post{}
 	err := c.ShouldBindJSON(&afterPost)
@@ -179,14 +181,22 @@ func UpdatePostByPostID(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	} else {
-		err = svc.UpdatePost(afterPost)
+		err = svcMaster.UpdatePost(afterPost)
 	}
+
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 
 	if beforePost.Title == afterPost.Title {
+		if beforePost.ThumbnailPath != afterPost.ThumbnailPath {
+			imageNames := strings.Split(beforePost.ThumbnailPath, " ")
+			for _, v := range imageNames {
+				img.Remove(v)
+			}
+			// img.Upload()
+		}
 		err = github.PushUpdatedPost(afterPost)
 		if err != nil {
 			resp.Response500(c, err)
@@ -217,10 +227,10 @@ func GetPosts(c *gin.Context) {
 			return
 		}
 	}
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 
-	cards, err := svc.GetPosts()
+	cards, err := svcSlave.GetPosts()
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -235,18 +245,18 @@ func GetPosts(c *gin.Context) {
 // getEveryCardByTag returns posts data by tag without post body
 func getPostsByTag(tag string) ([]model.PostCard, error) {
 
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 
-	return svc.GetPostsByTag(tag)
+	return svcSlave.GetPostsByTag(tag)
 }
 
 // GetTags returns every stored tags
 func GetTags(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 
-	tags, err := svc.GetTags()
+	tags, err := svcSlave.GetTags()
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -258,25 +268,22 @@ func GetTags(c *gin.Context) {
 
 // GetThumbnailByPostID returns post thumbnail image file
 func GetThumbnailByPostID(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
 
-	thumbnailName, err := svc.GetThumbnailNameByPostID(postID)
+	thumbnailName, err := svcSlave.GetThumbnailNameByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 
 	image, err := img.Download(thumbnailName)
-	// image, err := os.Open("assets/" + thumbnailName)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 	defer image.Body.Close()
-
-	// defer image.Close()
 
 	c.Header("Content-Type", *image.ContentType)
 	io.Copy(c.Writer, image.Body)
@@ -284,4 +291,18 @@ func GetThumbnailByPostID(c *gin.Context) {
 		resp.Response500(c, err)
 		return
 	}
+}
+
+func GetImagesByPostID(c *gin.Context) {
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
+	postID := c.Param("postid")
+
+	images, err := svcSlave.GetImagesByPostID(postID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	resp.ResponseDataWith200(c, images)
 }
