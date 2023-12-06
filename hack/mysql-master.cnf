@@ -1,5 +1,9 @@
 [mysqld]
 character-set-server=utf8
+server-id = 1
+log_bin = mysql-log
+binlog_do_db = blogdb
+slave-skip-errors = 1032
 
 [mysql]
 default-character-set=utf8

@@ -1,0 +1,7 @@
+FROM --platform=linux/amd64 mysql:latest
+
+COPY ./hack/mysql-slave.cnf /cfg/mysql-slave.cnf
+COPY ./hack/mysql-master.cnf /cfg/mysql-master.cnf
+
+COPY ./hack/init-slave.sql /cfg/init-slave.sql
+COPY ./hack/init-master.sql /cfg/init-master.sql

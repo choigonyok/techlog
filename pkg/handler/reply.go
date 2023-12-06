@@ -13,11 +13,11 @@ import (
 
 // GetRepliesByPostID returns every reply in a post
 func GetRepliesByPostID(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
 
-	replies, err := svc.GetRepliesByPostID(postID)
+	replies, err := svcSlave.GetRepliesByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -32,8 +32,8 @@ func GetRepliesByPostID(c *gin.Context) {
 
 // CreateReply creates new reply
 func CreateReply(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
 	commentID := c.Param("commentid")
 	postID := c.Param("postid")
 	adminCookie := AdminCookie{}
@@ -60,7 +60,7 @@ func CreateReply(c *gin.Context) {
 		reply.Admin = "0"
 	}
 
-	err = svc.CreateReply(reply)
+	err = svcMaster.CreateReply(reply)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -69,19 +69,21 @@ func CreateReply(c *gin.Context) {
 
 // DeleteReplyByReplyID deletes a reply by password
 func DeleteReplyByReplyID(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	replyID := c.Param("replyid")
 	inputPassword := c.Query("password")
 
-	password, err := svc.GetReplyPasswordByReplyID(replyID)
+	password, err := svcSlave.GetReplyPasswordByReplyID(replyID)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
 
 	if password == inputPassword {
-		err := svc.DeleteReplyByReplyID(replyID)
+		err := svcMaster.DeleteReplyByReplyID(replyID)
 		if err != nil {
 			resp.Response500(c, err)
 			return

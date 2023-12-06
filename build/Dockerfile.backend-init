@@ -4,16 +4,18 @@ WORKDIR /app
 
 COPY ./go.mod ./
 COPY ./go.sum ./
+COPY ./.env ./.env
 
 RUN go mod download
 
-COPY ./cmd/blog ./cmd
-COPY ./pkg ./pkg
+COPY ./cmd/init ./cmd
+
+COPY ./assets ./assets
 
 ENV GOMAXPROCS=5
 
-RUN go build ./cmd/blog.go
+RUN go build ./cmd/init.go
 
 EXPOSE 8080
 
-CMD [ "./blog" ]
+CMD [ "./init" ]

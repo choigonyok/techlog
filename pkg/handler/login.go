@@ -30,15 +30,15 @@ func VerifyAdminIDAndPW(c *gin.Context) {
 
 // VerifyAdminUser checks the client has already logged in
 func VerifyAdminUser(c *gin.Context) {
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 
 	adminCookieValue, err := c.Cookie(adminCookieKey)
 	if err != nil {
 		resp.Response401(c)
 		return
 	}
-	value, err := svc.GetCookieValue()
+	value, err := svcSlave.GetCookieValue()
 	if err != nil {
 		resp.Response401(c)
 		return
