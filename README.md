@@ -4,7 +4,7 @@
 
 ## ⭐ Release & Dependencies
 
-<img src="https://img.shields.io/badge/1.1-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
+<img src="https://img.shields.io/badge/1.4-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
 
 </br>
 
@@ -78,7 +78,29 @@ v1.2
 
 </td>
 </tr>
+<tr>
+<td align=center>
+v1.3
+</td>
+<td align=center>
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.3)
+
+</td>
+</tr>
+<tr>
+<td align=center>
+v1.4
+</td>
+<td align=center>
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.4)
+
+</td>
+</tr>
 </table>
+
+
 
 ## ⭐ Features
 
