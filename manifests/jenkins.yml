@@ -21,16 +21,14 @@ parameters:
   fileSystemId: FILE_SYSTEM_ID
   directoryPerms: "777"
   basePath: "/dynamic_provisioning"
-  subPathPattern: "/${.PVC.namespace}"
-  ensureUniqueDirectory: "false" # For sharing data between ASG jenkins pods
-  reuseAccessPoint: "false" # optional
-mountOptions:
-  - sync
+  subPathPattern: ""
+  ensureUniqueDirectory: "false"
+  reuseAccessPoint: "false"
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: jenkins
+  name: jenkins-ha
   namespace: devops-system
 spec:
   replicas: 3
@@ -84,7 +82,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jenkins
+  name: jenkins-ha-0
   namespace: devops-system
   # annotations:
   #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
@@ -92,11 +90,57 @@ metadata:
   #   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 spec:
   selector:
-    app.kubernetes.io/name: jenkins
+    statefulset.kubernetes.io/pod-name: jenkins-ha-0
   ports:
     - name: ui
       protocol: TCP
-      port: 80
+      port: 8080
+      targetPort: 8080
+    - name: controller
+      protocol: TCP
+      port: 50000
+      targetPort: 50000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-ha-1
+  namespace: devops-system
+  # annotations:
+  #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+  #   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: jenkins-ha-1
+  ports:
+    - name: ui
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: controller
+      protocol: TCP
+      port: 50000
+      targetPort: 50000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-ha-2
+  namespace: devops-system
+  # annotations:
+  #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+  #   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: jenkins-ha-2
+  ports:
+    - name: ui
+      protocol: TCP
+      port: 8080
       targetPort: 8080
     - name: controller
       protocol: TCP
