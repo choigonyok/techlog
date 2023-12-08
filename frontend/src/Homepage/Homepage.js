@@ -7,6 +7,7 @@ import axios from "axios";
 import profileimage from "../Assets/IMG_0071 2.jpg";
 import github from "../Assets/Icons/github-icon.png";
 import instagram from "../Assets/Icons/instagram-icon.png";
+import youtube from "../Assets/Icons/youtube-icon.png";
 import { useState, useEffect } from "react";
 
 const Homepage = () => {
@@ -53,6 +54,9 @@ const Homepage = () => {
           </a>
           <a href="https://www.instagram.com/choigonyok">
             <img className="icon-image" alt="my" src={instagram} />
+          </a>
+          <a href="https://www.youtube.com/channel/UCjcaraxwh4Fz6KYJwfE0-Hg">
+            <img className="icon-image" alt="my" src={youtube} />
           </a>
         </div>
         <div className="introduce-text__text">

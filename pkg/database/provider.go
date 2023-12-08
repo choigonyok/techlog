@@ -18,6 +18,7 @@ type Provider interface {
 	GetPosts() ([]model.PostCard, error)
 	GetPostByID(postID string) (model.Post, error)
 	GetThumbnailNameByPostID(postID string) (string, error)
+	GetPostImageNameByImageID(imageID string) (string, error)
 	SetCookieValueByUniqueID(uniqueID string) error
 	UpdateCookieValueByUniqueID(uniqueID string) error
 	GetCookieValue() (string, error)
@@ -35,6 +36,10 @@ type Provider interface {
 	DeleteReplyByReplyID(replyID string) error
 	CreateReply(reply model.Reply) error
 	StoreInitialPost(post model.Post) error
+	GetImagesByPostID(postID string) ([]model.PostImage, error)
+	DeleteImagesByPostID(postID string) error
+	CreatePostImageByPostID(postID string, image model.PostImage) error
+	DeletePostImagesByPostID(postID string) error
 }
 
 type MysqlProvider struct {
@@ -281,4 +286,39 @@ func (p *MysqlProvider) StoreInitialPost(post model.Post) error {
 	_, err := p.connector.Exec(`INSERT INTO post (id, tags, title, text, writeTime) VALUES (` + strconv.Itoa(post.ID) + `, '` + post.Tags + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `')`)
 
 	return err
+}
+
+func (p *MysqlProvider) GetImagesByPostID(postID string) ([]model.PostImage, error) {
+	image := model.PostImage{}
+	images := []model.PostImage{}
+	r, err := p.connector.Query(`SELECT id, imageName, thumbnail FROM image WHERE postID = ` + postID + ` ORDER BY thumbnail DESC`)
+	for r.Next() {
+		r.Scan(&image.ID, &image.ImageName, &image.Thumbnail)
+		images = append(images, image)
+	}
+	defer r.Close()
+	return images, err
+}
+
+func (p *MysqlProvider) DeleteImagesByPostID(postID string) error {
+	_, err := p.connector.Exec(`DELETE FROM image WHERE postID = ` + postID)
+	return err
+}
+
+func (p *MysqlProvider) CreatePostImageByPostID(postID string, image model.PostImage) error {
+	_, err := p.connector.Exec(`INSERT INTO image (postID, imageName, thumbnail) VALUES (` + postID + `, "` + image.ImageName + `", ` + image.Thumbnail + `)`)
+	return err
+}
+
+func (p *MysqlProvider) DeletePostImagesByPostID(postID string) error {
+	_, err := p.connector.Exec(`DELETE FROM image WHERE postID = '` + postID + `'`)
+	return err
+}
+
+func (p *MysqlProvider) GetPostImageNameByImageID(imageID string) (string, error) {
+	imageName := ""
+	r, err := p.connector.Query(`SELECT imageName FROM image WHERE id = '` + imageID + `'`)
+	r.Next()
+	r.Scan(&imageName)
+	return imageName, err
 }

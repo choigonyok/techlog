@@ -47,9 +47,17 @@ func (svc *Service) GetPostByID(postID string) (model.Post, error) {
 	return data.UnMarshalPostDatabaseFmt(post), err
 }
 
+func (svc *Service) DeletePostImagesByPostID(postID string) error {
+	return svc.provider.DeletePostImagesByPostID(postID)
+}
+
 // GetThumbnailNameByPostID returns post's thumbnail image file name from database
 func (svc *Service) GetThumbnailNameByPostID(postID string) (string, error) {
 	return svc.provider.GetThumbnailNameByPostID(postID)
+}
+
+func (svc *Service) GetPostImageNameByImageID(imageID string) (string, error) {
+	return svc.provider.GetPostImageNameByImageID(imageID)
 }
 
 // UpdatePost updates post data in to database
@@ -107,5 +115,22 @@ func (svc *Service) StoreInitialPostImages(post model.Post) error {
 		}
 	}
 
+	return nil
+}
+
+func (svc *Service) GetImagesByPostID(postID string) ([]model.PostImage, error) {
+	return svc.provider.GetImagesByPostID(postID)
+}
+
+func (svc *Service) DeleteImagesByPostID(postID string) error {
+	return svc.provider.DeleteImagesByPostID(postID)
+}
+
+func (svc *Service) CreatePostImagesByPostID(postID string, images []model.PostImage) error {
+	for _, image := range images {
+		if err := svc.provider.CreatePostImageByPostID(postID, image); err != nil {
+			return err
+		}
+	}
 	return nil
 }
