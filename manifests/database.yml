@@ -21,31 +21,28 @@ spec:
           - "-c"
           - |
             set -ex
-            
             [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
             ordinal=${BASH_REMATCH[1]}
             if [[ $ordinal -eq 0 ]]; then
-              cp /cfg/mysql-master.cnf /mnt/cfg/mysql.cnf
-              cp /cfg/init-master.sql /mnt/init/init.sql
+              cp /cfg/mysql-master.cnf /mnt/
+              cp /cfg/init-master.sql /mnt/
             else
-              cp /cfg/mysql-slave.cnf /mnt/cfg/mysql.cnf
-              cp /cfg/init-slave.sql /mnt/init/init.sql
+              cp /cfg/mysql-slave.cnf /mnt/
+              cp /cfg/init-slave.sql /mnt/
             fi
           volumeMounts:
-            - name: master-slave-cfg
-              mountPath: /mnt/cfg/
-            - name: master-slave-init
-              mountPath: /mnt/init/
+          - name: local-vol
+            mountPath: /mnt/
       containers:
         - name: database
           image: mysql:latest
           ports:
             - containerPort: 3306
           volumeMounts:
-          - name: master-slave-cfg
-            mountPath: /etc/mysql/conf.d
-          - name: master-slave-init
-            mountPath: /docker-entrypoint-initdb.d
+          - name: local-vol
+            mountPath: /etc/mysql/conf.d/
+          - name: local-vol
+            mountPath: /docker-entrypoint-initdb.d/
           env:
             - name: MYSQL_ROOT_PASSWORD
               value: "password"
@@ -58,13 +55,16 @@ spec:
       volumes:
         - name: database-volume
           hostPath:
-            path: /volumes # Replace with the actual path on your host machine
-        - name: master-slave-cfg
-          hostPath:
-            path: /volumes/cfg
-        - name: master-slave-init
-          hostPath:
-            path: /volumes/init
+            path: /volumes
+  volumeClaimTemplates:
+  - metadata:
+      name: local-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: 1Gi
 ---
 apiVersion: v1
 kind: Service

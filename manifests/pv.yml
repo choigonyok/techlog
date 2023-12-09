@@ -40,7 +40,7 @@ spec:
     required:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: failure-domain.beta.kubernetes.io/zone
+        - key: topology.kubernetes.io/zone
           operator: In
           values:
           - ap-northeast-2a
