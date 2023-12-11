@@ -60,5 +60,6 @@ output "node_security_group_id"{
 }
 
 output "acm_certificate_arn"{
-  value = data.aws_acm_certificate.techlog.arn
+  # value = data.aws_acm_certificate.techlog.arn
+  value = aws_route53_zone.main.zone_id
 }
