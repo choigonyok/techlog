@@ -40,6 +40,7 @@ const Deletepage = () => {
   const [isWrite, setIsWrites] = useState(false);
   const [comInfo, setComInfo] = useState([]);
   const [postRequest, setPostRequest] = useState(false);
+  const [imageNames, setImageNames] = useState([]);
 
   const postHandler = () => {
     const postdata = {
@@ -53,9 +54,6 @@ const Deletepage = () => {
         withCredentials: true,
       })
       .then((response) => {
-        setToModify(false);
-        setIsDeleted(!isDeleted);
-        setChangeEvent(!changeEvent);
       })
       .catch((error) => {
         if (error.response.status === 400) {
@@ -66,6 +64,19 @@ const Deletepage = () => {
           console.log(error);
         }
       });
+
+    axios
+      .put(process.env.REACT_APP_HOST + "/api/posts/" + id + "/images", imageNames, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setToModify(false);
+        setIsDeleted(!isDeleted);
+        setChangeEvent(!changeEvent);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   useEffect(() => {
@@ -73,7 +84,6 @@ const Deletepage = () => {
       .get(process.env.REACT_APP_HOST + "/api/posts")
       .then((response) => {
         setAllPost(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -109,14 +119,24 @@ const Deletepage = () => {
       .then((response) => {
         setToModify(true);
         setID(value);
-        setTitleText(response.data[0].title);
-        setTagText(response.data[0].tag);
-        setDateText(response.data[0].writetime);
-        setMD(response.data[0].text);
+        setTitleText(response.data.title);
+        setTagText(response.data.tags);
+        setDateText(response.data.writetime);
+        setMD(response.data.text);
         setChangeEvent(!changeEvent);
       })
       .catch((error) => {
         console.error(error);
+      });
+
+    axios
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + value + "/images")
+      .then((response) => {
+        console.log(response.data);
+        setImageNames([...response.data]);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -180,6 +200,17 @@ const Deletepage = () => {
       });
   }, [postRequest]);
 
+  const changeThumbnailHandler = (newThumbnailImage) => {
+    let originalImages = imageNames
+    let beforeThumbnail = imageNames.filter((element) => element.thumbnail === "1")
+    let afterThumbnail = imageNames.filter((element) => element.id === newThumbnailImage.id)
+    beforeThumbnail[0].thumbnail = "0";
+    afterThumbnail[0].thumbnail = "1";
+
+    setImageNames(
+      [...afterThumbnail, ...originalImages.filter((element) => element.imageName !== beforeThumbnail[0].imageName).filter((element) => element.imageName !== afterThumbnail[0].imageName), ...beforeThumbnail]
+    );
+  }
   return (
     <div>
       <Header />
@@ -221,6 +252,33 @@ const Deletepage = () => {
                     value={titleText}
                     onChange={titleHandler}
                   />
+                </div>
+                <div className="image-thumbnail-container">
+                  {imageNames.map((item, index) => (
+                    item.thumbnail === "1" ?
+                      <div className="image-thumbnail">
+                        <img
+                          className="image-thumbnail-image"
+                          alt="my"
+                          src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
+                        />
+                        <div className="image-thumbnail-name">
+                          {item.imageName}
+                        </div>
+                      </div>
+                      :
+                      <div className="image-non-thumbnail">
+                        <img
+                          className="image-non-thumbnail-image"
+                          alt="my"
+                          src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
+                          onClick={() => changeThumbnailHandler(item)}
+                        />
+                        <div className="image-non-thumbnail-name">
+                          {item.imageName}
+                        </div>
+                      </div>
+                  ))}
                 </div>
                 <div>
                   <div className="admin-editor">

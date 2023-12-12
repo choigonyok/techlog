@@ -115,9 +115,9 @@
 }
 .delete-date {
   display: flex;
-  border: 0.2rem solid white;
   border-radius: 1.25rem;
   flex-wrap: wrap;
+  justify-content: space-between;
   display: flex;
   font-size: 0.9rem;
   text-align: left;
@@ -167,4 +167,56 @@
   color: white;
   border-radius: 1.8rem;
   transition: 300ms;
+}
+
+.image-thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-thumbnail-image {
+  display: flex;
+  object-fit: cover;
+  width: 300px;
+  height: 210px;
+  border: 2px solid greenyellow;
+}
+
+.image-thumbnail-name {
+  display: flex;
+  color: greenyellow;
+}
+
+.image-non-thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-non-thumbnail-image:hover {
+  border: 2px solid green;
+}
+
+.image-non-thumbnail-image {
+  display: flex;
+  cursor: pointer;
+  object-fit: cover;
+  width: 300px;
+  height: 210px;
+  border: 2px solid white;
+}
+
+.image-non-thumbnail-name {
+  display: flex;
+  color: white;
+}
+
+.image-thumbnail-container {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 10px;
 }

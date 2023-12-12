@@ -6,11 +6,11 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: haproxy
+      app: haproxy-mysql
   template:
     metadata:
       labels:
-        app: haproxy
+        app: haproxy-mysql
     spec:
       affinity:
         podAntiAffinity:
@@ -20,10 +20,10 @@ spec:
               - key: "app"
                 operator: In
                 values:
-                - haproxy
+                - haproxy-mysql
             topologyKey: "kubernetes.io/hostname"
       containers:
-      - name: haproxy
+      - name: haproxy-mysql
         image: achoistic98/blog_haproxy:latest
         imagePullPolicy: Always
         ports:
@@ -36,12 +36,64 @@ metadata:
   name: mysql-ha-haproxy
 spec:
   selector:
-    app: haproxy
+    app: haproxy-mysql
   ports:
     - name: forwarding
       protocol: TCP
       port: 3306
       targetPort: 3306
+    - name: ui
+      protocol: TCP
+      port: 80
+      targetPort: 9000
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-ha-haproxy
+  namespace: devops-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: haproxy-jenkins
+  template:
+    metadata:
+      labels:
+        app: haproxy-jenkins
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - haproxy-jenkins
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: haproxy-jenkins
+        image: achoistic98/blog_haproxy:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-ha-haproxy
+  namespace: devops-system
+spec:
+  selector:
+    app: haproxy-jenkins
+  ports:
+    - name: forwarding
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
     - name: ui
       protocol: TCP
       port: 80

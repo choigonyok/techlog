@@ -37,6 +37,11 @@ func New(prefix string) *Routes {
 			Handler: handler.GetThumbnailByPostID,
 		},
 		{
+			Path:    prefix + "posts/:postid/images/:imageid",
+			Method:  GET,
+			Handler: handler.GetPostImageByImageID,
+		},
+		{
 			Path:    prefix + "posts/:postid",
 			Method:  GET,
 			Handler: handler.GetPost,
@@ -47,9 +52,19 @@ func New(prefix string) *Routes {
 			Handler: handler.UpdatePostByPostID,
 		},
 		{
+			Path:    prefix + "posts/:postid/images",
+			Method:  PUT,
+			Handler: handler.UpdatePostImagesByPostID,
+		},
+		{
 			Path:    prefix + "posts/:postid",
 			Method:  DELETE,
 			Handler: handler.DeletePostByPostID,
+		},
+		{
+			Path:    prefix + "posts/:postid/images",
+			Method:  GET,
+			Handler: handler.GetImagesByPostID,
 		},
 
 		// Visitor

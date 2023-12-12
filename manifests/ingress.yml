@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   ingressClassName: nginx
   rules:
@@ -22,11 +24,18 @@ spec:
             name: backend
             port:
               number: 80
-      - path: /haproxy
+      - path: /haproxy/mysql
         pathType: Prefix
         backend:
           service:
-            name: haproxy-external-name
+            name: haproxy-mysql-external-name
+            port:
+              number: 80
+      - path: /haproxy/jenkins
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-jenkins-external-name
             port:
               number: 80
   - host: ci.choigonyok.com
@@ -38,7 +47,7 @@ spec:
           service:
             name: jenkins-external-name
             port:
-              number: 80
+              number: 8080
   - host: cd.choigonyok.com
     http:
       paths:
@@ -57,7 +66,7 @@ metadata:
   name: jenkins-external-name
 spec:
   type: ExternalName
-  externalName: jenkins.devops-system.svc.cluster.local
+  externalName: jenkins-ha-haproxy.devops-system.svc.cluster.local
 ---
 apiVersion: v1
 kind: Service
@@ -72,7 +81,16 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-  name: haproxy-external-name
+  name: haproxy-mysql-external-name
 spec:
   type: ExternalName
   externalName: mysql-ha-haproxy.default.svc.cluster.local  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  name: haproxy-jenkins-external-name
+spec:
+  type: ExternalName
+  externalName: jenkins-ha-haproxy.devops-system.svc.cluster.local  

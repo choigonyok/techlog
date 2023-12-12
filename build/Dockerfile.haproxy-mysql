@@ -4,9 +4,9 @@ RUN apt update && apt install haproxy -y
 
 RUN apt install systemctl -y
 
-COPY ./hack/haproxy.cfg /etc/haproxy/haproxy.cfg
+COPY ./hack/haproxy-mysql.cfg /etc/haproxy/haproxy-mysql.cfg
 
 RUN systemctl stop haproxy.service
 
 # ENTRYPOINT [ "systemctl", "start", "haproxy.service" ]
-ENTRYPOINT [ "haproxy", "-f", "/etc/haproxy/haproxy.cfg", "-db" ]
+ENTRYPOINT [ "haproxy", "-f", "/etc/haproxy/haproxy-mysql.cfg", "-db" ]

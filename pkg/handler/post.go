@@ -10,7 +10,6 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
-	"github.com/choigonyok/techlog/pkg/github"
 	img "github.com/choigonyok/techlog/pkg/image"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
@@ -197,20 +196,39 @@ func UpdatePostByPostID(c *gin.Context) {
 			}
 			// img.Upload()
 		}
-		err = github.PushUpdatedPost(afterPost)
-		if err != nil {
-			resp.Response500(c, err)
-			return
-		}
-	} else {
-		if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
-			resp.Response500(c, err)
-			return
-		}
-		if err := github.PushCreatedPost(afterPost, nil, true); err != nil {
-			resp.Response500(c, err)
-			return
-		}
+		// err = github.PushUpdatedPost(afterPost)
+		// if err != nil {
+		// 	resp.Response500(c, err)
+		// 	return
+		// }
+	}
+	// else {
+	// 	if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
+	// 		resp.Response500(c, err)
+	// 		return
+	// 	}
+	// 	if err := github.PushCreatedPost(afterPost, nil, true); err != nil {
+	// 		resp.Response500(c, err)
+	// 		return
+	// 	}
+	// }
+}
+
+func UpdatePostImagesByPostID(c *gin.Context) {
+	pvrMaster := database.NewMysqlProvider(database.GetConnector())
+	svcMaster := service.NewService(pvrMaster)
+	postID := c.Param("postid")
+	images := []model.PostImage{}
+
+	c.ShouldBindJSON(&images)
+
+	if err := svcMaster.DeletePostImagesByPostID(postID); err != nil {
+		resp.Response500(c, err)
+		return
+	}
+	if err := svcMaster.CreatePostImagesByPostID(postID, images); err != nil {
+		resp.Response500(c, err)
+		return
 	}
 }
 
@@ -293,11 +311,36 @@ func GetThumbnailByPostID(c *gin.Context) {
 	}
 }
 
+func GetPostImageByImageID(c *gin.Context) {
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
+	imageID := c.Param("imageid")
+
+	imageName, err := svcSlave.GetPostImageNameByImageID(imageID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	image, err := img.Download(imageName)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+	defer image.Body.Close()
+
+	c.Header("Content-Type", *image.ContentType)
+	io.Copy(c.Writer, image.Body)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+}
+
 func GetImagesByPostID(c *gin.Context) {
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
 	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
-
 	images, err := svcSlave.GetImagesByPostID(postID)
 	if err != nil {
 		resp.Response500(c, err)

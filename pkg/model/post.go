@@ -28,8 +28,8 @@ type PostCard struct {
 }
 
 type PostImage struct {
-	ID        int
-	PostID    int
-	ImageName string
-	Thumbnail string
+	ID        int    `json:"id"`
+	PostID    int    `json:"postid"`
+	ImageName string `json:"imageName"`
+	Thumbnail string `json:"thumbnail"`
 }
