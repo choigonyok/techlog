@@ -70,7 +70,13 @@ spec:
             steps {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''#!/busybox/sh
-                    /kaniko/executor -f `pwd`/build/Dockerfile.dev -c `pwd` --cache=true --destination=achoistic98/test333:latest
+                    /kaniko/executor -f `pwd`/build/Dockerfile.golang -c `pwd` --cache=true --destination=achoistic98/blog_backend:${env.BUILD_NUMBER}
+                    '''
+                    sh '''#!/busybox/sh
+                    /kaniko/executor -f `pwd`/build/Dockerfile.frontend -c `pwd` --cache=true --destination=achoistic98/blog_frontend:${env.BUILD_NUMBER}
+                    '''
+                    sh '''#!/busybox/sh
+                    /kaniko/executor -f `pwd`/build/Dockerfile.mysql -c `pwd` --cache=true --destination=achoistic98/blog_database:${env.BUILD_NUMBER}
                     '''
                 }
             }
@@ -79,7 +85,33 @@ spec:
                     slackSend(color: '#F7A200', message: "Container Image Build and Push FAIL")
                 }
                 success {
-                    slackSend(message: "Container Image Build and Push Success")
+                    slackSend(message: "Every Container Image Build and Push Success")
+                }
+            }
+        }
+        stage('Update manifests') {
+            steps {
+                git branch: "main", credentialsId: 'github', url: 'https://{GITHUB_TOKEN}@github.com/choigonyok/argocd-apps.git'
+                dir("techlog") {
+                    sh 'sed -i "s/image: achoistic98\\/blog_backend:.*/image: achoistic98\\/blog_backend:${BUILD_NUMBER}/g" backend-deployment.yml'
+                    sh 'sed -i "s/image: achoistic98\\/blog_frontend:.*/image: achoistic98\\/blog_frontend:${BUILD_NUMBER}/g" frontend-deployment.yml'
+                    sh 'sed -i "s/image: achoistic98\\/blog_database:.*/image: achoistic98\\/blog_database:${BUILD_NUMBER}/g" database-deployment.yml'
+
+                    sh 'git add .'
+                    sh 'git config credential.helper store --global'
+                    sh 'git config user.email "achoistic98@naver.com"'
+                    sh 'git config user.name "choigonyok"'
+                    sh 'git commit -m "CI(${BUILD_NUMBER}): Push updated manifests by jenkins"'
+
+                    sh 'git push origin main'
+                }
+            }
+            post {
+                failure {
+                    slackSend(color: '#F7A200', message: "Update manifests FAIL")
+                }
+                success {
+                    slackSend(message: "Update manifests Success")
                 }
             }
         }

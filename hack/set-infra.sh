@@ -47,6 +47,9 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2
 kubectl patch cm argocd-cmd-params-cm -n argocd -p '{"data": {"server.insecure" : "true"}}'
 kubectl rollout restart deployment/argocd-server -n argocd
 
+echo "Deploy persistentVolumes..."
+kubectl apply -f ../manifests/pv.yml
+
 PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd -o json | jq -r '.data.password' | base64 -d)
 echo "PASSWORD: $PASSWORD"
 PASSWORD=""

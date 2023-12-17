@@ -30,9 +30,21 @@ services:
     build:
       dockerfile: build/Dockerfile.mysql-dev
       context: .
-    restart: no
+    restart: yes
     ports:
       - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: blogdb
+      TZ: Asia/Seoul
+
+  mysql-slave:
+    build:
+      dockerfile: build/Dockerfile.mysql-dev-slave
+      context: .
+    restart: yes
+    ports:
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: blogdb
