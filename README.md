@@ -139,17 +139,6 @@ v1.4
 
 </br>
 
-## ~~⭐ Related Posts~~  [cannot access now due to refactoring]
-
-~~<a href="http://www.choigonyok.com/post/29">#1. 나만의 테크블로그 개발하기</a> </br>~~
-~~<a href="http://www.choigonyok.com/post/30">#2. 리액트에서 이미지 업로드하기</a> </br>~~
-~~<a href="http://www.choigonyok.com/post/31">#3. 관련 / 전체 게시글 구현하기</a> </br>~~
-~~<a href="http://www.choigonyok.com/post/32">#4. 여러 파일 한 번에 업로드하기</a> </br>~~
-~~<a href="http://www.choigonyok.com/post/33">#5. 댓글 / 답글 기능 구현하기</a> </br>~~
-~~<a href="http://www.choigonyok.com/post/34">#6. AWS에 프론트엔드 배포하기</a>~~
-
-</br>
-
 ## ⭐ Contributor
 
 <table>
