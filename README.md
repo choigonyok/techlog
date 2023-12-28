@@ -111,7 +111,7 @@ v1.4
 * Post Backup Automation in Github Repo
 * TLS Termination Using Terraform & ACM
 * AWS S3 Uploading & Downloading Images
-* Database Active/Passive Pattern for HA
+* [Database Master/Slace Architecture](https://www.choigonyok.com/post/47)
 * AWS CloudFront(CDN) Hosting Frontend
 * Golang Package Oriented Design
 * Unit, Integration, E2E, Mocking Test
