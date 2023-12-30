@@ -17,7 +17,7 @@ CREATE TABLE `visitor` (
         `total` INT NOT NULL DEFAULT 0,
         `date` DATE DEFAULT NULL
 );
-INSERT INTO `visitor` VALUES (1,199,'2023-10-29');
+INSERT INTO `visitor` VALUES (1,223,'2023-12-27');
 
 DROP TABLE IF EXISTS `post`;
 CREATE TABLE `post` (
