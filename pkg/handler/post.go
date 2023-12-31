@@ -10,6 +10,7 @@ import (
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/database"
+	"github.com/choigonyok/techlog/pkg/github"
 	img "github.com/choigonyok/techlog/pkg/image"
 	"github.com/choigonyok/techlog/pkg/model"
 	resp "github.com/choigonyok/techlog/pkg/response"
@@ -82,10 +83,10 @@ func CreatePost(c *gin.Context) {
 		imageNames = append(imageNames, image.ImageName)
 	}
 	post.ID = postID
-	// err = github.PushCreatedPost(post, imageNames, false)
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// }
+	err = github.PushCreatedPost(post, imageNames, false)
+	if err != nil {
+		resp.Response500(c, err)
+	}
 }
 
 // rollBackSavedImageByImageName deletes saved image by file name
@@ -104,13 +105,15 @@ func DeletePostByPostID(c *gin.Context) {
 
 	pvrMaster := database.NewMysqlProvider(database.GetConnector())
 	svcMaster := service.NewService(pvrMaster)
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
 
-	// post, err := svc.GetPostByID(postID)
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// 	return
-	// }
+	post, err := svcSlave.GetPostByID(postID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
 
 	imageNames, err := svcMaster.DeletePostByPostID(postID)
 	if err != nil {
@@ -125,11 +128,11 @@ func DeletePostByPostID(c *gin.Context) {
 		}
 	}
 
-	// err = github.PushDeletedPost(post.Title, post.ID, false)
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// 	return
-	// }
+	err = github.PushDeletedPost(post.Title, post.ID, false)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
 }
 
 // GetPost returns post data including post body
@@ -196,22 +199,21 @@ func UpdatePostByPostID(c *gin.Context) {
 			}
 			// img.Upload()
 		}
-		// err = github.PushUpdatedPost(afterPost)
-		// if err != nil {
-		// 	resp.Response500(c, err)
-		// 	return
-		// }
+		err = github.PushUpdatedPost(afterPost)
+		if err != nil {
+			resp.Response500(c, err)
+			return
+		}
+	} else {
+		if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
+		if err := github.PushCreatedPost(afterPost, nil, true); err != nil {
+			resp.Response500(c, err)
+			return
+		}
 	}
-	// else {
-	// 	if err := github.PushDeletedPost(beforePost.Title, beforePost.ID, true); err != nil {
-	// 		resp.Response500(c, err)
-	// 		return
-	// 	}
-	// 	if err := github.PushCreatedPost(afterPost, nil, true); err != nil {
-	// 		resp.Response500(c, err)
-	// 		return
-	// 	}
-	// }
 }
 
 func UpdatePostImagesByPostID(c *gin.Context) {
