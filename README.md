@@ -107,11 +107,11 @@ v1.4
 [Refactoring #2] (In Progress)
 * Jenkins CI Pipeline
 * ArgoCD CD Pipeline
-* AWS Multi AZ Architecture
+* [AWS Multi AZ Architecture](https://github.com/choigonyok/techlog-posts/blob/main/AWS%20Multi-AZ%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EC%99%80%20Service%20Topology%EC%97%90%20%EB%8C%80%ED%95%98%EC%97%AC.md)
 * Post Backup Automation in Github Repo
-* TLS Termination Using Terraform & ACM
+* [HTTPS Using Terraform & ACM](https://github.com/choigonyok/techlog-posts/blob/main/%ED%85%8C%EB%9D%BC%ED%8F%BC%20%26%20ACM%20%26%20Route53%EB%A1%9C%20HTTPS%20%EA%B5%AC%ED%98%84%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
 * AWS S3 Uploading & Downloading Images
-* [Database Master/Slace Architecture](https://www.choigonyok.com/post/47)
+* [Database Master/Slace Architecture](https://github.com/choigonyok/techlog-posts/blob/main/MySQL%20%EB%A7%88%EC%8A%A4%ED%84%B0-%EC%8A%AC%EB%A0%88%EC%9D%B4%EB%B8%8C%20Replication%20%EA%B5%AC%EC%84%B1%20%EB%B0%8F%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
 * AWS CloudFront(CDN) Hosting Frontend
 * Golang Package Oriented Design
 * Unit, Integration, E2E, Mocking Test
