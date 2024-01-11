@@ -98,8 +98,17 @@ v1.4
 
 </td>
 </tr>
-</table>
+<tr>
+<td align=center>
+v1.5
+</td>
+<td align=center>
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v1.5)
 
+</td>
+</tr>
+</table>
 
 
 ## ⭐ Features
