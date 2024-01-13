@@ -36,6 +36,7 @@ type Provider interface {
 	DeleteReplyByReplyID(replyID string) error
 	CreateReply(reply model.Reply) error
 	StoreInitialPost(post model.Post) error
+	IsDatabaseEmpty() bool
 	GetImagesByPostID(postID string) ([]model.PostImage, error)
 	DeleteImagesByPostID(postID string) error
 	CreatePostImageByPostID(postID string, image model.PostImage) error
@@ -321,4 +322,13 @@ func (p *MysqlProvider) GetPostImageNameByImageID(imageID string) (string, error
 	r.Next()
 	r.Scan(&imageName)
 	return imageName, err
+}
+
+func (p *MysqlProvider) IsDatabaseEmpty() bool {
+	i := 0
+	r := p.connector.QueryRow(`SELECT id FROM post LIMIT 1`)
+	if err := r.Scan(i); err == sql.ErrNoRows {
+		return true
+	}
+	return false
 }

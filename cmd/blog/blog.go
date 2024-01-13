@@ -42,31 +42,29 @@ func main() {
 	}
 	defer slave.CloseReadDB(haproxy)
 
-	pvr := database.NewMysqlProvider(database.GetConnector())
-	svc := service.NewService(pvr)
+	masterPvr := database.NewMysqlProvider(database.GetConnector())
+	masterSvc := service.NewService(masterPvr)
+	slavePvr := database.NewMysqlProvider(database.GetReadConnector())
+	slaveSvc := service.NewService(slavePvr)
 
-	fmt.Println("master ping start")
 	err = db0.Ping()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println("master ping end")
 
-	fmt.Println("slave ping start")
 	err = haproxy.Ping()
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println("slave ping end")
 
-	fmt.Println("test1")
 	github.SyncGithubToken(githubToken)
 	posts := github.GetPostsFromGithubRepo()
-	for _, post := range posts {
-		svc.StoreInitialPost(post)
-		svc.StoreInitialPostImages(post)
+	if slaveSvc.IsDatabaseEmpty() {
+		for _, post := range posts {
+			masterSvc.StoreInitialPost(post)
+			masterSvc.StoreInitialPostImages(post)
+		}
 	}
-	fmt.Println("test2")
 
 	server, err := server.New()
 	if err != nil {

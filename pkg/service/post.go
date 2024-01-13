@@ -93,6 +93,10 @@ func (svc *Service) StoreInitialPost(post model.Post) error {
 	return svc.provider.StoreInitialPost(post)
 }
 
+func (svc *Service) IsDatabaseEmpty() bool {
+	return svc.provider.IsDatabaseEmpty()
+}
+
 func (svc *Service) StoreInitialPostImages(post model.Post) error {
 	if post.ThumbnailPath == "" {
 		return nil
