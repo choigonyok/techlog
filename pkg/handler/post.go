@@ -168,11 +168,23 @@ func UpdatePostByPostID(c *gin.Context) {
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
 	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
+	imageNames := []string{}
+	imageNameString := ""
 
 	beforePost, _ := svcSlave.GetPostByID(postID)
+	images, err := svcSlave.GetImagesByPostID(postID)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
+	for _, v := range images {
+		imageNames = append(imageNames, v.ImageName)
+	}
+	imageNameString = strings.Join(imageNames, " ")
 
 	afterPost := model.Post{}
-	err := c.ShouldBindJSON(&afterPost)
+	err = c.ShouldBindJSON(&afterPost)
 	if err != nil {
 		resp.Response500(c, err)
 		return
@@ -191,13 +203,35 @@ func UpdatePostByPostID(c *gin.Context) {
 		return
 	}
 
+	if afterPost.Tags == "" {
+		afterPost.Tags = beforePost.Tags
+	}
+	if afterPost.Text == "" {
+		afterPost.Text = beforePost.Text
+	}
+	if afterPost.Title == "" {
+		afterPost.Title = beforePost.Title
+	}
+	if afterPost.ThumbnailPath == "" {
+		afterPost.ThumbnailPath = beforePost.ThumbnailPath
+	}
+	if afterPost.WriteTime == "" {
+		afterPost.WriteTime = beforePost.WriteTime
+	}
+	if afterPost.ThumbnailPath == "" {
+		afterPost.ThumbnailPath = imageNameString
+	}
+
 	if beforePost.Title == afterPost.Title {
 		if beforePost.ThumbnailPath != afterPost.ThumbnailPath {
 			imageNames := strings.Split(beforePost.ThumbnailPath, " ")
 			for _, v := range imageNames {
 				img.Remove(v)
 			}
-			// img.Upload()
+			// newImageNames := strings.Split(afterPost.ThumbnailPath, " ")
+			// for _, v := range newImageNames {
+			// 	img.Upload(v)
+			// }
 		}
 		err = github.PushUpdatedPost(afterPost)
 		if err != nil {
