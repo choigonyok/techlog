@@ -122,13 +122,20 @@ func PushCreatedPost(post model.Post, imageNames []string, isUpdate bool) error 
 	postTitleIncludeExtension = strings.ReplaceAll(postTitleIncludeExtension, `!`, "%21")
 	postTitleIncludeExtension = postTitleIncludeExtension + ".md"
 
+	images := ""
+	if imageNames == nil {
+		images = post.ThumbnailPath
+	} else {
+		images = strings.Join(imageNames, " ")
+	}
+
 	var (
 		commitMessage string
 		fileContent   = `[ID: ` + strconv.Itoa(post.ID) + `]` + `
 [Tags: ` + post.Tags + `]` + `
 [Title: ` + post.Title + `]` + `
 [WriteTime: ` + post.WriteTime + `]` + `
-[ImageNames: ` + strings.Join(imageNames, " ") + `]` + `
+[ImageNames: ` + images + `]` + `
 
 ` + post.Text
 	)
