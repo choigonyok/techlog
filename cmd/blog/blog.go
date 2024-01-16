@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/choigonyok/techlog/pkg/database"
 	"github.com/choigonyok/techlog/pkg/github"
@@ -59,6 +62,9 @@ func main() {
 
 	github.SyncGithubToken(githubToken)
 	posts := github.GetPostsFromGithubRepo()
+
+	d, _ := time.ParseDuration(strconv.Itoa(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(11)) + "s")
+	time.Sleep(d)
 	if slaveSvc.IsDatabaseEmpty() {
 		for _, post := range posts {
 			masterSvc.StoreInitialPost(post)
