@@ -47,6 +47,10 @@ func (svc *Service) GetPostByID(postID string) (model.Post, error) {
 	return data.UnMarshalPostDatabaseFmt(post), err
 }
 
+func (svc *Service) GetImageNamesByPostID(postID string) ([]string, error) {
+	return svc.provider.GetImageNamesByPostID(postID)
+}
+
 func (svc *Service) DeletePostImagesByPostID(postID string) error {
 	return svc.provider.DeletePostImagesByPostID(postID)
 }
@@ -86,6 +90,10 @@ func (svc *Service) StoreImage(image model.PostImage) error {
 	}
 
 	return svc.provider.StoreImage(image)
+}
+
+func (svc *Service) DeleteImagesByImageName(name string) error {
+	return svc.provider.DeleteImagesByImageName(name)
 }
 
 func (svc *Service) StoreInitialPost(post model.Post) error {
