@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template: 
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      initContainers:
+      - name: insert-email-file
+        image: bash:latest
+        command:
+        - bash
+        - "-c"
+        - |
+          cd /etc/auth
+          echo "achoistic98@gmail.com" > email.txt
+        volumeMounts:
+        - name: authenticated-files
+          mountPath: /etc/auth 
+      containers:
+      - name: oauth2-proxy
+        image: quay.io/oauth2-proxy/oauth2-proxy:latest
+        ports:
+        - containerPort: 4180
+        args:
+        - --provider=google
+        - --email-domain=""
+        - --upstream=http://nginx.default.svc.cluster.local
+        - --http-address=0.0.0.0:4180
+        - --cookie-secure=false
+        - --authenticated-emails-file=/etc/auth/email.txt
+        env:
+        - name:  OAUTH2_PROXY_COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oauth2-proxy-secrets
+              key: cookie-secret
+              optional: false
+        - name:  OAUTH2_PROXY_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: oauth2-proxy-secrets
+              key: client-id
+              optional: false
+        - name:  OAUTH2_PROXY_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oauth2-proxy-secrets
+              key: client-secret
+              optional: false
+        - name:  OAUTH2_PROXY_SET_XAUTHREQUEST # 구글을 통해 인증된 계정의 이메일과 사용자 이름을 헤더로 받기위한 env var
+          value: "true"
+        volumeMounts:
+        - name: authenticated-files
+          mountPath: /etc/auth
+      volumes:
+        - name: authenticated-files
+          hostPath:
+            path: /etc/auth
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - backend
+            topologyKey: "kubernetes.io/hostname"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+spec:
+  selector:
+    app: oauth2-proxy
+  ports:
+    - protocol: TCP
+      port: 4180
+      targetPort: 4180
+  type: ClusterIP
