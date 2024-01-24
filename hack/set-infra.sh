@@ -57,6 +57,9 @@ PASSWORD=""
 echo "Deploy ingress..."
 kubectl apply -f ../manifests/ingress.yml
 
+echo "Deploy secrets to inject environment variables..."
+sh ../hack/inject-secrets.sh
+
 echo "Deploy applications..."
 kubectl apply -f ../manifests/application.yml -n argocd
 

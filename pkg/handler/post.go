@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"strings"
@@ -34,30 +35,19 @@ func CreatePost(c *gin.Context) {
 	image := model.PostImage{}
 	imageNames := []string{}
 
-	formData, err := c.MultipartForm()
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
-
-	// handle post data
-	postDatas := formData.Value["data"]
-	postData := []byte(postDatas[0])
-	err = json.Unmarshal(postData, &post)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
-
 	post.WriteTime = time.GetCurrentTimeByFormat("2006-01-02")
+
+	imageDatas, err := getPostData(c, &post)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
+
 	postID, err := svcMaster.CreatePost(post)
 	if err != nil {
 		resp.Response500(c, err)
 		return
 	}
-
-	// handle image data
-	imageDatas := formData.File["file"]
 
 	for i, v := range imageDatas {
 		image.ImageName = data.CreateRandomString() + v.Filename[strings.LastIndex(v.Filename, "."):]
@@ -87,6 +77,27 @@ func CreatePost(c *gin.Context) {
 	if err != nil {
 		resp.Response500(c, err)
 	}
+}
+
+// getPostData parses post's text and image data
+func getPostData(c *gin.Context, post *model.Post) ([]*multipart.FileHeader, error) {
+	formData, err := c.MultipartForm()
+	if err != nil {
+		return nil, err
+	}
+
+	// handle post data
+	postDatas := formData.Value["data"]
+	postData := []byte(postDatas[0])
+	err = json.Unmarshal(postData, &post)
+	if err != nil {
+		return nil, err
+	}
+
+	// handle image data
+	imageDatas := formData.File["file"]
+
+	return imageDatas, nil
 }
 
 // rollBackSavedImageByImageName deletes saved image by file name
@@ -168,71 +179,64 @@ func UpdatePostByPostID(c *gin.Context) {
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
 	svcSlave := service.NewService(pvrSlave)
 	postID := c.Param("postid")
-	imageNames := []string{}
-	imageNameString := ""
+	afterPost := model.Post{}
+
+	imageDatas, err := getPostData(c, &afterPost)
+	if err != nil {
+		resp.Response500(c, err)
+		return
+	}
 
 	beforePost, _ := svcSlave.GetPostByID(postID)
-	images, err := svcSlave.GetImagesByPostID(postID)
+	imageNames, err := svcSlave.GetImageNamesByPostID(postID)
 	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
-
-	for _, v := range images {
-		imageNames = append(imageNames, v.ImageName)
-	}
-	imageNameString = strings.Join(imageNames, " ")
-
-	afterPost := model.Post{}
-	err = c.ShouldBindJSON(&afterPost)
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
-	afterPost = data.MarshalPostToDatabaseFmt(afterPost)
-
-	if afterPost.ID, err = strconv.Atoi(postID); err != nil {
 		resp.Response500(c, err)
 		return
 	} else {
-		err = svcMaster.UpdatePost(afterPost)
+		beforePost.ThumbnailPath = strings.Join(imageNames, " ")
 	}
 
-	if err != nil {
-		resp.Response500(c, err)
-		return
-	}
+	afterPost.WriteTime = beforePost.WriteTime
+	afterPost.ID, _ = strconv.Atoi(postID)
 
-	if afterPost.Tags == "" {
-		afterPost.Tags = beforePost.Tags
-	}
-	if afterPost.Text == "" {
-		afterPost.Text = beforePost.Text
-	}
-	if afterPost.Title == "" {
-		afterPost.Title = beforePost.Title
-	}
-	if afterPost.ThumbnailPath == "" {
-		afterPost.ThumbnailPath = beforePost.ThumbnailPath
-	}
-	if afterPost.WriteTime == "" {
-		afterPost.WriteTime = beforePost.WriteTime
-	}
-	if afterPost.ThumbnailPath == "" {
-		afterPost.ThumbnailPath = imageNameString
+	if !isImageEqual(beforePost.ThumbnailPath, afterPost.ThumbnailPath) {
+		for _, v := range imageNames {
+			fmt.Println()
+			fmt.Println("IMAGE NAME: ", v)
+			fmt.Println("AFTER: ", afterPost.ThumbnailPath)
+			if !strings.Contains(afterPost.ThumbnailPath, v) {
+
+				fmt.Println("DELETED!")
+
+				if err := svcMaster.DeleteImagesByImageName(v); err != nil {
+					resp.Response500(c, err)
+					return
+				}
+
+				if err := img.Remove(v); err != nil {
+					resp.Response500(c, err)
+					return
+				}
+			}
+		}
+
+		for i, v := range imageDatas {
+			newImage := model.PostImage{}
+			newImage.ImageName = data.CreateRandomString() + v.Filename[strings.LastIndex(v.Filename, "."):]
+			newImage.PostID, _ = strconv.Atoi(postID)
+			if i == 0 {
+				newImage.Thumbnail = "1"
+			} else {
+				newImage.Thumbnail = "0"
+			}
+
+			img.Upload(v, newImage.ImageName)
+			svcMaster.StoreImage(newImage)
+			afterPost.ThumbnailPath = strings.Replace(afterPost.ThumbnailPath, v.Filename, newImage.ImageName, -1)
+		}
 	}
 
 	if beforePost.Title == afterPost.Title {
-		if beforePost.ThumbnailPath != afterPost.ThumbnailPath {
-			imageNames := strings.Split(beforePost.ThumbnailPath, " ")
-			for _, v := range imageNames {
-				img.Remove(v)
-			}
-			// newImageNames := strings.Split(afterPost.ThumbnailPath, " ")
-			// for _, v := range newImageNames {
-			// 	img.Upload(v)
-			// }
-		}
 		err = github.PushUpdatedPost(afterPost)
 		if err != nil {
 			resp.Response500(c, err)
@@ -248,6 +252,20 @@ func UpdatePostByPostID(c *gin.Context) {
 			return
 		}
 	}
+}
+
+// isImageEqual compares images before update with images after update
+func isImageEqual(beforeImages string, afterImages string) bool {
+	cmp := map[string]bool{}
+	for _, v := range strings.Fields(beforeImages) {
+		cmp[v] = true
+	}
+	for _, v := range strings.Fields(afterImages) {
+		if !cmp[v] {
+			return false
+		}
+	}
+	return true
 }
 
 func UpdatePostImagesByPostID(c *gin.Context) {

@@ -17,6 +17,7 @@ type Provider interface {
 	GetPostsByTag(string) ([]model.PostCard, error)
 	GetPosts() ([]model.PostCard, error)
 	GetPostByID(postID string) (model.Post, error)
+	GetImageNamesByPostID(postID string) ([]string, error)
 	GetThumbnailNameByPostID(postID string) (string, error)
 	GetPostImageNameByImageID(imageID string) (string, error)
 	SetCookieValueByUniqueID(uniqueID string) error
@@ -36,6 +37,7 @@ type Provider interface {
 	DeleteReplyByReplyID(replyID string) error
 	CreateReply(reply model.Reply) error
 	StoreInitialPost(post model.Post) error
+	DeleteImagesByImageName(name string) error
 	IsDatabaseEmpty() bool
 	GetImagesByPostID(postID string) ([]model.PostImage, error)
 	DeleteImagesByPostID(postID string) error
@@ -331,4 +333,20 @@ func (p *MysqlProvider) IsDatabaseEmpty() bool {
 		return true
 	}
 	return false
+}
+
+func (p *MysqlProvider) GetImageNamesByPostID(postID string) ([]string, error) {
+	imageNames := []string{}
+	imageName := ""
+	r, err := p.connector.Query(`SELECT imageName FROM image WHERE postID = ` + postID)
+	for r.Next() {
+		r.Scan(&imageName)
+		imageNames = append(imageNames, imageName)
+	}
+	return imageNames, err
+}
+
+func (p *MysqlProvider) DeleteImagesByImageName(name string) error {
+	_, err := p.connector.Exec(`DELETE FROM image WHERE imageName = "` + name + `"`)
+	return err
 }
