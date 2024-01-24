@@ -59,7 +59,7 @@ module "eks" {
     one = {
       name           = "asg-1"
       ami_type       = "AL2_x86_64"
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.large"]
 
       min_size     = 3
       max_size     = 6
