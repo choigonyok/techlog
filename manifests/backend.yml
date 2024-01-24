@@ -32,29 +32,65 @@ spec:
         - containerPort: 8080
         env:
         - name: DB_HOST_READ
-          value: mysql-ha-haproxy:3306
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-host-read
+              optional: false
         - name: DB_HOST_WRITE
-          value: mysql-ha-0
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-host-write
+              optional: false
         - name: DB_DRIVER
-          value: mysql
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-driver
+              optional: false
         - name: HOST
-          value: www.choigonyok.com
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: host
+              optional: false
         - name: DB_USER
-          value: root
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-user
+              optional: false
         - name: DB_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-password
+              optional: false
         - name: DB_NAME
-          value: blogdb
-        - name: BLOG_ID
-          value: choigonyok
-        - name: BLOG_PW
-          value: devops
-        # - name: AWS_SECRET_KEY
-        #   value: 
-        # - name: AWS_ACCESS_KEY
-        #   value: 
-        # - name: GITHUB_TOKEN
-        #   value: 
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: db-name
+              optional: false
+        - name: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: aws-secret-key
+              optional: false
+        - name: AWS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: aws-access-key
+              optional: false
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: github-token
+              optional: false
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
