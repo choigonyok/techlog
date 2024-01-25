@@ -1,29 +1,36 @@
 package service
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/choigonyok/techlog/pkg/data"
 	"github.com/choigonyok/techlog/pkg/model"
 )
 
-// GetTags returns every tag in blog without redundancy
-func (svc *Service) GetTags() ([]string, error) {
-	result := []string{}
-	tags, err := svc.provider.GetTags()
+// GetTags returns every tag in blog without redundancy and number of posts each tag contains
+func (svc *Service) GetTagsAndPostNum() ([]model.PostTag, error) {
+	results := []model.PostTag{}
 	m := make(map[string]bool)
+
+	tags, err := svc.provider.GetTags()
 
 	for _, v := range tags {
 		separateTags := strings.Split(v.Tags, " ")
 		for _, tag := range separateTags {
 			pureTag := strings.ReplaceAll(tag, " ", "")
 			if !m[pureTag] {
-				result = append(result, pureTag)
+				num := svc.provider.GetNumberOfPostsByTag(pureTag)
+				temp := model.PostTag{
+					Tag: pureTag,
+					Num: strconv.Itoa(num),
+				}
+				results = append(results, temp)
 				m[tag] = true
 			}
 		}
 	}
-	return result, err
+	return results, err
 }
 
 // GetPostsByTag returns posts having same tag with input tag parameter
@@ -145,4 +152,8 @@ func (svc *Service) CreatePostImagesByPostID(postID string, images []model.PostI
 		}
 	}
 	return nil
+}
+
+func (svc *Service) GetEveryPostCount() int {
+	return svc.provider.GetEveryPostCount()
 }
