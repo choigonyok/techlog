@@ -8,6 +8,25 @@ import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 
 const Writepage = () => {
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    axios
+    .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+    .then((response) => {
+      if (response.status !== 202) {
+        navigate("/");
+      }
+    })
+    .catch((error) => {
+      if (error.response.status === 401) {
+        window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+      } else {
+        console.error(error);
+      }
+    });
+  },[])
+
   axios.defaults.withCredentials = true;
 
   const [md, setMD] = useState("");
@@ -18,7 +37,6 @@ const Writepage = () => {
   const [img, setIMG] = useState([]);
   const [imgName, setImgName] = useState([]);
   const [unlock, setUnLock] = useState(false);
-  const navigate = useNavigate();
   const mounted = useRef(false);
 
   const postHandler = () => {

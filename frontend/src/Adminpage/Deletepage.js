@@ -8,19 +8,25 @@ import Writepage from "./Writepage"
 import { useNavigate } from "react-router-dom";
 
 const Deletepage = () => {
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(()=>{
     axios
-      .get(process.env.REACT_APP_HOST + "/api/login")
-      .catch((error) => {
-        if (error.response.status === 401) {
-          navigator("/login");
-        } else {
-          console.error(error);
-        }
-      });
-  }, []);
+    .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+    .then((response) => {
+      if (response.status !== 202) {
+        navigate("/");
+      }
+    })
+    .catch((error) => {
+      if (error.response.status === 401) {
+        // navigate("/oauth2/sign_in");
+        window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+      } else {
+        console.error(error);
+      }
+    });
+  },[])
 
   axios.defaults.withCredentials = true;
 

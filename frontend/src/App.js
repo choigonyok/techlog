@@ -16,7 +16,7 @@ const App = () => {
         <Route path="/post/:postid" element={<Postpage/>} />
         <Route path="/admin/delete" element={<Deletepage/>} />
         <Route path="/admin/write" element={<Writepage/>} />
-        <Route path="/login" element={<Loginpage/>} />
+        {/* <Route path="/login" element={<Loginpage/>} /> */}
       </Routes>
     </BrowserRouter>
   );

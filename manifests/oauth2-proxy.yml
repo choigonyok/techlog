@@ -30,17 +30,15 @@ spec:
         ports:
         - containerPort: 4180
         args:
-        # https://www.choigonyok.com/oauth2/start?rd=https%3A%2F%2Fwww.choigonyok.com%2Foauth2%2Fcallback
-
         - --provider=google
         - --email-domain=""
-        - --upstream=http://frontend.default.svc.cluster.local/
+        - --upstream=http://frontend.default.svc.cluster.local
         - --http-address=0.0.0.0:4180
         - --cookie-secure=false
         - --authenticated-emails-file=/etc/auth/email.txt
         - --redirect-url=https://www.choigonyok.com/oauth2/callback
-        # - --proxy-prefix=/oauth2
-        # - --redeem-url=https://accounts.google.com/o/oauth2/token
+        - --whitelist-domain=choigonyok.com
+        - --cookie-domain=choigonyok.com
         env:
         - name:  OAUTH2_PROXY_COOKIE_SECRET
           valueFrom:
@@ -60,7 +58,7 @@ spec:
               name: oauth2-proxy-secrets
               key: client-secret
               optional: false
-        - name:  OAUTH2_PROXY_SET_XAUTHREQUEST # 구글을 통해 인증된 계정의 이메일과 사용자 이름을 헤더로 받기위한 env var
+        - name:  OAUTH2_PROXY_SET_XAUTHREQUEST
           value: "true"
         volumeMounts:
         - name: authenticated-files
@@ -81,4 +79,5 @@ spec:
     - protocol: TCP
       port: 4180
       targetPort: 4180
-  type: ClusterIP
+      nodePort: 30000
+  type: NodePort
