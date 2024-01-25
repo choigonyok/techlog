@@ -70,7 +70,7 @@ const Button = (props) => {
           className={
             "ALL" === PostData.tags ? "tags-button__clicked" : "tags-button"
           }
-          value="ALL"
+          value={"ALL(" + allPostCount.count + ')'}
           onClick={() => ClickHandler("ALL")}
         />
         {tagsdata.map((item, index) => (

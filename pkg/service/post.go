@@ -153,3 +153,7 @@ func (svc *Service) CreatePostImagesByPostID(postID string, images []model.PostI
 	}
 	return nil
 }
+
+func (svc *Service) GetEveryPostCount() int {
+	return svc.provider.GetEveryPostCount()
+}

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -402,4 +403,18 @@ func GetImagesByPostID(c *gin.Context) {
 	}
 
 	resp.ResponseDataWith200(c, images)
+}
+
+func GetEveryPostCount(c *gin.Context) {
+	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
+	svcSlave := service.NewService(pvrSlave)
+	count := svcSlave.GetEveryPostCount()
+	if count == 0 {
+		resp.Response500(c, errors.New("there is no post"))
+	}
+	resp.ResponseDataWith200(c, struct {
+		Count string `json:"count"`
+	}{
+		Count: strconv.Itoa(count),
+	})
 }

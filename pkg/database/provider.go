@@ -15,6 +15,7 @@ type Provider interface {
 	UpdateVisitorToday(newToday, newTotal int) error
 	GetTags() ([]model.PostTags, error)
 	GetNumberOfPostsByTag(tag string) int
+	GetEveryPostCount() int
 	GetPostsByTag(string) ([]model.PostCard, error)
 	GetPosts() ([]model.PostCard, error)
 	GetPostByID(postID string) (model.Post, error)
@@ -88,6 +89,13 @@ func (p *MysqlProvider) GetTags() ([]model.PostTags, error) {
 func (p *MysqlProvider) GetNumberOfPostsByTag(tag string) int {
 	num := 0
 	r := p.connector.QueryRow(`SELECT COUNT(*) FROM post WHERE tags LIKE '%` + tag + `%'`)
+	r.Scan(&num)
+	return num
+}
+
+func (p *MysqlProvider) GetEveryPostCount() int {
+	num := 0
+	r := p.connector.QueryRow(`SELECT COUNT(*) FROM post`)
 	r.Scan(&num)
 	return num
 }

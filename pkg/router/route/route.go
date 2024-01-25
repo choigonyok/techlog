@@ -66,6 +66,11 @@ func New(prefix string) *Routes {
 			Method:  GET,
 			Handler: handler.GetImagesByPostID,
 		},
+		{
+			Path:    prefix + "posts/count",
+			Method:  GET,
+			Handler: handler.GetEveryPostCount,
+		},
 
 		// Visitor
 		{
