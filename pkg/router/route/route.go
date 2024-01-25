@@ -90,7 +90,7 @@ func New(prefix string) *Routes {
 		{
 			Path:    prefix + "tags",
 			Method:  GET,
-			Handler: handler.GetTags,
+			Handler: handler.GetTagsAndPostNum,
 		},
 
 		// Comment

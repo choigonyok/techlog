@@ -19,6 +19,11 @@ type PostTags struct {
 	Tags string `json:"tags"`
 }
 
+type PostTag struct {
+	Tag string `json:"tag"`
+	Num string `json:"num"`
+}
+
 type PostCard struct {
 	ID            int    `json:"id"`
 	Tags          string `json:"tags"`

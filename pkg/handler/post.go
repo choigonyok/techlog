@@ -323,12 +323,12 @@ func getPostsByTag(tag string) ([]model.PostCard, error) {
 	return svcSlave.GetPostsByTag(tag)
 }
 
-// GetTags returns every stored tags
-func GetTags(c *gin.Context) {
+// GetTags returns every stored tags and number of posts each tag contains
+func GetTagsAndPostNum(c *gin.Context) {
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
 	svcSlave := service.NewService(pvrSlave)
 
-	tags, err := svcSlave.GetTags()
+	tags, err := svcSlave.GetTagsAndPostNum()
 	if err != nil {
 		resp.Response500(c, err)
 		return
