@@ -119,7 +119,7 @@ v1.5
 * [AWS Multi AZ Architecture](https://github.com/choigonyok/techlog-posts/blob/main/AWS%20Multi-AZ%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EC%99%80%20Service%20Topology%EC%97%90%20%EB%8C%80%ED%95%98%EC%97%AC.md)
 * Post Backup Automation in Github Repo
 * [HTTPS Using Terraform & ACM](https://github.com/choigonyok/techlog-posts/blob/main/%ED%85%8C%EB%9D%BC%ED%8F%BC%20%26%20ACM%20%26%20Route53%EB%A1%9C%20HTTPS%20%EA%B5%AC%ED%98%84%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
-* AWS S3 Uploading & Downloading Images
+* [AWS S3 Uploading & Downloading Images](https://github.com/choigonyok/techlog-posts/blob/main/Golang%EC%97%90%EC%84%9C%20AWS%20S3%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0.md)
 * [Database Master/Slace Architecture](https://github.com/choigonyok/techlog-posts/blob/main/MySQL%20%EB%A7%88%EC%8A%A4%ED%84%B0-%EC%8A%AC%EB%A0%88%EC%9D%B4%EB%B8%8C%20Replication%20%EA%B5%AC%EC%84%B1%20%EB%B0%8F%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
 * AWS CloudFront(CDN) Hosting Frontend
 * Golang Package Oriented Design
