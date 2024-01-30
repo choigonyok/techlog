@@ -73,6 +73,7 @@ func (svc *Service) GetPostImageNameByImageID(imageID string) (string, error) {
 
 // UpdatePost updates post data in to database
 func (svc *Service) UpdatePost(post model.Post) error {
+	post = data.MarshalPostToDatabaseFmt(post)
 	return svc.provider.UpdatePost(post)
 }
 

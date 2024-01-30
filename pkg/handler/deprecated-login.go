@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Deprecated: this is replaced with google SSO with Oauth2 Proxy
 // VerifyAdminIDAndPW chekcs the input id/password of client is correct
 func VerifyAdminIDAndPW(c *gin.Context) {
 	user := model.User{}
@@ -28,6 +29,7 @@ func VerifyAdminIDAndPW(c *gin.Context) {
 	resp.Response200(c)
 }
 
+// Deprecated: this is replaced with google SSO with Oauth2 Proxy
 // VerifyAdminUser checks the client has already logged in
 func VerifyAdminUser(c *gin.Context) {
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
