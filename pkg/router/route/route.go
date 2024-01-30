@@ -79,17 +79,18 @@ func New(prefix string) *Routes {
 			Handler: handler.GetVisitorCounts,
 		},
 
+		// Deprecated: this is replaced with google SSO with Oauth2 Proxy
 		// Login
-		{
-			Path:    prefix + "login",
-			Method:  POST,
-			Handler: handler.VerifyAdminIDAndPW,
-		},
-		{
-			Path:    prefix + "login",
-			Method:  GET,
-			Handler: handler.VerifyAdminUser,
-		},
+		// {
+		// 	Path:    prefix + "login",
+		// 	Method:  POST,
+		// 	Handler: handler.VerifyAdminIDAndPW,
+		// },
+		// {
+		// 	Path:    prefix + "login",
+		// 	Method:  GET,
+		// 	Handler: handler.VerifyAdminUser,
+		// },
 
 		// Tagee
 		{

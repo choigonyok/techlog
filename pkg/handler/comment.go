@@ -20,7 +20,6 @@ func DeleteCommentByCommentID(c *gin.Context) {
 	// admin user delete
 	userType := c.Query("type")
 	if userType == "admin" {
-		VerifyAdminUser(c)
 		if err := svcMaster.DeleteCommentByCommentID(commentID); err != nil {
 			resp.Response500(c, err)
 		} else {

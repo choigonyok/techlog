@@ -23,13 +23,6 @@ import (
 
 // CreatePost creates new post with client input data
 func CreatePost(c *gin.Context) {
-	VerifyAdminUser(c)
-	// statusCode := VerifyAdminUser(c)
-	// if statusCode == 401 {
-	// 	resp.Response401(c)
-	// 	return
-	// }
-
 	pvrMaster := database.NewMysqlProvider(database.GetConnector())
 	svcMaster := service.NewService(pvrMaster)
 	post := model.Post{}
@@ -108,13 +101,6 @@ func rollBackSavedImageByImageName(imageName string) error {
 
 // DeletePostByPostID deletes post and images by post id
 func DeletePostByPostID(c *gin.Context) {
-	VerifyAdminUser(c)
-	// statusCode := VerifyAdminUser(c)
-	// if statusCode == 401 {
-	// 	resp.Response401(c)
-	// 	return
-	// }
-
 	pvrMaster := database.NewMysqlProvider(database.GetConnector())
 	svcMaster := service.NewService(pvrMaster)
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
@@ -168,13 +154,6 @@ func GetPost(c *gin.Context) {
 
 // UpdatePost updates title, tags, body of post
 func UpdatePostByPostID(c *gin.Context) {
-	VerifyAdminUser(c)
-	// statusCode := VerifyAdminUser(c)
-	// if statusCode == 401 {
-	// 	resp.Response401(c)
-	// 	return
-	// }
-
 	pvrMaster := database.NewMysqlProvider(database.GetConnector())
 	svcMaster := service.NewService(pvrMaster)
 	pvrSlave := database.NewMysqlProvider(database.GetReadConnector())
@@ -199,16 +178,11 @@ func UpdatePostByPostID(c *gin.Context) {
 
 	afterPost.WriteTime = beforePost.WriteTime
 	afterPost.ID, _ = strconv.Atoi(postID)
+	afterImages := strings.Split(afterPost.ThumbnailPath, " ")
 
 	if !isImageEqual(beforePost.ThumbnailPath, afterPost.ThumbnailPath) {
 		for _, v := range imageNames {
-			fmt.Println()
-			fmt.Println("IMAGE NAME: ", v)
-			fmt.Println("AFTER: ", afterPost.ThumbnailPath)
 			if !strings.Contains(afterPost.ThumbnailPath, v) {
-
-				fmt.Println("DELETED!")
-
 				if err := svcMaster.DeleteImagesByImageName(v); err != nil {
 					resp.Response500(c, err)
 					return
@@ -221,11 +195,11 @@ func UpdatePostByPostID(c *gin.Context) {
 			}
 		}
 
-		for i, v := range imageDatas {
+		for _, v := range imageDatas {
 			newImage := model.PostImage{}
 			newImage.ImageName = data.CreateRandomString() + v.Filename[strings.LastIndex(v.Filename, "."):]
 			newImage.PostID, _ = strconv.Atoi(postID)
-			if i == 0 {
+			if afterImages[0] == v.Filename {
 				newImage.Thumbnail = "1"
 			} else {
 				newImage.Thumbnail = "0"
@@ -252,6 +226,10 @@ func UpdatePostByPostID(c *gin.Context) {
 			resp.Response500(c, err)
 			return
 		}
+	}
+
+	if err := svcMaster.UpdatePost(afterPost); err != nil {
+		resp.Response500(c, err)
 	}
 }
 

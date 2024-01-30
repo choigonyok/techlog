@@ -19,10 +19,13 @@ const Writepage = () => {
       }
     })
     .catch((error) => {
-      if (error.response.status === 401) {
-        window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-      } else {
-        console.error(error);
+      if (error.response) {
+        if (error.response.status === 401) {
+          alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
+          window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+        } else {
+          console.error(error);
+        }
       }
     });
   },[])
@@ -40,6 +43,25 @@ const Writepage = () => {
   const mounted = useRef(false);
 
   const postHandler = () => {
+    axios
+      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+      .then((response) => {
+        if (response.status === 202) {
+          requestPosting()
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+          } else {
+            console.error(error);
+          }
+        }
+      })
+  };
+
+  const requestPosting = () => {
     const post = {
       title: titleText,
       tags: tagText,
@@ -61,13 +83,9 @@ const Writepage = () => {
         // setUnLock(!unlock);
       })
       .catch((error) => {
-        if (error.response.status === 401) {
-          alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
-        } else {
-          console.error(error);
-        }
+        console.error(error);
       });
-  };
+  }
 
   const deleteWronglyWrittenPost = () => {
     axios
