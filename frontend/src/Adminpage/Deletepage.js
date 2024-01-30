@@ -10,23 +10,24 @@ import { useNavigate } from "react-router-dom";
 const Deletepage = () => {
   const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     axios
-    .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-    .then((response) => {
-      if (response.status !== 202) {
-        navigate("/");
-      }
-    })
-    .catch((error) => {
-      if (error.response.status === 401) {
-        // navigate("/oauth2/sign_in");
-        window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-      } else {
-        console.error(error);
-      }
-    });
-  },[])
+      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+      .then((response) => {
+        if (response.status !== 202) {
+          navigate("/");
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+          } else {
+            console.error(error);
+          }
+        }
+      });
+  }, [])
 
   axios.defaults.withCredentials = true;
 
@@ -47,25 +48,75 @@ const Deletepage = () => {
   const [comInfo, setComInfo] = useState([]);
   const [postRequest, setPostRequest] = useState(false);
   const [imageNames, setImageNames] = useState([]);
+  const [img, setIMG] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [preImageLength, setPreImageLength] = useState(0);
+  
 
   const postHandler = () => {
+    axios
+      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+      .then((response) => {
+        if (response.status === 202) {
+          requestEditPost();
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+          } else {
+            console.error(error);
+          }
+        }
+      })
+  };
+
+  const requestEditPost = () => {
+    let images = [];
+    imageNames.map((item) => (
+      item.thumbnail === "1"
+        ?
+        images.push(item.imageName)
+        :
+        ""
+    ))
+    imageNames.map((item) => (
+      item.thumbnail === "0"
+        ?
+        images.push(item.imageName)
+        :
+        ""
+    ))
+    const imageString = images.join(" ");
+
     const postdata = {
       title: titleText,
       tags: tagText,
       writeTime: dateText,
       text: bodyText,
+      thumbnailPath: imageString,
     };
+
+    // console.log("SEND DATA:",JSON.stringify(postdata));
+
+    const formData = new FormData();
+    for (let i = 0; i < img.length; i++) {
+      formData.append("file", img[i]);
+    }
+    formData.append('data', JSON.stringify(postdata));
+
     axios
-      .put(process.env.REACT_APP_HOST + "/api/posts/" + id, postdata, {
+      .put(process.env.REACT_APP_HOST + "/api/posts/" + id, formData, {
+        "Content-type": "multipart/form-data",
         withCredentials: true,
+
       })
       .then((response) => {
       })
       .catch((error) => {
         if (error.response.status === 400) {
           alert(`특수문자 ' 가 입력된 곳이 존재합니다. 수정해주세요.`);
-        } else if (error.response.status === 401) {
-          alert("로그인이 안된 사용자는 게시글 수정 권한이 없습니다!");
         } else {
           console.log(error);
         }
@@ -73,6 +124,7 @@ const Deletepage = () => {
 
     axios
       .put(process.env.REACT_APP_HOST + "/api/posts/" + id + "/images", imageNames, {
+        "Content-type": "multipart/form-data",
         withCredentials: true,
       })
       .then((response) => {
@@ -83,7 +135,7 @@ const Deletepage = () => {
       .catch((error) => {
         console.log(error);
       });
-  };
+  }
 
   useEffect(() => {
     axios
@@ -106,6 +158,25 @@ const Deletepage = () => {
 
   const deleteHandler = (value) => {
     axios
+      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+      .then((response) => {
+        if (response.status === 202) {
+          requestDeletePost(value);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+          } else {
+            console.error(error);
+          }
+        }
+      })
+  };
+
+  const requestDeletePost = (value) => {
+    axios
       .delete(process.env.REACT_APP_HOST + "/api/posts/" + value, {
         withCredentials: true,
       })
@@ -115,9 +186,8 @@ const Deletepage = () => {
       })
       .catch((error) => {
         console.error(error);
-        alert("로그인이 안된 사용자는 게시글 삭제 권한이 없습니다!");
       });
-  };
+  }
 
   const modifyHandler = (value) => {
     axios
@@ -138,8 +208,8 @@ const Deletepage = () => {
     axios
       .get(process.env.REACT_APP_HOST + "/api/posts/" + value + "/images")
       .then((response) => {
-        console.log(response.data);
         setImageNames([...response.data]);
+        setPreImageLength(response.data.length);
       })
       .catch((error) => {
         console.log(error);
@@ -167,20 +237,34 @@ const Deletepage = () => {
 
   const CommentDeleteHandler = (value) => {
     axios
+      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+      .then((response) => {
+        if (response.status === 202) {
+          requestDeleteComment(value);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+          } else {
+            console.error(error);
+          }
+        }
+      })
+  };
+
+  const requestDeleteComment = (value) => {
+    axios
       .delete(process.env.REACT_APP_HOST + "/api/comments/" + value +
         "?type=admin")
       .then((response) => {
         setPostRequest(!postRequest);
       })
       .catch((error) => {
-        if (error.response.status === 401) {
-          console.log(error);
-          alert("로그인이 안된 사용자는 댓글 삭제 권한이 없습니다!");
-        } else {
-          console.log(error);
-        }
+        console.error(error);
       });
-  };
+  }
 
   const isPostsHandler = () => {
     setIsComments(false);
@@ -209,14 +293,58 @@ const Deletepage = () => {
   const changeThumbnailHandler = (newThumbnailImage) => {
     let originalImages = imageNames
     let beforeThumbnail = imageNames.filter((element) => element.thumbnail === "1")
-    let afterThumbnail = imageNames.filter((element) => element.id === newThumbnailImage.id)
+    let afterThumbnail = imageNames.filter((element) => element.imageName === newThumbnailImage.imageName)
     beforeThumbnail[0].thumbnail = "0";
     afterThumbnail[0].thumbnail = "1";
+    setImageNames([...imageNames]);
 
-    setImageNames(
-      [...afterThumbnail, ...originalImages.filter((element) => element.imageName !== beforeThumbnail[0].imageName).filter((element) => element.imageName !== afterThumbnail[0].imageName), ...beforeThumbnail]
-    );
+    // setImageNames(
+    //   [...afterThumbnail, ...originalImages.filter((element) => element.imageName !== beforeThumbnail[0].imageName).filter((element) => element.imageName !== afterThumbnail[0].imageName), ...beforeThumbnail]
+    // );
   }
+
+  const imgHandler = (e) => {
+    setIMG((img) => [...img, ...e.target.files]);
+    console.log("e.target.files : ",e.target.files);
+    let f = document.getElementById("imgfile").files;
+    if (f.length !== 0) {
+      for (let i = 0; i < f.length; i++) {
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setNewImages([...newImages, reader.result]);
+        }
+        reader.readAsDataURL(e.target.files[i]);
+        
+        let img = {
+          id: 0,
+          postid: id,
+          imageName: f[i].name,
+          thumbnail: 0,
+        };
+        setImageNames([...imageNames, img]);
+      }
+    }
+  };
+
+  const deleteIMGHandler = (value) => {
+    setImageNames(
+      imageNames.filter((element) => String(element.imageName) !== value.imageName)
+    );
+    if (value.thumbnail === "1") {
+      imageNames.filter((element) => String(element.imageName) !== value.imageName)[0].thumbnail = "1";
+    }
+    if (value.id !== 0) {
+      setPreImageLength(preImageLength - 1);
+    }
+  
+    setIMG(
+      img.filter((element) => String(element.name) !== value.imageName)
+    );
+  };
+
+  console.log("IMG LENGTH : ", img.length);
+
   return (
     <div>
       <Header />
@@ -262,30 +390,81 @@ const Deletepage = () => {
                 <div className="image-thumbnail-container">
                   {imageNames.map((item, index) => (
                     item.thumbnail === "1" ?
-                      <div className="image-thumbnail">
-                        <img
-                          className="image-thumbnail-image"
-                          alt="my"
-                          src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
-                        />
-                        <div className="image-thumbnail-name">
-                          {item.imageName}
+                      (item.id !== 0 ?
+                        <div className="image-thumbnail">
+                          <img
+                            className="image-thumbnail-image"
+                            alt="my"
+                            src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
+                          />
+                          <div className="image-thumbnail-name">
+                            {item.imageName}
+                          </div>
                         </div>
-                      </div>
+                        :
+                        <div className="image-thumbnail">
+                          <img
+                            className="image-thumbnail-image"
+                            alt="my"
+                            src={newImages[index - preImageLength]}
+                          />
+                          <div className="image-thumbnail-name">
+                            {item.imageName}
+                          </div>
+                        </div>)
                       :
-                      <div className="image-non-thumbnail">
-                        <img
-                          className="image-non-thumbnail-image"
-                          alt="my"
-                          src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
-                          onClick={() => changeThumbnailHandler(item)}
-                        />
-                        <div className="image-non-thumbnail-name">
-                          {item.imageName}
+                      (item.id !== 0 ?
+                        <div className="image-non-thumbnail">
+                          <img
+                            className="image-non-thumbnail-image"
+                            alt="my"
+                            src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
+                            onClick={() => changeThumbnailHandler(item)}
+                          />
+                          <div className="image-non-thumbnail-name">
+                            {item.imageName}
+                          </div>
                         </div>
-                      </div>
+                        :
+                        <div className="image-non-thumbnail">
+                          <img
+                            className="image-non-thumbnail-image"
+                            alt="my"
+                            src={newImages[index - preImageLength]}
+                            // src={newImages.filter((element) => element.name === item.imageName).pop()}
+                            onClick={() => changeThumbnailHandler(item)}
+                          />
+                          <div className="image-non-thumbnail-name">
+                            {item.imageName}
+                          </div>
+                        </div>)
                   ))}
                 </div>
+                <div className="admin-titletagdate">
+                  <label for="imgfile">
+                    <div class="file-button">IMG UPLOAD</div>
+                  </label>
+                  <input
+                    type="file"
+                    required
+                    multiple
+                    id="imgfile"
+                    name="imgfile"
+                    className="file-input"
+                    onChange={imgHandler}
+                  />
+                </div>
+                {imageNames.map((item, index) => (
+                  <div className="imgname-container">
+                    {item.imageName}
+                    <input
+                      type="button"
+                      value="X"
+                      className="imgname-button"
+                      onClick={() => deleteIMGHandler(item)}
+                    />
+                  </div>
+                ))}
                 <div>
                   <div className="admin-editor">
                     <MDEditor height={400} value={md} onChange={setMD} />
