@@ -24,6 +24,7 @@ CREATE TABLE `post` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `tags` VARCHAR(40) NOT NULL DEFAULT '',
     `title` VARCHAR(40) NOT NULL DEFAULT '',
+    `subtitle` VARCHAR(40) NOT NULL DEFAULT '',
     `text` TEXT,
     `writeTime` DATE NOT NULL DEFAULT '2000-01-01',
     PRIMARY KEY (`id`)
