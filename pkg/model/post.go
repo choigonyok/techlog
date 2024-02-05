@@ -4,15 +4,17 @@ type Post struct {
 	ID            int    `json:"id"`
 	Tags          string `json:"tags"`
 	Title         string `json:"title"`
+	Subtitle      string `json:"subtitle"`
 	WriteTime     string `json:"writeTime"`
 	ThumbnailPath string `json:"thumbnailPath"`
 	Text          string `json:"text"`
 }
 
 type PostWrite struct {
-	Tags  string `json:"tags"`
-	Title string `json:"title"`
-	Text  string `json:"text"`
+	Tags     string `json:"tags"`
+	Title    string `json:"title"`
+	Subtitle string `json:"subtitle"`
+	Text     string `json:"text"`
 }
 
 type PostTags struct {
@@ -28,6 +30,7 @@ type PostCard struct {
 	ID            int    `json:"id"`
 	Tags          string `json:"tags"`
 	Title         string `json:"title"`
+	Subtitle      string `json:"subtitle"`
 	WriteTime     string `json:"writeTime"`
 	ThumbnailPath string `json:"thumbnailPath"`
 }
