@@ -94,12 +94,25 @@ func GetPostsFromGithubRepo() []model.Post {
 		writeTime, _ = strings.CutSuffix(writeTime, "]")
 		post.WriteTime = writeTime
 
-		imageNames, content, _ := strings.Cut(afterWriteTime, "\n")
+		imageNames, afterImageNames, _ := strings.Cut(afterWriteTime, "\n")
 		imageNames, _ = strings.CutPrefix(imageNames, "[ImageNames: ")
 		imageNames, _ = strings.CutSuffix(imageNames, "]")
 		post.ThumbnailPath = imageNames
 
-		post.Text = content
+		subtitle, content, _ := strings.Cut(afterImageNames, "\n")
+
+		// Deprecated: After previous posts are modified to contain empty subtitle
+		// There are some posts not contain subtitle
+		// because they are written before subtitle feature is implemented.
+		// So GetPostsFromGithubRepo should check subtitle is exist or not
+		subtitle, isExist := strings.CutPrefix(subtitle, "[Subtitle: ")
+		if isExist {
+			subtitle, _ = strings.CutSuffix(subtitle, "]")
+			post.Subtitle = subtitle
+			post.Text = content
+		} else {
+			post.Text = afterImageNames
+		}
 
 		posts = append(posts, post)
 	}
