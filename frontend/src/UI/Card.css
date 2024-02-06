@@ -27,14 +27,27 @@
   border-top-right-radius: 1.5rem;
   object-fit: cover;
 }
-.postcard-tag {
+
+.postcard-subtitle {
   font-size: 1.6rem;
   padding-left: 3%;
   padding-right: 3%;
-  padding-top: 3%;
   font-style: italic;
   display: flex;
-  height: 5rem;
+  height: 2.5rem;
+  width: auto;
+  padding-bottom: auto;
+  justify-content: left;
+  align-items: center;
+}
+
+.postcard-tag {
+  font-size: 1.6rem;
+  padding-left: 3%;
+  padding-right: 3%;;
+  font-style: italic;
+  display: flex;
+  height: 2.5rem;
   width: auto;
   justify-content: left;
   align-items: center;

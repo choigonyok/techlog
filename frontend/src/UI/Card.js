@@ -6,7 +6,7 @@ const Card = (props) => {
 
   const cardClickHandler = (postID) => {
     // 버튼 클릭 시 특정 URL로 이동
-    navigate("/post/"+postID)
+    navigate("/post/" + postID)
   };
 
   return (
@@ -15,16 +15,23 @@ const Card = (props) => {
         <div className="cardcontainer">
           {props.postdata.map((item, index) => (
             <div>
-              <h2 className="postcard" onClick={()=>{cardClickHandler(item.id)}}>
+              <h2 className="postcard" onClick={() => { cardClickHandler(item.id) }}>
                 <div>
                   <img
                     className="postcard-image"
                     alt="my"
-                    src={process.env.REACT_APP_HOST+"/api/posts/"+item.id+"/thumbnail"}
+                    src={process.env.REACT_APP_HOST + "/api/posts/" + item.id + "/thumbnail"}
                   />
                 </div>
                 <div className="postcard-text">
                   <p>{item.title}</p>
+                </div>
+                <div className="postcard-subtitle">
+                  {item.subtitle ?
+                    <p>- {item.subtitle}</p>
+                    :
+                    ""
+                  }
                 </div>
                 <div className="postcard-tag">
                   <p>{item.tags}</p>
