@@ -149,6 +149,7 @@ func PushCreatedPost(post model.Post, imageNames []string, isUpdate bool) error 
 [Title: ` + post.Title + `]` + `
 [WriteTime: ` + post.WriteTime + `]` + `
 [ImageNames: ` + images + `]` + `
+[Subtitle: ` + post.Subtitle + `]` + `
 
 ` + post.Text
 	)

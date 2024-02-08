@@ -62,10 +62,12 @@ func UnmarshalReplyToDatabaseFmt(replies []model.Reply) []model.Reply {
 func MarshalPostToDatabaseFmt(post model.Post) model.Post {
 	post.Tags = RemoveWhiteSpace(post.Tags)
 	post.Title = RemoveWhiteSpace(post.Title)
+	post.Subtitle = RemoveWhiteSpace(post.Subtitle)
 
 	post.Tags = strings.ToUpper(strings.ReplaceAll((strings.ReplaceAll(post.Tags, `\`, `\\`)), `'`, `\'`))
 	post.Text = strings.ReplaceAll(strings.ReplaceAll(post.Text, `\`, `\\`), `'`, `\'`)
 	post.Title = strings.ReplaceAll(strings.ReplaceAll(post.Title, `\`, `\\`), `'`, `\'`)
+	post.Subtitle = strings.ReplaceAll(strings.ReplaceAll(post.Subtitle, `\`, `\\`), `'`, `\'`)
 	post.WriteTime = strings.ReplaceAll(strings.ReplaceAll(post.WriteTime, `\`, `\\`), `'`, `\'`)
 
 	return post
@@ -76,6 +78,7 @@ func UnMarshalPostDatabaseFmt(post model.Post) model.Post {
 	post.Tags = strings.ReplaceAll(strings.ReplaceAll(post.Tags, `\'`, `'`), `\`, `\\`)
 	post.Text = strings.ReplaceAll(strings.ReplaceAll(post.Text, `\'`, `'`), `\`, `\\`)
 	post.Title = strings.ReplaceAll(strings.ReplaceAll(post.Title, `\'`, `'`), `\`, `\\`)
+	post.Subtitle = strings.ReplaceAll(strings.ReplaceAll(post.Subtitle, `\'`, `'`), `\`, `\\`)
 	post.WriteTime = strings.ReplaceAll(strings.ReplaceAll(post.WriteTime, `\'`, `'`), `\`, `\\`)
 
 	return post

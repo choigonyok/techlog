@@ -103,9 +103,9 @@ func (p *MysqlProvider) GetEveryPostCount() int {
 func (p *MysqlProvider) GetPostsByTag(tag string) ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
-	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY id desc`)
+	r, err := p.connector.Query(`SELECT id, tags, title, writeTime, subtitle FROM post WHERE tags LIKE "%` + tag + `%" ORDER BY id desc`)
 	for r.Next() {
-		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
+		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime, &card.Subtitle)
 		cards = append(cards, card)
 	}
 	defer r.Close()
@@ -115,9 +115,9 @@ func (p *MysqlProvider) GetPostsByTag(tag string) ([]model.PostCard, error) {
 func (p *MysqlProvider) GetPosts() ([]model.PostCard, error) {
 	card := model.PostCard{}
 	cards := []model.PostCard{}
-	r, err := p.connector.Query(`SELECT id, tags, title, writeTime FROM post ORDER BY id desc`)
+	r, err := p.connector.Query(`SELECT id, tags, title, writeTime, subtitle FROM post ORDER BY id desc`)
 	for r.Next() {
-		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime)
+		r.Scan(&card.ID, &card.Tags, &card.Title, &card.WriteTime, &card.Subtitle)
 		cards = append(cards, card)
 	}
 	defer r.Close()
@@ -127,8 +127,8 @@ func (p *MysqlProvider) GetPosts() ([]model.PostCard, error) {
 func (p *MysqlProvider) GetPostByID(postID string) (model.Post, error) {
 	post := model.Post{}
 
-	r := p.connector.QueryRow(`SELECT id, tags, title, text, writeTime FROM post WHERE id = ` + postID)
-	err := r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime)
+	r := p.connector.QueryRow(`SELECT id, tags, title, text, writeTime, subtitle FROM post WHERE id = ` + postID)
+	err := r.Scan(&post.ID, &post.Tags, &post.Title, &post.Text, &post.WriteTime, &post.Subtitle)
 
 	return post, err
 }
@@ -200,7 +200,7 @@ func (p *MysqlProvider) CreatePost(post model.Post) (int, error) {
 	if err != nil {
 		fmt.Println("TX CREATE ERROR", err.Error())
 	}
-	_, err = tx.Exec(`INSERT INTO post (tags, title, text, writeTime) VALUES ('` + post.Tags + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `')`)
+	_, err = tx.Exec(`INSERT INTO post (tags, title, text, writeTime, subtitle) VALUES ('` + post.Tags + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `', '` + post.Subtitle + `')`)
 	if err != nil {
 		tx.Rollback()
 	}
