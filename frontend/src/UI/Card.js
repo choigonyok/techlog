@@ -27,10 +27,10 @@ const Card = (props) => {
                   <p>{item.title}</p>
                 </div>
                 <div className="postcard-subtitle">
-                  {item.subtitle ?
-                    <p>- {item.subtitle}</p>
-                    :
+                  {item.subtitle === "" ?
                     ""
+                    :
+                    <p>- {item.subtitle}</p>
                   }
                 </div>
                 <div className="postcard-tag">
