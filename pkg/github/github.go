@@ -229,14 +229,27 @@ func PushUpdatedPost(afterPost model.Post) error {
 		PostTitleIncludeExtension = afterPost.Title + ".md"
 		commitMessage             = "Update(" + strconv.Itoa(afterPost.ID) + "): " + PostTitleIncludeExtension
 		// commitMessage = "Test: Push to this repo when new post is updated"
-		fileContent = `[ID: ` + strconv.Itoa(afterPost.ID) + `]` + `
-		[Tags: ` + afterPost.Tags + `]` + `
-		[Title: ` + afterPost.Title + `]` + `
-		[WriteTime: ` + afterPost.WriteTime + `]` + `
-		[ImageNames: ` + afterPost.ThumbnailPath + `]` + `
-		
-		` + afterPost.Text
+		fileContent string
 	)
+
+	if afterPost.Subtitle != "" {
+		fileContent = `[ID: ` + strconv.Itoa(afterPost.ID) + `]` + `
+[Tags: ` + afterPost.Tags + `]` + `
+[Title: ` + afterPost.Title + `]` + `
+[WriteTime: ` + afterPost.WriteTime + `]` + `
+[ImageNames: ` + afterPost.ThumbnailPath + `]` + `
+[Subtitle: ` + afterPost.Subtitle + `]` + `
+
+` + afterPost.Text
+	} else {
+		fileContent = `[ID: ` + strconv.Itoa(afterPost.ID) + `]` + `
+[Tags: ` + afterPost.Tags + `]` + `
+[Title: ` + afterPost.Title + `]` + `
+[WriteTime: ` + afterPost.WriteTime + `]` + `
+[ImageNames: ` + afterPost.ThumbnailPath + `]` + `
+
+` + afterPost.Text
+	}
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
