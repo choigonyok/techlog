@@ -158,7 +158,7 @@ func (p *MysqlProvider) GetCookieValue() (string, error) {
 }
 
 func (p *MysqlProvider) UpdatePost(post model.Post) error {
-	_, err := p.connector.Exec(`UPDATE post SET title = '` + post.Title + `', text = '` + post.Text + `', tags = '` + post.Tags + `' WHERE id = ` + strconv.Itoa(post.ID))
+	_, err := p.connector.Exec(`UPDATE post SET title = '` + post.Title + `', text = '` + post.Text + `', tags = '` + post.Tags + `', subtitle = '` + post.Subtitle + `' WHERE id = ` + strconv.Itoa(post.ID))
 
 	return err
 }

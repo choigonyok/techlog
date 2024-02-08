@@ -152,7 +152,7 @@ func GetPost(c *gin.Context) {
 	}
 }
 
-// UpdatePost updates title, tags, body of post
+// UpdatePost updates title, subtitle, tags, body of post
 func UpdatePostByPostID(c *gin.Context) {
 	pvrMaster := database.NewMysqlProvider(database.GetConnector())
 	svcMaster := service.NewService(pvrMaster)
