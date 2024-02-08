@@ -34,6 +34,7 @@ const Deletepage = () => {
   const [changeEvent, setChangeEvent] = useState(false);
   const [md, setMD] = useState("");
   const [titleText, setTitleText] = useState("");
+  const [subtitleText, setSubtitleText] = useState("");
   const [tagText, setTagText] = useState("");
   const [dateText, setDateText] = useState("");
   const [bodyText, setBodyText] = useState("");
@@ -96,6 +97,7 @@ const Deletepage = () => {
       writeTime: dateText,
       text: bodyText,
       thumbnailPath: imageString,
+      subtitle: subtitleText,
     };
 
     // console.log("SEND DATA:",JSON.stringify(postdata));
@@ -115,11 +117,7 @@ const Deletepage = () => {
       .then((response) => {
       })
       .catch((error) => {
-        if (error.response.status === 400) {
-          alert(`특수문자 ' 가 입력된 곳이 존재합니다. 수정해주세요.`);
-        } else {
-          console.log(error);
-        }
+        console.log(error);
       });
 
     axios
@@ -199,6 +197,7 @@ const Deletepage = () => {
         setTagText(response.data.tags);
         setDateText(response.data.writetime);
         setMD(response.data.text);
+        setSubtitleText(response.data.subtitle);
         setChangeEvent(!changeEvent);
       })
       .catch((error) => {
@@ -218,6 +217,10 @@ const Deletepage = () => {
 
   const titleHandler = (e) => {
     setTitleText(e.target.value);
+  };
+
+  const subtitleHandler = (e) => {
+    setSubtitleText(e.target.value);
   };
 
   const tagHandler = (e) => {
@@ -387,6 +390,13 @@ const Deletepage = () => {
                     onChange={titleHandler}
                   />
                 </div>
+                <div className="admin-titletagdate">
+                  <input
+                    type="text"
+                    value={subtitleText}
+                    onChange={subtitleHandler}
+                  />
+                </div>
                 <div className="image-thumbnail-container">
                   {imageNames.map((item, index) => (
                     item.thumbnail === "1" ?
@@ -488,6 +498,7 @@ const Deletepage = () => {
                       <div className="delete-post">
                         <h2 className="delete-date">{item.writeTime}</h2>
                         <h2 className="delete-title">{item.title}</h2>
+                        <h2 className="delete-subtitle">{item.subtitle}</h2>
                         <h2 className="delete-tag">{item.tags}</h2>
                       </div>
                       <div className="delete-button__container">

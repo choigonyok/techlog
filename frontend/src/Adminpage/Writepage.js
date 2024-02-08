@@ -34,6 +34,7 @@ const Writepage = () => {
 
   const [md, setMD] = useState("");
   const [titleText, setTitleText] = useState("");
+  const [subtitleText, setSubtitleText] = useState("");
   const [tagText, setTagText] = useState("");
   const [dateText, setDateText] = useState("");
   const [bodyText, setBodyText] = useState("");
@@ -66,6 +67,7 @@ const Writepage = () => {
       title: titleText,
       tags: tagText,
       text: bodyText,
+      subtitle: subtitleText,
     };
     const formData = new FormData();
     for (let i = 0; i < img.length; i++) {
@@ -99,6 +101,10 @@ const Writepage = () => {
 
   const titleHandler = (e) => {
     setTitleText(e.target.value);
+  };
+
+  const subtitleHandler = (e) => {
+    setSubtitleText(e.target.value);
   };
 
   const tagHandler = (e) => {
@@ -181,6 +187,15 @@ const Writepage = () => {
             placeholder="TITLE : [BLOG #1] 블로그 개발하기"
             value={titleText}
             onChange={titleHandler}
+          />
+          {/* <input type="button" value="적용" onClick={TitleClickHandler} /> */}
+        </div>
+        <div className="admin-titletagdate">
+          <input
+            type="text"
+            placeholder="SUBTITLE : 직접 기술 블로그를 만들어보자"
+            value={subtitleText}
+            onChange={subtitleHandler}
           />
           {/* <input type="button" value="적용" onClick={TitleClickHandler} /> */}
         </div>
