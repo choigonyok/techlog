@@ -66,6 +66,9 @@ const Homepage = () => {
           <div>
             2017.03~ &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
           </div>
+          <div>
+            2024.03~2024.06 &nbsp;&nbsp;&nbsp; SLEXN, inc. Solution Architect
+          </div>
         </div>
       </div>
       <Button onSeeTaggedPost={seeTaggedPostHandler} />
