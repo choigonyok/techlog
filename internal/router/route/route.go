@@ -21,54 +21,65 @@ const (
 func New(prefix string) *Routes {
 	m := make(map[int]handler.Handler)
 	m[handler.VISITOR_HANDLER] = handler.NewVisitorHandler()
+	m[handler.POST_HANDLER] = handler.NewPostHandler()
 
 	h := &Routes{
 		// Post
-		// {
-		// 	Path:    prefix + "post",
-		// 	Method:  POST,
-		// 	Handler: handler.CreatePost,
-		// },
-		// {
-		// 	Path:    prefix + "posts",
-		// 	Method:  GET,
-		// 	Handler: handler.GetPosts,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid/thumbnail",
-		// 	Method:  GET,
-		// 	Handler: handler.GetThumbnailByPostID,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid/images/:imageid",
-		// 	Method:  GET,
-		// 	Handler: handler.GetPostImageByImageID,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid",
-		// 	Method:  GET,
-		// 	Handler: handler.GetPost,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid",
-		// 	Method:  PUT,
-		// 	Handler: handler.UpdatePostByPostID,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid/images",
-		// 	Method:  PUT,
-		// 	Handler: handler.UpdatePostImagesByPostID,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid",
-		// 	Method:  DELETE,
-		// 	Handler: handler.DeletePostByPostID,
-		// },
-		// {
-		// 	Path:    prefix + "posts/:postid/images",
-		// 	Method:  GET,
-		// 	Handler: handler.GetImagesByPostID,
-		// },
+		{
+			Path:    prefix + "post",
+			Method:  POST,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).CreatePost,
+			// handler.CreatePost
+		},
+		{
+			Path:    prefix + "posts",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetPosts,
+		},
+		{
+			Path:    prefix + "posts/:postId",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetPost,
+		},
+		{
+			Path:    prefix + "posts/:postId",
+			Method:  DELETE,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).DeletePost,
+		},
+		{
+			Path:    prefix + "posts/:postId",
+			Method:  PUT,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).UpdatePost,
+		},
+
+		// Tag
+		{
+			Path:    prefix + "tags",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetTags,
+		},
+
+		// Image
+		{
+			Path:    prefix + "posts/:postId/thumbnail",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetThumbnail,
+		},
+		{
+			Path:    prefix + "posts/:postId/images/:imageId",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetImage,
+		},
+		{
+			Path:    prefix + "posts/:postId/images",
+			Method:  PUT,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).UpdateImages,
+		},
+		{
+			Path:    prefix + "posts/:postId/images",
+			Method:  GET,
+			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetImages,
+		},
 		// {
 		// 	Path:    prefix + "posts/count",
 		// 	Method:  GET,
@@ -94,14 +105,6 @@ func New(prefix string) *Routes {
 		// 	Method:  GET,
 		// 	Handler: handler.VerifyAdminUser,
 		// },
-
-		// 	// Tagee
-		// 	{
-		// 		Path:    prefix + "tags",
-		// 		Method:  GET,
-		// 		Handler: handler.GetTagsAndPostNum,
-		// 	},
-
 		// 	// Comment
 		// 	{
 		// 		Path:    prefix + "posts/:postid/comment",

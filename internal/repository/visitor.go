@@ -30,3 +30,19 @@ func (repo *VisitorRepository) Get(column, conditionKey, conditionValue string) 
 
 	return count
 }
+
+func (repo *VisitorRepository) GetAllCount() (*[]int, error) {
+	counts := []int{}
+	r, err := repo.db.Query(`SELECT count FROM visitor`)
+	if err != nil {
+		return nil, err
+	}
+
+	for r.Next() {
+		c := 0
+		r.Scan(&c)
+		counts = append(counts, c)
+	}
+
+	return &counts, nil
+}

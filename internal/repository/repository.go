@@ -12,4 +12,5 @@ const TMP_DB_HOST = "localhost"
 const TMP_DB_PASSWORD = "tester1234"
 const TMP_DB_USERNAME = "postgres"
 const TMP_DB_DATABASE = "test_db"
+const TMP_POST_DB_DATABASE = "post_db"
 const TMP_DB_PORT = 5432
