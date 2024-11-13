@@ -79,11 +79,7 @@ func (h *PostHandler) GetTags(c *gin.Context) {
 		return
 	}
 
-	b, _ := json.Marshal(struct {
-		Tags []string `json:"tags"`
-	}{
-		Tags: *tags,
-	})
+	b, _ := json.Marshal(tags)
 
 	c.Writer.Write(b)
 }

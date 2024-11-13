@@ -129,26 +129,32 @@ func (u *PostUsecase) GetPost(postId string) (*model.Post, error) {
 	return p, nil
 }
 
-func (u *PostUsecase) GetTags() (*[]string, error) {
+func (u *PostUsecase) GetTags() ([]*model.Tag, error) {
 	tags, err := u.postRepository.GetTags()
 	if err != nil {
 		return nil, err
 	}
 
-	m := make(map[string]bool)
+	m := make(map[string]int)
 
 	for _, tag := range *tags {
 		if _, ok := m[tag]; !ok {
-			m[tag] = true
+			counts := u.postRepository.GetCounts(tag)
+			m[tag] = counts
 		}
 	}
+	m["ALL"] = u.postRepository.GetTotalCounts()
 
-	uniqueTags := []string{}
-	for k, _ := range m {
-		uniqueTags = append(uniqueTags, k)
+	uniqueTags := []*model.Tag{}
+	for k, v := range m {
+		t := model.Tag{
+			Name:  k,
+			Count: v,
+		}
+		uniqueTags = append(uniqueTags, &t)
 	}
 
-	return &uniqueTags, nil
+	return uniqueTags, nil
 }
 
 func (u *PostUsecase) GetThumbnail(postId string) *model.Image {

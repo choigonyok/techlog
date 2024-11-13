@@ -21,7 +21,7 @@ const Homepage = () => {
         setVisitNum(response.data.today);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   }, []);
 
@@ -67,7 +67,7 @@ const Homepage = () => {
             2017.03~ &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
           </div>
           <div>
-            2024.03~2024.06 &nbsp;&nbsp;&nbsp; SLEXN, inc. Solution Architect
+            2024.03~2024.06 &nbsp;&nbsp;&nbsp; SLEXN, inc. Internship
           </div>
         </div>
       </div>

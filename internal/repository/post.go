@@ -35,7 +35,7 @@ func (repo *PostRepository) Get(column, conditionKey, conditionValue string) any
 }
 
 func (repo *PostRepository) CreatePost(post *model.Post) error {
-	_, err := repo.db.Exec(`INSERT INTO posts (id, title, text, writeTime, subtitle) VALUES ('` + post.ID + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `', '` + post.Subtitle + `')`)
+	_, err := repo.db.Exec(`INSERT INTO posts (id, title, text, write_time, subtitle) VALUES ('` + post.ID + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `', '` + post.Subtitle + `')`)
 	return err
 }
 
@@ -74,7 +74,7 @@ func (repo *PostRepository) GetPostsWithTag(tag string) ([]*model.Post, error) {
 
 	str := strings.Join(ids, "', '")
 
-	r2, err := repo.db.Query(`SELECT id, title, writeTime, subtitle FROM posts WHERE id IN ('` + str + `') ORDER BY id desc`)
+	r2, err := repo.db.Query(`SELECT id, title, write_time, subtitle FROM posts WHERE id IN ('` + str + `') ORDER BY id desc`)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (repo *PostRepository) GetPostsWithTag(tag string) ([]*model.Post, error) {
 }
 
 func (repo *PostRepository) GetPosts() ([]*model.Post, error) {
-	r, err := repo.db.Query(`SELECT id, title, writeTime, subtitle FROM posts ORDER BY id desc`)
+	r, err := repo.db.Query(`SELECT id, title, write_time, subtitle FROM posts ORDER BY id desc`)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (repo *PostRepository) GetTagsByPostId(postId string) (*[]string, error) {
 }
 
 func (repo *PostRepository) GetPost(postId string) (*model.Post, error) {
-	r := repo.db.QueryRow(`SELECT id, title, writeTime, subtitle FROM posts WHERE id = '` + postId + `'`)
+	r := repo.db.QueryRow(`SELECT id, title, write_time, subtitle FROM posts WHERE id = '` + postId + `'`)
 
 	p := model.Post{}
 	r.Scan(&p.ID, &p.Title, &p.WriteTime, &p.Subtitle)
@@ -229,4 +229,18 @@ func (repo *PostRepository) DeletePost(postId string) error {
 func (repo *PostRepository) CreateThumbnail(image *model.Image) error {
 	_, err := repo.db.Exec(`INSERT INTO thumbnails (image_id, post_id) VALUES ('` + image.ID + `', '` + image.PostID + `')`)
 	return err
+}
+
+func (repo *PostRepository) GetCounts(tag string) int {
+	r := repo.db.QueryRow(`SELECT COUNT(*) FROM tags WHERE name = '` + tag + `'`)
+	counts := 0
+	r.Scan(&counts)
+	return counts
+}
+
+func (repo *PostRepository) GetTotalCounts() int {
+	r := repo.db.QueryRow(`SELECT COUNT(*) FROM posts`)
+	counts := 0
+	r.Scan(&counts)
+	return counts
 }
