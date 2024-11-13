@@ -22,6 +22,7 @@ func New(prefix string) *Routes {
 	m := make(map[int]handler.Handler)
 	m[handler.VISITOR_HANDLER] = handler.NewVisitorHandler()
 	m[handler.POST_HANDLER] = handler.NewPostHandler()
+	m[handler.AUTH_HANDLER] = handler.NewAuthHandler()
 
 	h := &Routes{
 		// Post
@@ -29,7 +30,6 @@ func New(prefix string) *Routes {
 			Path:    prefix + "post",
 			Method:  POST,
 			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).CreatePost,
-			// handler.CreatePost
 		},
 		{
 			Path:    prefix + "posts",
@@ -93,13 +93,18 @@ func New(prefix string) *Routes {
 			Handler: m[handler.VISITOR_HANDLER].(*handler.VisitorHandler).GetVisitorCounts,
 		},
 
-		// Deprecated: this is replaced with google SSO with Oauth2 Proxy
 		// Login
-		// {
-		// 	Path:    prefix + "login",
-		// 	Method:  POST,
-		// 	Handler: handler.VerifyAdminIDAndPW,
-		// },
+		{
+			Path:    prefix + "login",
+			Method:  POST,
+			Handler: m[handler.AUTH_HANDLER].(*handler.AuthHandler).Login,
+		},
+		{
+			Path:    prefix + "github/callback",
+			Method:  POST,
+			Handler: m[handler.AUTH_HANDLER].(*handler.AuthHandler).Callback,
+		},
+
 		// {
 		// 	Path:    prefix + "login",
 		// 	Method:  GET,

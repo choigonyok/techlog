@@ -3,8 +3,10 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/choigonyok/techlog/internal/usecase"
+	"github.com/choigonyok/techlog/pkg/image"
 	"github.com/choigonyok/techlog/pkg/model"
 	"github.com/choigonyok/techlog/pkg/time"
 	"github.com/gin-gonic/gin"
@@ -36,7 +38,15 @@ func (h *PostHandler) GetPosts(c *gin.Context) {
 // GetPost returns post data including post body
 func (h *PostHandler) GetPost(c *gin.Context) {
 	postId := c.Param("postId")
-	h.usecase.GetPost(postId)
+	post, err := h.usecase.GetPost(postId)
+	if err != nil {
+		fmt.Println("ERR GETTING POST:", err)
+		// RETURN
+		return
+	}
+
+	b, _ := json.Marshal(post)
+	c.Writer.Write(b)
 }
 
 // CreatePost creates new post with client input data
@@ -90,19 +100,19 @@ func (h *PostHandler) GetThumbnail(c *gin.Context) {
 
 	thubmail := h.usecase.GetThumbnail(postId)
 
-	// image, err := img.Download(thumbnailName)
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// 	return
-	// }
-	// defer image.Body.Close()
+	img, err := image.Download(thubmail.ID)
+	if err != nil {
+		// RETURN
+		return
+	}
+	defer img.Body.Close()
 
-	// c.Header("Content-Type", *image.ContentType)
-	// io.Copy(c.Writer, image.Body)
-	// if err != nil {
-	// 	resp.Response500(c, err)
-	// 	return
-	// }
+	c.Header("Content-Type", *img.ContentType)
+	io.Copy(c.Writer, img.Body)
+	if err != nil {
+		// RETURN
+		return
+	}
 
 	b, _ := json.Marshal(thubmail)
 	c.Writer.Write(b)

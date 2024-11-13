@@ -35,7 +35,8 @@ func (repo *PostRepository) Get(column, conditionKey, conditionValue string) any
 }
 
 func (repo *PostRepository) CreatePost(post *model.Post) error {
-	_, err := repo.db.Exec(`INSERT INTO posts (id, title, text, write_time, subtitle) VALUES ('` + post.ID + `', '` + post.Title + `', '` + post.Text + `', '` + post.WriteTime + `', '` + post.Subtitle + `')`)
+	query := `INSERT INTO posts (id, title, text, write_time, subtitle) VALUES ($1, $2, $3, $4, $5)`
+	_, err := repo.db.Exec(query, post.ID, post.Title, post.Text, post.WriteTime, post.Subtitle)
 	return err
 }
 
@@ -45,10 +46,12 @@ func (repo *PostRepository) UpdatePost(post *model.Post) error {
 	return err
 }
 
-func (repo *PostRepository) CreateTags(tags *[]string, postId string) error {
-	for _, tag := range *tags {
-		_, err := repo.db.Exec(`INSERT INTO tags (name, post_id) VALUES ('` + tag + `', '` + postId + `')`)
-		return err
+func (repo *PostRepository) CreateTags(tags []string, postId string) error {
+	for _, tag := range tags {
+		if _, err := repo.db.Exec(`INSERT INTO tags (name, post_id) VALUES ('` + tag + `', '` + postId + `')`); err != nil {
+			return err
+		}
+
 	}
 	return nil
 }
@@ -163,10 +166,10 @@ func (repo *PostRepository) GetTagsByPostId(postId string) (*[]string, error) {
 }
 
 func (repo *PostRepository) GetPost(postId string) (*model.Post, error) {
-	r := repo.db.QueryRow(`SELECT id, title, write_time, subtitle FROM posts WHERE id = '` + postId + `'`)
+	r := repo.db.QueryRow(`SELECT id, title, write_time, subtitle, text FROM posts WHERE id = '` + postId + `'`)
 
 	p := model.Post{}
-	r.Scan(&p.ID, &p.Title, &p.WriteTime, &p.Subtitle)
+	r.Scan(&p.ID, &p.Title, &p.WriteTime, &p.Subtitle, &p.Text)
 
 	return &p, nil
 }

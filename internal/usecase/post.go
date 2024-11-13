@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 
 	repo "github.com/choigonyok/techlog/internal/repository"
+	"github.com/choigonyok/techlog/pkg/image"
 	"github.com/choigonyok/techlog/pkg/model"
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -24,22 +25,23 @@ func (u *PostUsecase) CreatePost(post *model.Post, images []*multipart.FileHeade
 	if err := u.postRepository.CreatePost(post); err != nil {
 		return err
 	}
-	if err := u.postRepository.CreateTags(&post.Tags, post.ID); err != nil {
+
+	if err := u.postRepository.CreateTags(post.Tags, post.ID); err != nil {
 		return err
 	}
 
-	for _, image := range images {
+	for _, img := range images {
 		i := model.Image{}
-		i.Name = image.Filename
+		i.Name = img.Filename
 		i.PostID = post.ID
 		i.ID = uuid.NewString()
 
-		// err = image.Upload(v, image.ImageName)
-		// if err != nil {
-		// 	fmt.Println(err.Error())
-		// }
+		err := image.Upload(img, i.ID)
+		if err != nil {
+			return err
+		}
 
-		err := u.postRepository.CreateImage(i)
+		err = u.postRepository.CreateImage(i)
 		if err != nil {
 			return err
 		}
@@ -73,7 +75,7 @@ func (u *PostUsecase) UpdatePost(post *model.Post, images []*multipart.FileHeade
 	if err := u.postRepository.DeleteTags(post.ID); err != nil {
 		return err
 	}
-	if err := u.postRepository.CreateTags(&post.Tags, post.ID); err != nil {
+	if err := u.postRepository.CreateTags(post.Tags, post.ID); err != nil {
 		return err
 	}
 	if err := u.postRepository.DeleteThumbnail(post.ID); err != nil {
