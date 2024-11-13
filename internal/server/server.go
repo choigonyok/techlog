@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/choigonyok/techlog/internal/router"
@@ -17,6 +18,9 @@ const (
 // New creates new Server object
 func New() (*Server, error) {
 	r, err := router.New()
+	if err != nil {
+		fmt.Println("ERR SETTING MIDDLEWARES:", err)
+	}
 	httpHandlers := r.GetHTTPHandler()
 
 	s := newHTTPServer(httpHandlers, listenAddress)

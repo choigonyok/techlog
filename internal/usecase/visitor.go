@@ -1,8 +1,9 @@
 package usecase
 
 import (
+	"database/sql"
+
 	repo "github.com/choigonyok/techlog/internal/repository"
-	"github.com/choigonyok/techlog/pkg/time"
 	_ "github.com/lib/pq"
 )
 
@@ -16,14 +17,25 @@ func NewVisitorUsecase() *VisitorUsecase {
 	}
 }
 
-func (u *VisitorUsecase) GetTodayCount() int {
-	t := u.visitorRepository.Get("count", "date", time.GetCurrentTimeByFormat("2006/01/02")).(int)
-	return t
+func (u *VisitorUsecase) GetTodayCount() (int, error) {
+	today, err := u.visitorRepository.GetToday()
+	if err == sql.ErrNoRows {
+		u.visitorRepository.CreateToday()
+		return 1, nil
+	}
+	if err := u.visitorRepository.UpdateToday(today + 1); err != nil {
+		return 0, err
+	}
+
+	return today + 1, nil
 }
 
 func (u *VisitorUsecase) GetTotalCount() (int, error) {
-	counts, err := u.visitorRepository.GetAllCount()
+	counts, err := u.visitorRepository.GetTotal()
 	total := 0
+	if err == sql.ErrNoRows {
+		return 0, nil
+	}
 
 	for _, c := range *counts {
 		total += c

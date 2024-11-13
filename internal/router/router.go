@@ -33,8 +33,10 @@ func New() (*Router, error) {
 		route:      route.New(endpointPrefix),
 	}
 
+	if err := router.setMiddlewares(); err != nil {
+		return nil, err
+	}
 	router.setRoutes()
-	// err := router.setMiddlewares()
 
 	return router, nil
 }
