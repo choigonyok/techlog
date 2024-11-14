@@ -1,0 +1,3 @@
+[submodule "ui"]
+	path = techlog-ui
+	url = https://github.com/choigonyok/techlog-ui.git
