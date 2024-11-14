@@ -1,13 +1,14 @@
 package model
 
 type Post struct {
-	ID            int    `json:"id"`
-	Tags          string `json:"tags"`
-	Title         string `json:"title"`
-	Subtitle      string `json:"subtitle"`
-	WriteTime     string `json:"writeTime"`
-	ThumbnailPath string `json:"thumbnailPath"`
-	Text          string `json:"text"`
+	ID            string   `json:"id"`
+	Tags          []string `json:"tags"`
+	Title         string   `json:"title"`
+	Subtitle      string   `json:"subtitle"`
+	WriteTime     string   `json:"writeTime"`
+	ThumbnailName string   `json:"thumbnail_name"`
+	Text          string   `json:"text"`
+	Images        []*Image `json:"images"`
 }
 
 type PostWrite struct {
@@ -35,9 +36,13 @@ type PostCard struct {
 	ThumbnailPath string `json:"thumbnailPath"`
 }
 
-type PostImage struct {
-	ID        int    `json:"id"`
-	PostID    int    `json:"postid"`
-	ImageName string `json:"imageName"`
-	Thumbnail string `json:"thumbnail"`
+type Image struct {
+	ID     string `json:"id"`
+	PostID string `json:"post_id"`
+	Name   string `json:"name"`
+}
+
+type Tag struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }

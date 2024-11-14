@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -17,12 +18,6 @@ import (
 type AuthHandler struct {
 	gin.HandlerFunc
 }
-
-const HOME_IDP_GIT_OAUTH_CLIENT_ID = ""
-const HOME_IDP_GIT_OAUTH_CLIENT_SECRET = ""
-const randomstring = "randomstring"
-
-var jwtSecret = []byte("18df91ad-af53-42a1-80a6-adsgasdd3005")
 
 func NewAuthHandler() *AuthHandler {
 	return &AuthHandler{}
@@ -40,6 +35,36 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	url := oauthConf.AuthCodeURL(randomstring, oauth2.AccessTypeOffline)
 	c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+func (h *AuthHandler) Validate(c *gin.Context) {
+	data := struct {
+		Token string `json:"token"`
+	}{}
+
+	b, _ := io.ReadAll(c.Request.Body)
+	json.Unmarshal(b, &data)
+
+	token, err := jwt.Parse(data.Token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+		}
+		return jwtSecret, nil
+	})
+
+	if err != nil || !token.Valid {
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		if username := claims["username"]; username != "choigonyok" {
+			c.Writer.WriteHeader(http.StatusForbidden)
+			return
+		}
+	} else {
+		c.Writer.WriteHeader(http.StatusOK)
+	}
 }
 
 func (h *AuthHandler) Callback(c *gin.Context) {
@@ -85,7 +110,7 @@ func (h *AuthHandler) Callback(c *gin.Context) {
 
 	username := userInfo["login"].(string)
 	if username != "choigonyok" {
-		c.Writer.WriteHeader(http.StatusUnauthorized)
+		c.Writer.WriteHeader(http.StatusForbidden)
 		return
 	}
 

@@ -80,11 +80,6 @@ func New(prefix string) *Routes {
 			Method:  GET,
 			Handler: m[handler.POST_HANDLER].(*handler.PostHandler).GetImages,
 		},
-		// {
-		// 	Path:    prefix + "posts/count",
-		// 	Method:  GET,
-		// 	Handler: handler.GetEveryPostCount,
-		// },
 
 		// Visitor
 		{
@@ -96,58 +91,19 @@ func New(prefix string) *Routes {
 		// Login
 		{
 			Path:    prefix + "login",
-			Method:  POST,
+			Method:  GET,
 			Handler: m[handler.AUTH_HANDLER].(*handler.AuthHandler).Login,
 		},
 		{
 			Path:    prefix + "github/callback",
-			Method:  POST,
+			Method:  GET,
 			Handler: m[handler.AUTH_HANDLER].(*handler.AuthHandler).Callback,
 		},
-
-		// {
-		// 	Path:    prefix + "login",
-		// 	Method:  GET,
-		// 	Handler: handler.VerifyAdminUser,
-		// },
-		// 	// Comment
-		// 	{
-		// 		Path:    prefix + "posts/:postid/comment",
-		// 		Method:  POST,
-		// 		Handler: handler.CreateComment,
-		// 	},
-		// 	{
-		// 		Path:    prefix + "comments",
-		// 		Method:  GET,
-		// 		Handler: handler.GetComments,
-		// 	},
-		// 	{
-		// 		Path:    prefix + "posts/:postid/comments",
-		// 		Method:  GET,
-		// 		Handler: handler.GetCommentsByPostID,
-		// 	},
-		// 	{
-		// 		Path:    prefix + "comments/:commentid",
-		// 		Method:  DELETE,
-		// 		Handler: handler.DeleteCommentByCommentID,
-		// 	},
-
-		// 	// Reply
-		// 	{
-		// 		Path:    prefix + "posts/:postid/replies",
-		// 		Method:  GET,
-		// 		Handler: handler.GetRepliesByPostID,
-		// 	},
-		// 	{
-		// 		Path:    prefix + "posts/:postid/comments/:commentid/reply",
-		// 		Method:  POST,
-		// 		Handler: handler.CreateReply,
-		// 	},
-		// 	{
-		// 		Path:    prefix + "posts/:postid/comments/:commentid/replies/:replyid",
-		// 		Method:  DELETE,
-		// 		Handler: handler.DeleteReplyByReplyID,
-		// 	},
+		{
+			Path:    prefix + "token",
+			Method:  POST,
+			Handler: m[handler.AUTH_HANDLER].(*handler.AuthHandler).Validate,
+		},
 	}
 	return h
 }

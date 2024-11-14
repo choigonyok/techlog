@@ -2,8 +2,7 @@ package image
 
 import (
 	"fmt"
-	"mime/multipart"
-	"os"
+	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -13,21 +12,16 @@ import (
 )
 
 const (
-	region       = "ap-northeast-2"
-	s3BucketName = "blog-choigonyok"
+	Region       = "ap-northeast-2"
+	S3BucketName = "techlog-choigonyok"
 )
 
-var (
-	awsSecretKey = os.Getenv("AWS_SECRET_KEY")
-	awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
-)
-
-func Upload(f *multipart.FileHeader, imageName string) error {
+func Upload(r io.Reader, id string) error {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(region),
+		Region: aws.String(Region),
 		Credentials: credentials.NewStaticCredentials(
-			awsAccessKey,
-			awsSecretKey,
+			AWS_ACCESS_KEY,
+			AWS_SECRET_KEY,
 			""),
 	})
 	if err != nil {
@@ -35,18 +29,10 @@ func Upload(f *multipart.FileHeader, imageName string) error {
 	}
 	uploader := s3manager.NewUploader(sess)
 
-	file, _ := f.Open()
-	if err != nil {
-		fmt.Println("Error copying the file")
-		return err
-	}
-
-	file.Seek(0, 0)
-
 	result, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(s3BucketName),
-		Key:    aws.String(imageName),
-		Body:   file,
+		Bucket: aws.String(S3BucketName),
+		Key:    aws.String(id),
+		Body:   r,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to upload file, %v", err)
@@ -57,10 +43,10 @@ func Upload(f *multipart.FileHeader, imageName string) error {
 
 func Download(imageName string) (*s3.GetObjectOutput, error) {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(region),
+		Region: aws.String(Region),
 		Credentials: credentials.NewStaticCredentials(
-			awsAccessKey,
-			awsSecretKey,
+			AWS_ACCESS_KEY,
+			AWS_SECRET_KEY,
 			""),
 	})
 	if err != nil {
@@ -70,7 +56,7 @@ func Download(imageName string) (*s3.GetObjectOutput, error) {
 	svc := s3.New(sess)
 
 	output, err := svc.GetObject(&s3.GetObjectInput{
-		Bucket: aws.String(s3BucketName),
+		Bucket: aws.String(S3BucketName),
 		Key:    aws.String(imageName),
 	})
 	if err != nil {
@@ -86,10 +72,10 @@ func Download(imageName string) (*s3.GetObjectOutput, error) {
 
 func Remove(imageName string) error {
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(region),
+		Region: aws.String(Region),
 		Credentials: credentials.NewStaticCredentials(
-			awsAccessKey,
-			awsSecretKey,
+			AWS_ACCESS_KEY,
+			AWS_SECRET_KEY,
 			""),
 	})
 	if err != nil {
@@ -99,7 +85,7 @@ func Remove(imageName string) error {
 	svc := s3.New(sess)
 
 	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(s3BucketName),
+		Bucket: aws.String(S3BucketName),
 		Key:    aws.String(imageName),
 	})
 	if err != nil {

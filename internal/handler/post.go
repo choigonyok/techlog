@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/choigonyok/techlog/internal/model"
 	"github.com/choigonyok/techlog/internal/usecase"
 	"github.com/choigonyok/techlog/pkg/image"
-	"github.com/choigonyok/techlog/pkg/model"
 	"github.com/choigonyok/techlog/pkg/time"
 	"github.com/gin-gonic/gin"
 )
@@ -127,12 +127,11 @@ func (h *PostHandler) DeletePost(c *gin.Context) {
 		// RETURN
 	}
 
-	// for _, v := range imageNames {
-	// 	if err := img.Remove(v); err != nil {
-	// 		resp.Response500(c, err)
-	// 		return
-	// 	}
-	// }
+	if err := h.usecase.DeletePost(postId); err != nil {
+		fmt.Println("ERR DELETING POST:", err)
+		// RETURN
+		return
+	}
 
 	// err = github.PushDeletedPost(post.Title, post.ID, false)
 	// if err != nil {
@@ -155,6 +154,7 @@ func (h *PostHandler) UpdatePost(c *gin.Context) {
 	imageDatas := m.File["file"]
 
 	postData := []byte(postDatas[0])
+	// fmt.Println("POST DATA:", postData)
 	json.Unmarshal(postData, &post)
 
 	h.usecase.UpdatePost(&post, imageDatas)

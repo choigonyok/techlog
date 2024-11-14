@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/choigonyok/techlog/pkg/model"
+	"github.com/choigonyok/techlog/internal/model"
 )
 
 type PostRepository struct {
@@ -41,7 +41,8 @@ func (repo *PostRepository) CreatePost(post *model.Post) error {
 }
 
 func (repo *PostRepository) UpdatePost(post *model.Post) error {
-	_, err := repo.db.Exec(`UPDATE posts SET title = '` + post.Title + `', text = '` + post.Text + `', subtitle = '` + post.Subtitle + `'`)
+	query := `UPDATE posts SET title = $1, text = $2, subtitle = $3 WHERE id = $4`
+	_, err := repo.db.Exec(query, post.Title, post.Text, post.Subtitle, post.ID)
 
 	return err
 }
@@ -56,13 +57,15 @@ func (repo *PostRepository) CreateTags(tags []string, postId string) error {
 	return nil
 }
 
-func (repo *PostRepository) CreateImage(image model.Image) error {
+func (repo *PostRepository) CreateImage(image *model.Image) error {
 	_, err := repo.db.Exec(`INSERT INTO images (id, post_id, name) VALUES ('` + image.ID + `', '` + image.PostID + `', '` + image.Name + `')`)
 	return err
 }
 
 func (repo *PostRepository) GetPostsWithTag(tag string) ([]*model.Post, error) {
-	r, err := repo.db.Query(`SELECT post_id FROM tags WHERE name = '` + tag + `'`)
+	tags := strings.Join(strings.Split(tag, ","), "','")
+
+	r, err := repo.db.Query(`SELECT post_id FROM tags WHERE name IN ('` + tags + `')`)
 	if err != nil {
 		return nil, err
 	}
@@ -221,6 +224,11 @@ func (repo *PostRepository) DeleteTags(postId string) error {
 
 func (repo *PostRepository) DeleteImages(postId string) error {
 	_, err := repo.db.Exec(`DELETE FROM images WHERE post_id = '` + postId + `'`)
+	return err
+}
+
+func (repo *PostRepository) DeleteImagesWithException(postId string, id []string) error {
+	_, err := repo.db.Exec(`DELETE FROM images WHERE post_id = '` + postId + `' and id NOT IN ('` + strings.Join(id, "','") + `')`)
 	return err
 }
 
