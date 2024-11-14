@@ -1,22 +1,34 @@
-# Techlog. 🚀
+# Techlog
 
-### **_Make A Tech Blog On My Own_**
+<img src="https://img.shields.io/badge/1316-FFFFFF?style=flat&label=lines of code"/>
 
-## ⭐ Release & Dependencies
+<img src="https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white"/> <img src="https://img.shields.io/badge/Gin-00ADD8?style=flat&logo=go&logoColor=white"/> <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black"/> <img src="https://img.shields.io/badge/Oauth-181717?style=flat&logo=github&logoColor=white"/> <img src="https://img.shields.io/badge/S3-569A31?style=flat&logo=amazons3&logoColor=white"/> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white"/>
 
-<img src="https://img.shields.io/badge/1.5-FFFFFF?style=flat&label=release"/> <img src="https://img.shields.io/badge/1.20-00ADD8?style=flat&logo=go&logoColor=white&label=GO"/> <img src="https://img.shields.io/badge/18.0.0-61DAFB?style=flat&logo=react&logoColor=white&label=REACT"/> <img src="https://img.shields.io/badge/24.0.6-2496ED?style=flat&logo=docker&logoColor=white&label=DOCKER"/> <img src="https://img.shields.io/badge/1.28.1-326CE5?style=flat&logo=kubernetes&logoColor=white&label=KUBERNETES"/> <img src="https://img.shields.io/badge/1.5.7-844FBA?style=flat&logo=terraform&logoColor=white&label=TERRAFORM"/> 
+### **Make a technical blog on my own**
 
-</br>
+| Title         | Content                                 |
+|--------------|--------------------------------------|
+| [Demo](#Demo) | URL of Techlog              |
+| [Features](#Features) | Main features of Techlog                    |
+| [Duration](#Duration) | Development duration of Techlog                      |
+| [Architecture](#Architecture) | Architecture of Techlog                      |
+| [Releases](#Releases) | Releases of Techlog                      |
 
-## ⭐ Result
 
-### 🚀 [Techlog.](http://www.choigonyok.com) 🚀
+## Demo
 
-<img align="right" src="https://github.com/choigonyok/blog-project/assets/129271363/e3892e1e-8a0a-4635-837e-1c0c9fd46996" height="500" width="400"/>
+[https://www.choigonyok.com](https://www.choigonyok.com)
 
-</br>
+## Features
 
-## ⭐ Duration
+* Parse images from markdown text and Push to Amazon S3 bucket
+* Github Oauth2.0 for Authn / Authz
+* Create / Update / Delete posts on UI
+* View filtered posts with tags
+
+## Architecture
+
+## Duration
 
 <table>
 <tr>
@@ -40,12 +52,12 @@ Refactoring
 Refactoring
 </td>
 <td align=center>
-23.10.29 ~  (In Progress)
+24.11.13 ~ 24.11.14 (2 days)
 </td>
 </tr>
 </table>
 
-## ⭐ Released Version
+## Releases
 
 <table>
 <tr>
@@ -108,57 +120,15 @@ v1.5
 
 </td>
 </tr>
-</table>
 
-
-## ⭐ Features
-
-[Refactoring #2] (In Progress)
-* Jenkins CI Pipeline
-* ArgoCD CD Pipeline
-* [AWS Multi AZ Architecture](https://github.com/choigonyok/techlog-posts/blob/main/AWS%20Multi-AZ%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98%EC%99%80%20Service%20Topology%EC%97%90%20%EB%8C%80%ED%95%98%EC%97%AC.md)
-* Post Backup Automation in Github Repo
-* [HTTPS Using Terraform & ACM](https://github.com/choigonyok/techlog-posts/blob/main/%ED%85%8C%EB%9D%BC%ED%8F%BC%20%26%20ACM%20%26%20Route53%EB%A1%9C%20HTTPS%20%EA%B5%AC%ED%98%84%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
-* [AWS S3 Uploading & Downloading Images](https://github.com/choigonyok/techlog-posts/blob/main/Golang%EC%97%90%EC%84%9C%20AWS%20S3%20%ED%8C%8C%EC%9D%BC%20%EC%97%85%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0.md)
-* [Database Master/Slace Architecture](https://github.com/choigonyok/techlog-posts/blob/main/MySQL%20%EB%A7%88%EC%8A%A4%ED%84%B0-%EC%8A%AC%EB%A0%88%EC%9D%B4%EB%B8%8C%20Replication%20%EA%B5%AC%EC%84%B1%20%EB%B0%8F%20%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0.md)
-* AWS CloudFront(CDN) Hosting Frontend
-* Golang Package Oriented Design
-* Unit, Integration, E2E, Mocking Test
-
-[Refactoring #1]
-* MVC Design Pattern
-* Deploy in Kubernetes
-* Infrastructure Provisioning w/ Terraform
-* Responsive Web (in PC, Tablet, Mobile)
-* Anti-SQL Injection
-
-[Development]
-* Administrator Page
-* Markdown Editor 
-* Comment / Reply
-* Related Posts by Tags
-* Categorize by Tag Buttons
-* Today / Total Visitor Count
-
-</br>
-
-## ⭐ Technical Stacks
-
-<img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=Go&logoColor=white"> <img src="https://img.shields.io/badge/Gin-00ADD8?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&logoColor=black"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=Kubernetes&logoColor=white"> <img src="https://img.shields.io/badge/Containerd-575757?style=for-the-badge&logo=Containerd&logoColor=white"> <img src="https://img.shields.io/badge/Kubeadm-575757?style=for-the-badge"> <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=Terraform&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=Nginx&logoColor=white"> <img src="https://img.shields.io/badge/HAProxy-2496ED?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white"> <img src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white"> <img src="https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=Amazon&logoColor=white"> <img src="https://img.shields.io/badge/ROUTE53-4053D6?style=for-the-badge&logo=Amazon&logoColor=white">
-
-</br>
-
-## ⭐ Contributor
-
-<table>
 <tr>
 <td align=center>
-<img src="https://github.com/choigonyok/blog-project/assets/129271363/40334291-9fab-44f1-bacd-f06b56a0242d" height="150" width="150"/>
+v2.0
 </td>
-</tr>
-<tr>
 <td align=center>
-최윤석
+  
+[Release Note](https://github.com/choigonyok/techlog/releases/tag/v2.0)
+
 </td>
 </tr>
 </table>
