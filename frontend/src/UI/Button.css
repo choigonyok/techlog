@@ -32,6 +32,7 @@
   font-family: 'Mansalva', cursive;
   text-align: center;
   font-weight: 800;
+  margin-top: 2.5rem;
   padding: 2%;
 }
 .fadein {
@@ -71,6 +72,7 @@
 .container {
   display: flex;
   justify-content:center;
+  
   align-items: center;
   height: auto;
   flex-wrap: wrap;

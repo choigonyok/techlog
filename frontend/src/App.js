@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Postpage from "./Postpage/Postpage";
 import Writepage from "./Adminpage/Writepage";
 import Deletepage from "./Adminpage/Deletepage";
-import Loginpage from "./Adminpage/Loginpage";
+import Login from "./Header/Login";
+import Callback from "./Header/Callback";
 
 const App = () => {
   
@@ -13,10 +14,10 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<Homepage/>} />
-        <Route path="/post/:postid" element={<Postpage/>} />
-        <Route path="/admin/delete" element={<Deletepage/>} />
-        <Route path="/admin/write" element={<Writepage/>} />
-        {/* <Route path="/login" element={<Loginpage/>} /> */}
+        <Route path="/posts/:postid" element={<Postpage/>} />
+        <Route path="/admin" element={<Deletepage/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/github/callback" element={<Callback/>} />
       </Routes>
     </BrowserRouter>
   );

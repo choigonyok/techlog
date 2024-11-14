@@ -2,6 +2,7 @@ import "./Homepage.css";
 import Header from "../Header/Header";
 import Button from "../UI/Button";
 import Footer from "../UI/Footer";
+import Loading from "../UI/Loading";
 import Card from "../UI/Card";
 import axios from "axios";
 import profileimage from "../Assets/IMG_0071 2.jpg";
@@ -23,12 +24,17 @@ const Homepage = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    if (postData.length === 0 ) {
+      setIsLoading(false)
+    }
   }, []);
 
   const [totalNum, setTotalNum] = useState("");
   const [visitNum, setVisitNum] = useState("");
   const [changeEvent, setChangeEvent] = useState(false);
   const [postData, setPostData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const seeTaggedPostHandler = (taggedPostData) => {
     setPostData(taggedPostData);
@@ -38,9 +44,16 @@ const Homepage = () => {
     window.scrollTo(0, 0);
   }, [changeEvent]);
 
+  
+  const handleFinish = () => {
+    setIsLoading(false)
+  };
+
+
   return (
     <div className="page">
-      <Header /> {/* 6/2 Header 컴포넌트 재사용 위해서 분리 */}
+      <Header />
+      {!isLoading ? "" :<Loading/>}
       <div className="introduce">
         <div className="visitnum">
           TODAY : {visitNum} / TOTAL : {totalNum}
@@ -64,15 +77,15 @@ const Homepage = () => {
         </div>
         <div className="introduce-text__year">
           <div>
-            2017.03~ &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
+            2017.03.02~2025.02.28 &nbsp;&nbsp;&nbsp; Kyunghee Univ. Computer Engineering
           </div>
           <div>
-            2024.03~2024.06 &nbsp;&nbsp;&nbsp; SLEXN, inc. Internship
+            2024.03.02~2024.08.31 &nbsp;&nbsp;&nbsp; SLEXN, inc. Internship( Infrastructure Engineer )
           </div>
         </div>
       </div>
       <Button onSeeTaggedPost={seeTaggedPostHandler} />
-      {postData && <Card postdata={postData} />}
+      {postData && <Card postdata={postData} onFinishCard={handleFinish}/>}
       <Footer />
     </div>
   );

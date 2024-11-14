@@ -10,9 +10,14 @@ const Header = () => {
   };
 
   const githubPageHandler = () => {
-    // 버튼 클릭 시 특정 URL로 이동
-    navigate("https://github.com/choigonyok");
+    const token = localStorage.getItem("jwt_token");
+    if (token === null) {
+      navigate("/login");
+      return
+    }
+    navigate("/admin");
   };
+
 
   return (
     <div className="header">
@@ -21,9 +26,9 @@ const Header = () => {
       </button>
       <div className="header-empty" />
       <div>
-        <a href="/admin/delete" className="header-category">
+        <div onClick={githubPageHandler} className="header-category">
           admin
-        </a>
+        </div>
       </div>
     </div>
   );

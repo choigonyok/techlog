@@ -6,29 +6,30 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import Markdown from "../UI/Markdown";
 
 const Writepage = () => {
   const navigate = useNavigate();
 
-  useEffect(()=>{
-    axios
-    .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-    .then((response) => {
-      if (response.status !== 202) {
-        navigate("/");
-      }
-    })
-    .catch((error) => {
-      if (error.response) {
-        if (error.response.status === 401) {
-          alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
-          window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-        } else {
-          console.error(error);
-        }
-      }
-    });
-  },[])
+  // useEffect(()=>{
+  //   axios
+  //   .get(process.env.REACT_APP_HOST + "/login")
+  //   .then((response) => {
+  //     if (response.status !== 202) {
+  //       navigate("/");
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     if (error.response) {
+  //       if (error.response.status === 401) {
+  //         alert("로그인이 안된 사용자는 게시글 작성 권한이 없습니다!");
+  //         window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+  //       } else {
+  //         console.error(error);
+  //       }
+  //     }
+  //   });
+  // },[])
 
   axios.defaults.withCredentials = true;
 
@@ -43,31 +44,34 @@ const Writepage = () => {
   const [unlock, setUnLock] = useState(false);
   const mounted = useRef(false);
 
-  const postHandler = () => {
-    axios
-      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-      .then((response) => {
-        if (response.status === 202) {
-          requestPosting()
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 401) {
-            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-          } else {
-            console.error(error);
-          }
-        }
-      })
-  };
+  // const postHandler = () => {
+  //   axios
+  //     .get(process.env.REACT_APP_HOST + "/oauth2/auth")
+  //     .then((response) => {
+  //       if (response.status === 202) {
+  //         requestPosting()
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       if (error.response) {
+  //         if (error.response.status === 401) {
+  //           window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
+  //         } else {
+  //           console.error(error);
+  //         }
+  //       }
+  //     })
+  // };
 
   const requestPosting = () => {
+    const tags = tagText.split(',')
+    const trimedTags = tags.map((item)=>item.trim())
     const post = {
       title: titleText,
-      tags: tagText,
+      tags: trimedTags,
       text: bodyText,
       subtitle: subtitleText,
+      thumbnail_name: imgName[0],
     };
     const formData = new FormData();
     for (let i = 0; i < img.length; i++) {
@@ -120,14 +124,11 @@ const Writepage = () => {
   }, [md])
 
   const imgHandler = (e) => {
-    setIMG((img) => [...img, ...e.target.files]);
-    // setIMG(e.target.files);
+    setIMG((img) => [...e.target.files]);
 
     let f = document.getElementById("imgfile").files;
     if (f.length !== 0) {
-      for (let i = 0; i < f.length; i++) {
-        setImgName((element) => [...element, f[i].name]);
-      }
+      setImgName((element) => [...element, f[0].name]);
     }
   };
 
@@ -224,35 +225,16 @@ const Writepage = () => {
             />
           </div>
         ))}
-        <div>
-          <div className="admin-editor">
-            <MDEditor height={865} value={md} onChange={setMD} />
-          </div>
-        </div>
-        <div className="admin-container__sample">
-          <div className="sample-title">
-            <div className="post-tagsbox">
-              {tagText && <div className="post-tags__button">{tagText}</div>}
-            </div>
-            <div className="post-title__item">{titleText}</div>
-            <div className="written-date">{dateText}</div>
-            <div className="sample-container">
-              <MDEditor.Markdown className="post-body" source={bodyText} />
-            </div>
-          </div>
-        </div>
-
+        <Markdown onTextChange={setBodyText}/>
         <div className="button-container">
           <input
             type="button"
             className="admin-button"
             value="POST 추가하기"
-            onClick={postHandler}
+            onClick={requestPosting}
           />
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

@@ -3,11 +3,20 @@ import { useNavigate } from "react-router-dom";
 
 const Card = (props) => {
   const navigate = useNavigate();
-
+  var count = 0
+  
   const cardClickHandler = (postID) => {
-    // 버튼 클릭 시 특정 URL로 이동
-    navigate("/post/" + postID)
+    navigate("/posts/" + postID)
   };
+
+  const finishLoading = () => {
+    count += 1;
+    console.log(count, " ", props.postdata.length)
+    if (count === props.postdata.length) {
+      props.onFinishCard()
+    }
+  };
+  
 
   return (
     <div>
@@ -21,6 +30,7 @@ const Card = (props) => {
                     className="postcard-image"
                     alt="my"
                     src={process.env.REACT_APP_HOST + "/api/posts/" + item.id + "/thumbnail"}
+                    onLoad={finishLoading}
                   />
                 </div>
                 <div className="postcard-text">
@@ -34,7 +44,7 @@ const Card = (props) => {
                   }
                 </div>
                 <div className="postcard-tag">
-                  <p>{item.tags}</p>
+                  <p>{Array.from(item.tags).join(", ")}</p>
                 </div>
                 <div className="postcard-date">
                   <p className="postcard-date__box">{item.writeTime}</p>

@@ -6,26 +6,33 @@ import { useEffect, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import Writepage from "./Writepage"
 import { useNavigate } from "react-router-dom";
+import Loading from "../UI/Loading";
+import Markdown from "../UI/Markdown";
 
 const Deletepage = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-      .then((response) => {
-        if (response.status !== 202) {
-          navigate("/");
-        }
+    const token = localStorage.getItem("jwt_token");
+    if (token === null) {
+      navigate("/login");
+      return
+    }
+
+    axios.post(process.env.REACT_APP_HOST+'/api/token', JSON.stringify({token: token}))
+      .then(response => {
+        setIsLoading(false)
       })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 401) {
-            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-          } else {
-            console.error(error);
-          }
+      .catch(error => {
+        if (error.response.status === 403) {
+          alert("허가되지 않은 사용자입니다.")
+          navigate("/")
+        } else if (error.response.status === 401) {
+          navigate("/login")
         }
+        console.error('Error fetching progress:', error);
+        setIsLoading(false)
       });
   }, [])
 
@@ -49,59 +56,24 @@ const Deletepage = () => {
   const [comInfo, setComInfo] = useState([]);
   const [postRequest, setPostRequest] = useState(false);
   const [imageNames, setImageNames] = useState([]);
+  const [thumbnail, setThumbnail] = useState('');
   const [img, setIMG] = useState([]);
-  const [newImages, setNewImages] = useState([]);
+  const [imgName, setImgName] = useState('');
   const [preImageLength, setPreImageLength] = useState(0);
-  
 
+  console.log("NAME:",imgName)
   const postHandler = () => {
-    axios
-      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-      .then((response) => {
-        if (response.status === 202) {
-          requestEditPost();
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 401) {
-            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-          } else {
-            console.error(error);
-          }
-        }
-      })
-  };
-
-  const requestEditPost = () => {
-    let images = [];
-    imageNames.map((item) => (
-      item.thumbnail === "1"
-        ?
-        images.push(item.imageName)
-        :
-        ""
-    ))
-    imageNames.map((item) => (
-      item.thumbnail === "0"
-        ?
-        images.push(item.imageName)
-        :
-        ""
-    ))
-    const imageString = images.join(" ");
+    const tags = tagText.split(',')
+    const trimedTags = tags.map((item)=>item.trim())
 
     const postdata = {
       title: titleText,
-      tags: tagText,
+      tags: trimedTags,
       writeTime: dateText,
       text: bodyText,
-      thumbnailPath: imageString,
       subtitle: subtitleText,
+      thumbnail_name: imgName,
     };
-
-    // console.log("SEND DATA:",JSON.stringify(postdata));
-
     const formData = new FormData();
     for (let i = 0; i < img.length; i++) {
       formData.append("file", img[i]);
@@ -115,20 +87,7 @@ const Deletepage = () => {
 
       })
       .then((response) => {
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    axios
-      .put(process.env.REACT_APP_HOST + "/api/posts/" + id + "/images", imageNames, {
-        "Content-type": "multipart/form-data",
-        withCredentials: true,
-      })
-      .then((response) => {
-        setToModify(false);
-        setIsDeleted(!isDeleted);
-        setChangeEvent(!changeEvent);
+        navigate("/")
       })
       .catch((error) => {
         console.log(error);
@@ -156,25 +115,6 @@ const Deletepage = () => {
 
   const deleteHandler = (value) => {
     axios
-      .get(process.env.REACT_APP_HOST + "/oauth2/auth")
-      .then((response) => {
-        if (response.status === 202) {
-          requestDeletePost(value);
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 401) {
-            window.location.href = "https://www.choigonyok.com/oauth2/sign_in";
-          } else {
-            console.error(error);
-          }
-        }
-      })
-  };
-
-  const requestDeletePost = (value) => {
-    axios
       .delete(process.env.REACT_APP_HOST + "/api/posts/" + value, {
         withCredentials: true,
       })
@@ -194,7 +134,7 @@ const Deletepage = () => {
         setToModify(true);
         setID(value);
         setTitleText(response.data.title);
-        setTagText(response.data.tags);
+        setTagText(Array.from(response.data.tags).join(", "));
         setDateText(response.data.writetime);
         setMD(response.data.text);
         setSubtitleText(response.data.subtitle);
@@ -205,9 +145,9 @@ const Deletepage = () => {
       });
 
     axios
-      .get(process.env.REACT_APP_HOST + "/api/posts/" + value + "/images")
+      .get(process.env.REACT_APP_HOST + "/api/posts/" + value + "/thumbnail")
       .then((response) => {
-        setImageNames([...response.data]);
+        // setThumbnail(response.data)
         setPreImageLength(response.data.length);
       })
       .catch((error) => {
@@ -282,16 +222,16 @@ const Deletepage = () => {
     setIsWrites(true);
   };
 
-  useEffect(() => {
-    axios
-      .get(process.env.REACT_APP_HOST + "/api/comments")
-      .then((response) => {
-        setComInfo([...response.data]);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [postRequest]);
+  // useEffect(() => {
+  //   axios
+  //     .get(process.env.REACT_APP_HOST + "/api/comments")
+  //     .then((response) => {
+  //       setComInfo([...response.data]);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // }, [postRequest]);
 
   const changeThumbnailHandler = (newThumbnailImage) => {
     let originalImages = imageNames
@@ -307,26 +247,25 @@ const Deletepage = () => {
   }
 
   const imgHandler = (e) => {
-    setIMG((img) => [...img, ...e.target.files]);
-    console.log("e.target.files : ",e.target.files);
+    setIMG([...e.target.files]);
+
     let f = document.getElementById("imgfile").files;
     if (f.length !== 0) {
-      for (let i = 0; i < f.length; i++) {
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setNewImages([...newImages, reader.result]);
-        }
-        reader.readAsDataURL(e.target.files[i]);
-        
-        let img = {
-          id: 0,
-          postid: id,
-          imageName: f[i].name,
-          thumbnail: 0,
-        };
-        setImageNames([...imageNames, img]);
+      setImgName(f[0].name);
+    }
+
+    if (f.length !== 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
       }
+      const url = URL.createObjectURL(e.target.files[0])
+      let img = {
+        id: 0,
+        postid: id,
+        imageName: f.name,
+        thumbnail: url,
+      };
+      setThumbnail(img);
     }
   };
 
@@ -346,11 +285,10 @@ const Deletepage = () => {
     );
   };
 
-  console.log("IMG LENGTH : ", img.length);
-
   return (
     <div>
       <Header />
+      {!isLoading ? "" :<Loading/>}
       <div className="delete-container">
         <div className="delete-main">ADMIN</div>
         <div className="select-container">
@@ -366,12 +304,12 @@ const Deletepage = () => {
             value="POSTS"
             onClick={isPostsHandler}
           />
-          <input
+          {/* <input
             type="button"
             className="select-button"
             value="COMMENTS"
             onClick={isCommentsHandler}
-          />
+          /> */}
         </div>
         {isWrite && <div>
           <Writepage />
@@ -397,58 +335,22 @@ const Deletepage = () => {
                     onChange={subtitleHandler}
                   />
                 </div>
+                <div>
+                  </div>
                 <div className="image-thumbnail-container">
-                  {imageNames.map((item, index) => (
-                    item.thumbnail === "1" ?
-                      (item.id !== 0 ?
-                        <div className="image-thumbnail">
-                          <img
-                            className="image-thumbnail-image"
-                            alt="my"
-                            src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
-                          />
-                          <div className="image-thumbnail-name">
-                            {item.imageName}
-                          </div>
-                        </div>
-                        :
-                        <div className="image-thumbnail">
-                          <img
-                            className="image-thumbnail-image"
-                            alt="my"
-                            src={newImages[index - preImageLength]}
-                          />
-                          <div className="image-thumbnail-name">
-                            {item.imageName}
-                          </div>
-                        </div>)
-                      :
-                      (item.id !== 0 ?
-                        <div className="image-non-thumbnail">
-                          <img
-                            className="image-non-thumbnail-image"
-                            alt="my"
-                            src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/images/" + item.id}
-                            onClick={() => changeThumbnailHandler(item)}
-                          />
-                          <div className="image-non-thumbnail-name">
-                            {item.imageName}
-                          </div>
-                        </div>
-                        :
-                        <div className="image-non-thumbnail">
-                          <img
-                            className="image-non-thumbnail-image"
-                            alt="my"
-                            src={newImages[index - preImageLength]}
-                            // src={newImages.filter((element) => element.name === item.imageName).pop()}
-                            onClick={() => changeThumbnailHandler(item)}
-                          />
-                          <div className="image-non-thumbnail-name">
-                            {item.imageName}
-                          </div>
-                        </div>)
-                  ))}
+                  {thumbnail ?
+                      <img
+                      className="image-non-thumbnail-image"
+                      alt="my"
+                      src={thumbnail.thumbnail}
+                    />
+                    :
+                    <img
+                      className="image-non-thumbnail-image"
+                      alt="my"
+                      src={process.env.REACT_APP_HOST + "/api/posts/" + id + "/thumbnail"}
+                    /> 
+                  }
                 </div>
                 <div className="admin-titletagdate">
                   <label for="imgfile">
@@ -464,22 +366,7 @@ const Deletepage = () => {
                     onChange={imgHandler}
                   />
                 </div>
-                {imageNames.map((item, index) => (
-                  <div className="imgname-container">
-                    {item.imageName}
-                    <input
-                      type="button"
-                      value="X"
-                      className="imgname-button"
-                      onClick={() => deleteIMGHandler(item)}
-                    />
-                  </div>
-                ))}
-                <div>
-                  <div className="admin-editor">
-                    <MDEditor height={400} value={md} onChange={setMD} />
-                  </div>
-                </div>
+                <Markdown onTextChange={setMD} value={md}/>
                 <div className="button-container">
                   <input
                     type="button"
@@ -526,7 +413,7 @@ const Deletepage = () => {
             </div>
           </div>
         )}
-        {isComments && (
+        {/* {isComments && (
           <div className="delete-list">
             {comInfo &&
               comInfo.map((item, index) => (
@@ -548,7 +435,7 @@ const Deletepage = () => {
                 </div>
               ))}
           </div>
-        )}
+        )} */}
       </div>
 
       <Footer />

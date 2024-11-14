@@ -60,7 +60,7 @@ input[type="password"]{
   width: 100%;
   padding-left: 10%;
   padding-right: 10%;
-  padding-top: 10%;
+  padding-top: 10px;
   justify-content: center;
   align-items: center;
 }
