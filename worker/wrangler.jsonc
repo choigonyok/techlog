@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "techlog",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-20",
+  "observability": { "enabled": true },
+
+  // 화면(techlog-ui 빌드)은 정적 자산으로 내보낸다. 정적 자산 요청은 무료·무제한이고,
+  // /api/* 만 Worker 가 받는다. 없는 주소는 index.html 로 돌려 SPA 가 처리한다.
+  "assets": {
+    "directory": "../techlog-ui/build",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  "routes": [{ "pattern": "tech.choigonyok.com", "custom_domain": true }],
+  // GitHub 로그인 콜백 주소가 tech.choigonyok.com 하나라 workers.dev 주소는 열지 않는다.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "vars": { "ADMIN_LOGIN": "choigonyok" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "techlog",
+      "database_id": "9d576640-d452-42d8-a557-c179e8f75605",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "techlog-images" }]
+}

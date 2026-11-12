@@ -24,3 +24,5 @@ node_modules/
 # CI
 jenkins_home
 hack/config.json
+# Cloudflare wrangler cache
+.wrangler

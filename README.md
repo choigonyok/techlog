@@ -17,16 +17,25 @@
 
 ## Demo
 
-[https://www.choigonyok.com](https://www.choigonyok.com)
+[https://tech.choigonyok.com](https://tech.choigonyok.com)
 
 ## Features
 
-* Parse images from markdown text and Push to Amazon S3 bucket
+* Parse images from markdown text and store them in Cloudflare R2 (Amazon S3 before 2026-11)
 * Github Oauth2.0 for Authn / Authz
 * Create / Update / Delete posts on UI
 * View filtered posts with tags
 
 ## Architecture
+
+Since 2026-11 the blog runs on Cloudflare's free tier (`worker/`):
+
+* **Cloudflare Worker** serves the React build ([techlog-ui](https://github.com/choigonyok/techlog-ui)) as static assets and handles `/api/*`
+* **D1** stores posts, tags, image records and visitor counts
+* **R2** stores post images and thumbnails
+* **GitHub OAuth + JWT** guards writing, editing and deleting posts
+
+The previous Go (Gin) + PostgreSQL + S3 backend is kept in `cmd/`, `internal/` and `pkg/` for reference.
 
 ## Duration
 
